@@ -132,13 +132,14 @@ export function CvAction({
   className?: string;
   children?: ReactNode;
 }) {
+  if (!page.cv_url) return null;
   return (
     <a
       href={preview ? undefined : page.cv_url}
       download={preview ? undefined : `${page.slug}-CV.pdf`}
+      title={preview ? "Works on your published page" : undefined}
       className={className}
       aria-disabled={preview || undefined}
-      title={preview ? "Works on your published page" : undefined}
       onClick={preview ? (event) => event.preventDefault() : undefined}
     >
       <Download className="size-[1.05em] shrink-0" aria-hidden />

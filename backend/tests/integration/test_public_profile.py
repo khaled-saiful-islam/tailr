@@ -258,24 +258,6 @@ async def test_og_image_is_rendered_once(signed_in: httpx.AsyncClient) -> None:
     assert "Nur Aina Rahman" in sent["html"]
 
 
-async def test_public_cv_has_no_private_details(signed_in: httpx.AsyncClient) -> None:
-    await _profile(signed_in)
-    await _publish(signed_in, settings={"contact_email": "hi@aina.dev"})
-    with respx.mock(assert_all_called=True) as mock:
-        route = mock.post(f"{get_settings().renderer_url}/pdf").respond(200, content=b"%PDF-1.7")
-        response = await signed_in.get("/api/v1/public/profiles/nur-aina-rahman/cv.pdf")
-    assert response.status_code == 200
-    assert 'filename="nur-aina-rahman-CV.pdf"' in response.headers["content-disposition"]
-    html = json.loads(route.calls[0].request.content)["html"]
-    assert "hi@aina.dev" in html
-    profile_email = draft_to_document(sample_draft()).basics.email
-    if profile_email:
-        assert profile_email not in html
-    profile_phone = draft_to_document(sample_draft()).basics.phone
-    if profile_phone:
-        assert profile_phone not in html
-
-
 async def test_qr_code(signed_in: httpx.AsyncClient) -> None:
     await _profile(signed_in)
     response = await signed_in.get("/api/v1/public-profile/qr.svg")

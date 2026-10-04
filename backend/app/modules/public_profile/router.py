@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import io
+import uuid
 from typing import Literal
 
 import segno
@@ -20,7 +21,12 @@ from app.core.errors import NotFoundError
 from app.modules.auth.service import AuthService
 from app.modules.public_profile.schemas import (
     ContactOut,
+    DraftRequest,
     Highlight,
+    Inbox,
+    MessageIn,
+    MessageSent,
+    PortfolioDraft,
     PublicPage,
     PublicProfileOut,
     PublicProfileUpdate,
@@ -90,6 +96,30 @@ async def suggest(user: CurrentUser, db: DbSession) -> list[Highlight]:
     return await PublicProfileService(db).suggest_highlights(user)
 
 
+@owner_router.post("/draft", response_model=PortfolioDraft)
+async def draft(data: DraftRequest, user: CurrentUser, db: DbSession) -> PortfolioDraft:
+    """AI suggestions for your story, expertise and case studies; nothing is saved."""
+    return await PublicProfileService(db).draft(user, data.parts)
+
+
+@owner_router.get("/messages", response_model=Inbox)
+async def inbox(user: CurrentUser, db: DbSession) -> Inbox:
+    """Messages people sent through your portfolio's contact form."""
+    return await PublicProfileService(db).inbox(user)
+
+
+@owner_router.post("/messages/{message_id}/read", status_code=status.HTTP_204_NO_CONTENT)
+async def read_message(message_id: uuid.UUID, user: CurrentUser, db: DbSession) -> Response:
+    await PublicProfileService(db).mark_read(user, message_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@owner_router.delete("/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_message(message_id: uuid.UUID, user: CurrentUser, db: DbSession) -> Response:
+    await PublicProfileService(db).delete_message(user, message_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @owner_router.get("/qr.svg", response_class=Response)
 async def qr_code(
     user: CurrentUser, db: DbSession, page: Literal["portfolio", "cv"] = "portfolio"
@@ -124,6 +154,15 @@ async def reveal_contact(slug: str, request: Request, db: DbSession) -> ContactO
     return await PublicProfileService(db).contact(slug, client_ip(request))
 
 
+@visitor_router.post(
+    "/{slug}/messages", status_code=status.HTTP_202_ACCEPTED, response_model=MessageSent
+)
+async def send_message(slug: str, data: MessageIn, request: Request, db: DbSession) -> MessageSent:
+    """The contact form. The owner gets it by email and in Tailr; their address stays private."""
+    await PublicProfileService(db).send_message(slug, data, client_ip(request))
+    return MessageSent(sent=True)
+
+
 @visitor_router.get("/{slug}/og.jpg", response_class=Response)
 async def og_image(slug: str, db: DbSession) -> Response:
     data = await PublicProfileService(db).og_image(slug)
@@ -134,25 +173,16 @@ async def og_image(slug: str, db: DbSession) -> Response:
     )
 
 
-@visitor_router.get("/{slug}/cv.pdf", response_class=Response)
-async def public_cv(slug: str, request: Request, db: DbSession) -> Response:
-    pdf, filename = await PublicProfileService(db).cv(slug, client_ip(request))
-    return Response(
-        content=pdf,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
-
-
 # ── the page ─────────────────────────────────────────────────────────────
 
 
 @page_router.get("/p/{slug}", response_class=HTMLResponse)
-async def page(slug: str, request: Request, db: DbSession) -> HTMLResponse:
+@page_router.get("/p/{slug}/{rest:path}", response_class=HTMLResponse)
+async def page(slug: str, request: Request, db: DbSession, rest: str = "") -> HTMLResponse:
     service = PublicProfileService(db)
     found = await service.published(slug)
     shell = await load_shell()
-    if found is None:
+    if found is None or not known_path(found[1], rest):
         return HTMLResponse(
             render_page(shell, None, og_image="", index=False),
             status_code=status.HTTP_404_NOT_FOUND,
@@ -169,6 +199,20 @@ async def page(slug: str, request: Request, db: DbSession) -> HTMLResponse:
             source=source_of(request.headers.get("referer"), request.query_params.get("src")),
         )
     html = render_page(
-        shell, public, og_image=service.og_url(public), index=row.visibility == "public"
+        shell,
+        public,
+        og_image=service.og_url(public),
+        index=row.visibility == "public",
+        path=rest.strip("/"),
     )
     return HTMLResponse(html, headers=page_headers())
+
+
+def known_path(page: PublicPage, rest: str) -> bool:
+    """/p/<slug>/about, /work, /work/<project>, /contact; anything else is a 404."""
+    parts = [part for part in rest.strip("/").split("/") if part]
+    if not parts:
+        return True
+    if parts == ["work"] or (len(parts) == 1 and parts[0] in {"about", "contact"}):
+        return True
+    return len(parts) == 2 and parts[0] == "work" and any(p.path == parts[1] for p in page.projects)

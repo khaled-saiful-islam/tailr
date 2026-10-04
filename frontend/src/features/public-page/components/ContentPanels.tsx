@@ -5,8 +5,16 @@ import { IconButton, Panel, Switch } from "@/components/ui/controls";
 import { inputClass } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
 import type { PageProject, Section } from "@/public/types";
-import { imageUrl, useSuggestHighlights, type ImageOut } from "../api";
-import type { PageDraft } from "../draft";
+import {
+  imageUrl,
+  useDraftPortfolio,
+  useSuggestHighlights,
+  type CaseStudy,
+  type ImageOut,
+  type PortfolioDraft,
+} from "../api";
+import { portfolioOf, portfolioUpdater, type PageDraft } from "../draft";
+import { CaseStudyEditor } from "./CaseStudyEditor";
 import { ImagePicker } from "./ImagePicker";
 
 type Update = (recipe: (draft: PageDraft) => PageDraft) => void;
@@ -106,12 +114,17 @@ export function ProjectsPanel({
   update,
   projects,
   onImage,
+  suggestion,
+  onSuggestion,
 }: {
   draft: PageDraft;
   update: Update;
   projects: PageProject[];
   onImage: (image: ImageOut) => void;
+  suggestion: PortfolioDraft | null;
+  onSuggestion: (draft: PortfolioDraft | null) => void;
 }) {
+  const drafting = useDraftPortfolio();
   const settings = draft.settings;
   const images = settings.project_images ?? {};
   const setImage = (projectId: string, imageId: string | null) =>
@@ -120,6 +133,16 @@ export function ProjectsPanel({
       if (imageId) next[projectId] = imageId;
       else delete next[projectId];
       return { ...d, settings: { ...d.settings, project_images: next } };
+    });
+
+  const cases = portfolioOf(draft).case_studies ?? {};
+  const suggested = suggestion?.case_studies ?? {};
+  const setCase = (projectId: string, study: CaseStudy | null) =>
+    portfolioUpdater(update)((p) => {
+      const next = { ...(p.case_studies ?? {}) };
+      if (study) next[projectId] = study;
+      else delete next[projectId];
+      return { ...p, case_studies: next };
     });
 
   if (!projects.length) {
@@ -137,7 +160,30 @@ export function ProjectsPanel({
   return (
     <Panel
       title="Projects"
-      description="Add a picture to each and choose one to lead. Screenshots, photos or diagrams all work."
+      description="Each project gets its own page. Add a cover picture, choose one to lead, and tell the story as a case study."
+      actions={
+        <Button
+          size="sm"
+          variant="secondary"
+          icon={<Sparkles className="size-3.5" />}
+          loading={drafting.isPending}
+          onClick={() =>
+            drafting.mutate(["case_studies"], {
+              onSuccess: (result) => {
+                onSuggestion(result);
+                if (!Object.keys(result.case_studies).length)
+                  toast("Nothing to draft yet", {
+                    description:
+                      "Add details to your projects in your profile first.",
+                  });
+              },
+              onError: (error) => toast.error(error.message),
+            })
+          }
+        >
+          Draft case studies with AI
+        </Button>
+      }
     >
       <ul className="flex flex-col gap-3">
         {projects.map((project) => {
@@ -204,6 +250,33 @@ export function ProjectsPanel({
                   </IconButton>
                 )}
               </div>
+              {cases[project.id] === undefined && suggested[project.id] && (
+                <div className="w-full rounded-control border border-chalk/40 bg-chalk-soft p-3 text-[0.875rem]">
+                  <p className="font-semibold text-chalk">
+                    A drafted case study is ready.
+                  </p>
+                  <p className="mt-1 text-ink-2">
+                    {suggested[project.id]?.overview ??
+                      suggested[project.id]?.problem}
+                  </p>
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        setCase(project.id, suggested[project.id] ?? null)
+                      }
+                    >
+                      Use this
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <CaseStudyEditor
+                name={project.id}
+                study={cases[project.id]}
+                onChange={(study) => setCase(project.id, study)}
+                onImage={onImage}
+              />
             </li>
           );
         })}
@@ -213,6 +286,11 @@ export function ProjectsPanel({
 }
 
 const SECTIONS: { key: Section; label: string }[] = [
+  { key: "about", label: "About" },
+  { key: "expertise", label: "What you do" },
+  { key: "achievements", label: "Achievements" },
+  { key: "testimonials", label: "What people say" },
+  { key: "contact", label: "Contact" },
   { key: "highlights", label: "By the numbers" },
   { key: "projects", label: "Projects" },
   { key: "experience", label: "Experience" },

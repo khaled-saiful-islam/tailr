@@ -7,13 +7,26 @@ import {
   useSyncExternalStore,
   type ComponentType,
 } from "react";
+import { PortfolioSite, type PortfolioKit } from "./portfolio/PortfolioSite";
 import type { Mode, PublicPage, TemplateKey, TemplateProps } from "./types";
 
+function site(load: () => Promise<PortfolioKit>): ComponentType<TemplateProps> {
+  return lazy(() =>
+    load().then((kit) => ({
+      default: (props: TemplateProps) => <PortfolioSite kit={kit} {...props} />,
+    })),
+  );
+}
+
 const TEMPLATES: Record<TemplateKey, ComponentType<TemplateProps>> = {
-  blueprint: lazy(() => import("./templates/Blueprint")),
-  broadsheet: lazy(() => import("./templates/Broadsheet")),
-  salon: lazy(() => import("./templates/Salon")),
-  poster: lazy(() => import("./templates/Poster")),
+  blueprint: site(() =>
+    import("./templates/blueprint").then((m) => m.blueprint),
+  ),
+  broadsheet: site(() =>
+    import("./templates/broadsheet").then((m) => m.broadsheet),
+  ),
+  salon: site(() => import("./templates/salon").then((m) => m.salon)),
+  poster: site(() => import("./templates/poster").then((m) => m.poster)),
 };
 
 const darkQuery = "(prefers-color-scheme: dark)";

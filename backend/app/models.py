@@ -12,7 +12,11 @@ from app.modules.kits.models import Kit
 from app.modules.media.models import StoredImage
 from app.modules.notifications.models import Notification
 from app.modules.profile.models import CvImport, Profile
-from app.modules.public_profile.models import PublicProfile, PublicProfileViews
+from app.modules.public_profile.models import (
+    PortfolioMessage,
+    PublicProfile,
+    PublicProfileViews,
+)
 from app.modules.radar.models import Radar
 from app.modules.sources.models import SourceRun
 
@@ -26,6 +30,7 @@ __all__ = [
     "Kit",
     "Match",
     "Notification",
+    "PortfolioMessage",
     "Profile",
     "PublicProfile",
     "PublicProfileViews",

@@ -37,7 +37,9 @@ def _send(message: EmailMessage) -> None:
         smtp.send_message(message)
 
 
-async def send_email(*, to: str, subject: str, html: str, text: str) -> bool:
+async def send_email(
+    *, to: str, subject: str, html: str, text: str, reply_to: str | None = None
+) -> bool:
     settings = get_settings()
     if not settings.email_enabled:
         return False
@@ -45,6 +47,8 @@ async def send_email(*, to: str, subject: str, html: str, text: str) -> bool:
     message["From"] = settings.smtp_from
     message["To"] = to
     message["Subject"] = subject
+    if reply_to:
+        message["Reply-To"] = reply_to
     message.set_content(text)
     message.add_alternative(html, subtype="html")
     try:

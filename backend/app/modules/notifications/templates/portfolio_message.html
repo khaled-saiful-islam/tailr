@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#f7f8fa;font-family:Arial,Helvetica,sans-serif;color:#14213d;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f8fa;padding:24px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #dde2eb;border-radius:14px;">
+        <tr><td style="padding:24px 24px 8px;">
+          <p style="margin:0;font-size:14px;color:#47536d;">A message through your portfolio</p>
+          <h1 style="margin:8px 0 0;font-size:22px;line-height:1.3;">{{ who }}</h1>
+          <p style="margin:6px 0 0;font-size:14px;color:#47536d;">{{ reason }}, from {{ data.email }}</p>
+        </td></tr>
+        <tr><td style="padding:16px 24px;">
+          <div style="white-space:pre-line;font-size:15px;line-height:1.6;border-left:3px solid #f5c518;padding-left:14px;">{{ data.message }}</div>
+        </td></tr>
+        <tr><td style="padding:8px 24px 24px;font-size:14px;color:#47536d;">
+          Reply to this email to answer {{ data.name }} directly. Your address stays private until you do.<br />
+          <a href="{{ inbox }}" style="color:#3f6fe8;">Open your inbox on Tailr</a>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

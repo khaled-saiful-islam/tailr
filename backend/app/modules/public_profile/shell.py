@@ -71,7 +71,8 @@ def title_for(page: PublicPage) -> str:
 
 
 def description_for(page: PublicPage) -> str:
-    text = page.summary or page.headline or f"{page.name}'s profile on Tailr."
+    first = page.about[0] if page.about else None
+    text = page.hero_line or first or page.summary or page.headline or f"{page.name} on Tailr."
     text = re.sub(r"\s+", " ", text).strip()
     return text if len(text) <= 200 else text[:197].rsplit(" ", 1)[0] + "..."
 
@@ -137,24 +138,16 @@ def meta_tags(
     return "\n    ".join(tags)
 
 
-def _head(page: PublicPage, *, og_image: str, index: bool) -> str:
-    return meta_tags(
-        title=title_for(page),
-        description=description_for(page),
-        url=page.url,
-        og_image=og_image,
-        index=index,
-        structured=json_ld(page),
-    )
-
-
 def _fallback_body(page: PublicPage) -> str:
     """Plain HTML for crawlers and browsers without JavaScript; React replaces it."""
     parts = [f"<h1>{escape(page.name)}</h1>"]
+    if page.hero_line:
+        parts.append(f"<p>{escape(page.hero_line)}</p>")
     if page.headline:
         parts.append(f"<p>{escape(page.headline)}</p>")
     if page.summary:
         parts.append(f"<p>{escape(page.summary)}</p>")
+    parts += [f"<p>{escape(paragraph)}</p>" for paragraph in page.about]
     for role in page.experiences:
         parts.append(f"<h2>{escape(role.title)}, {escape(role.company)}</h2>")
         parts += [f"<p>{escape(bullet)}</p>" for bullet in role.bullets]
@@ -192,14 +185,43 @@ def render_not_available(shell: str) -> str:
     )
 
 
-def render_page(shell: str, page: PublicPage | None, *, og_image: str, index: bool) -> str:
+def _sub_page(page: PublicPage, path: str) -> tuple[str, str, str]:
+    """(title, description, canonical url) for /about, /work, /work/<project>, /contact."""
+    parts = [part for part in path.split("/") if part]
+    url = f"{page.url}/{'/'.join(parts)}" if parts else page.url
+    if len(parts) == 2:
+        project = next((p for p in page.projects if p.path == parts[1]), None)
+        if project is not None:
+            text = (project.case.overview if project.case else None) or project.summary
+            return f"{project.name} by {page.name}", text or description_for(page), url
+    titles = {
+        "about": f"About {page.name}",
+        "work": f"Work by {page.name}",
+        "contact": f"Contact {page.name}",
+    }
+    title = titles.get(parts[0], title_for(page)) if parts else title_for(page)
+    return title, description_for(page), url
+
+
+def render_page(
+    shell: str, page: PublicPage | None, *, og_image: str, index: bool, path: str = ""
+) -> str:
     """A portfolio page: the shell with its head tags, fallback HTML and data."""
     if page is None:
         return render_not_available(shell)
+    title, description, url = _sub_page(page, path)
+    head = meta_tags(
+        title=title,
+        description=description,
+        url=url,
+        og_image=og_image,
+        index=index,
+        structured=json_ld(page) if not path else None,
+    )
     return render_shell(
         shell,
-        title=f"{title_for(page)} | Tailr",
-        head=_head(page, og_image=og_image, index=index),
+        title=f"{title} | Tailr",
+        head=head,
         body=_fallback_body(page),
         data={"kind": "portfolio", **page.model_dump(mode="json")},
     )

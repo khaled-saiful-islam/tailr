@@ -35,7 +35,7 @@ Pick one, and Tailr tailors your resume, cover letter and apply kit for that exa
 | **Apply Kit** | One tap: a tailored resume (every line traced to your real experience), cover letter, screening answers and interview notes, in English or Bahasa Malaysia. It runs in the background and Tailr notifies you when it's ready. |
 | **Add any job** | Paste a link or the ad itself; Tailr measures it like a brief job. |
 | **CV Studio** | Your CV in five print-quality designs. Polish it with AI (every line checked against your profile), download a PDF, or share a link. |
-| **Portfolio** | A personal website made from your profile, in four designs, with a link preview for LinkedIn and WhatsApp. |
+| **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in four designs, one page or several. |
 | **Tracker** | Saved, applied, interviewing, offer: one board, with follow-up nudges. |
 
 Tailr never applies on your behalf. It prepares; you decide.
@@ -179,8 +179,8 @@ Tailr is built in milestones; each one is usable on its own.
 | M4 Fit score, AI fit reviews, Morning Brief (scheduled + on demand), email, Jobs and job detail | ✅ Done |
 | M5 Apply Kit: truth-checked resume, cover letter, answers and interview prep (English or Bahasa Malaysia), live preview and PDFs, add any job by link or text, notifications | ✅ Done |
 | M6 CV Studio: five CV designs, AI edits with truth checks and undo, PDF, share page with link preview; portfolio foundation (publishing, four designs, pictures, highlights, link previews, visits) | ✅ Done |
-| M7 Portfolio site: about, expertise, achievements, case-study pages, timeline, testimonials, contact form, one or several pages | Next |
-| M8 Tracker and Momentum | Planned |
+| M7 Portfolio site: about, expertise, achievements, case-study pages, timeline, testimonials, contact form to an inbox, one or several pages, AI drafting with a truth judge | ✅ Done |
+| M8 Tracker and Momentum | Next |
 | M9 Settings, admin (users, AI usage) and hand-over | Planned |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.

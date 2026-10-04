@@ -80,6 +80,8 @@ export function shows(page: PublicPage, section: Section): boolean {
       return page.skills.length > 0;
     case "languages":
       return page.languages.length > 0;
+    default:
+      return true;
   }
 }
 

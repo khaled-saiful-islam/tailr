@@ -21,6 +21,8 @@ const page: PublicPageData = {
   projects: [
     {
       id: "p1",
+      path: "one",
+      case: null,
       name: "One",
       role: null,
       url: null,
@@ -33,6 +35,8 @@ const page: PublicPageData = {
     },
     {
       id: "p2",
+      path: "two",
+      case: null,
       name: "Two",
       role: null,
       url: null,
@@ -49,8 +53,19 @@ const page: PublicPageData = {
   skills: [],
   languages: [],
   hidden_sections: [],
-  cv_url: "/api/v1/public/profiles/aina/cv.pdf",
+  cv_url: null,
   updated_at: "2026-10-04T00:00:00Z",
+  hero_line: null,
+  about: [],
+  currently: null,
+  interests: [],
+  expertise: [],
+  awards: [],
+  testimonials: [],
+  layout: "one_page",
+  contact_form: true,
+  whatsapp_url: null,
+  form_token: null,
 };
 
 const saved: PageSettingsOut = {
@@ -132,5 +147,66 @@ describe("applyDraft", () => {
     const next = applyDraft(page, draftFrom(saved), new Map());
     expect(next.location).toBe("Kuala Lumpur, Malaysia");
     expect(next.projects).toEqual(page.projects);
+  });
+
+  it("shows unsaved portfolio words and case studies", () => {
+    const draft = draftFrom(saved);
+    const next = applyDraft(
+      page,
+      {
+        ...draft,
+        settings: {
+          ...draft.settings,
+          portfolio: {
+            hero_line: "I build AI people use.",
+            about: ["First.", ""],
+            interests: ["Badminton"],
+            expertise: [
+              { title: "RAG", description: "I build it.", tools: ["Python"] },
+            ],
+            testimonials: [
+              { quote: "Great.", name: "Wei", role: null, relationship: null },
+            ],
+            awards: [],
+            case_studies: {
+              p1: {
+                overview: "A kit.",
+                approach: ["Small first."],
+                tools: [],
+                gallery: ["img-9"],
+              },
+            },
+            layout: "multi_page",
+            contact_form: false,
+            whatsapp: "+60 12 345 6789",
+          },
+        },
+      },
+      new Map([
+        [
+          "img-9",
+          {
+            id: "img-9",
+            purpose: "project",
+            url: "/x",
+            width: 640,
+            height: 400,
+          },
+        ],
+      ]),
+    );
+    expect(next.hero_line).toBe("I build AI people use.");
+    expect(next.about).toEqual(["First."]);
+    expect(next.layout).toBe("multi_page");
+    expect(next.contact_form).toBe(false);
+    expect(next.whatsapp_url).toBe("https://wa.me/60123456789");
+    expect(next.expertise[0]?.title).toBe("RAG");
+    const project = next.projects.find((p) => p.id === "p1");
+    expect(project?.case?.overview).toBe("A kit.");
+    expect(project?.case?.gallery[0]).toEqual({
+      url: "/api/v1/images/img-9.webp",
+      width: 640,
+      height: 400,
+    });
   });
 });

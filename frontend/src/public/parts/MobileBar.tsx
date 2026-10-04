@@ -35,13 +35,15 @@ export function MobileBar({
             Email
           </ContactAction>
         )}
-        <CvAction
-          page={page}
-          preview={preview}
-          className={`${item} ${secondary}`}
-        >
-          CV
-        </CvAction>
+        {page.cv_url && (
+          <CvAction
+            page={page}
+            preview={preview}
+            className={`${item} ${secondary}`}
+          >
+            CV
+          </CvAction>
+        )}
         <ShareAction
           page={page}
           up

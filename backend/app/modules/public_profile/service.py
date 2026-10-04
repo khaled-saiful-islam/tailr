@@ -8,6 +8,7 @@ edit to the profile shows up on the page at once.
 from __future__ import annotations
 
 import uuid
+from collections.abc import Sequence
 from datetime import datetime, timedelta
 
 from sqlalchemy import select
@@ -19,20 +20,29 @@ from app.core.config import get_settings
 from app.core.errors import ConflictError, NotFoundError, UnprocessableError
 from app.core.logging import get_logger
 from app.modules.auth.models import User
+from app.modules.cv.models import Cv
 from app.modules.kits.checks import fact_sources
-from app.modules.kits.render import to_pdf
 from app.modules.media.models import StoredImage
 from app.modules.profile.document import ProfileDocument
 from app.modules.profile.models import Profile
 from app.modules.public_profile import og
 from app.modules.public_profile.assemble import build_page, missing_for, page_url
-from app.modules.public_profile.cv import public_cv_html
+from app.modules.public_profile.contact import form_token, receive
+from app.modules.public_profile.drafting import draft_portfolio
 from app.modules.public_profile.highlights import is_truthful, suggest_highlights
-from app.modules.public_profile.models import PublicProfile, PublicProfileViews
+from app.modules.public_profile.models import (
+    PortfolioMessage,
+    PublicProfile,
+    PublicProfileViews,
+)
 from app.modules.public_profile.schemas import (
     ContactOut,
     Highlight,
+    Inbox,
+    MessageIn,
+    MessageOut,
     PageSettings,
+    PortfolioDraft,
     PublicPage,
     PublicProfileOut,
     PublicProfileUpdate,
@@ -46,8 +56,8 @@ from app.storage.files import get_storage
 log = get_logger(__name__)
 
 SLUG_CHANGES_PER_DAY = 10
+DRAFTS_PER_DAY = 20
 CONTACT_REVEALS_PER_HOUR = 20
-CV_DOWNLOADS_PER_HOUR = 30
 STATS_DAYS = 30
 
 
@@ -75,6 +85,11 @@ class PublicProfileService:
         ).scalars()
         return {image.id: image for image in rows}
 
+    async def _cv_pdf(self, row: PublicProfile) -> str | None:
+        """The shared CV's PDF, if the owner shares their CV."""
+        visibility = await self.db.scalar(select(Cv.visibility).where(Cv.user_id == row.user_id))
+        return f"/api/v1/public/cv/{row.slug}/cv.pdf" if visibility in {"link", "public"} else None
+
     async def _page(
         self, row: PublicProfile, document: ProfileDocument, updated: datetime
     ) -> PublicPage:
@@ -84,6 +99,8 @@ class PublicProfileService:
             await self._images(row.user_id),
             base_url=get_settings().public_web_url,
             updated_at=max(updated, row.updated_at) if row.updated_at else updated,
+            cv_pdf=await self._cv_pdf(row),
+            form_token=form_token(row.slug),
         )
 
     # ── owner ────────────────────────────────────────────────────────────
@@ -168,7 +185,8 @@ class PublicProfileService:
         return SlugCheckOut(slug=slug, available=problem is None, reason=problem)
 
     async def _check_images(self, user: User, settings: PageSettings) -> None:
-        wanted = {settings.photo_id, *settings.project_images.values()} - {None}
+        galleries = [i for case in settings.portfolio.case_studies.values() for i in case.gallery]
+        wanted = {settings.photo_id, *settings.project_images.values(), *galleries} - {None}
         if not wanted:
             return
         owned = set(
@@ -219,9 +237,15 @@ class PublicProfileService:
             )
             row.slug = check.slug
         if data.settings is not None:
-            await self._check_images(user, data.settings)
-            self._check_highlights(data.settings, document)
-            row.settings = data.settings.model_dump(mode="json")
+            settings = data.settings
+            projects = {p.id for p in document.projects} if document else set()
+            cases = {k: v for k, v in settings.portfolio.case_studies.items() if k in projects}
+            settings = settings.model_copy(
+                update={"portfolio": settings.portfolio.model_copy(update={"case_studies": cases})}
+            )
+            await self._check_images(user, settings)
+            self._check_highlights(settings, document)
+            row.settings = settings.model_dump(mode="json")
         if data.template is not None:
             row.template = data.template
         if data.appearance is not None:
@@ -253,6 +277,65 @@ class PublicProfileService:
         if document is None:
             raise UnprocessableError("Build your profile first.", code="no_profile")
         return await suggest_highlights(document, user.id)
+
+    async def draft(self, user: User, parts: Sequence[str]) -> PortfolioDraft:
+        """AI suggestions for the portfolio's words; nothing is saved."""
+        document, _ = await self._profile(user.id)
+        if document is None or missing_for(document):
+            raise UnprocessableError(
+                "Add your name and a role or project to your profile first.",
+                code="profile_incomplete",
+            )
+        await rate_limit.enforce(
+            f"portfolio-draft:{user.id}",
+            limit=DRAFTS_PER_DAY,
+            window_seconds=24 * 3600,
+            message="That's a lot of drafts for one day. Try again tomorrow.",
+        )
+        row = await self._row(user)
+        interests = PageSettings.model_validate(row.settings or {}).portfolio.interests
+        return await draft_portfolio(document, parts, user.id, interests)
+
+    async def inbox(self, user: User) -> Inbox:
+        row = await self._row(user)
+        messages = (
+            await self.db.execute(
+                select(PortfolioMessage)
+                .where(PortfolioMessage.profile_id == row.id)
+                .order_by(PortfolioMessage.created_at.desc())
+                .limit(100)
+            )
+        ).scalars()
+        items = [
+            MessageOut(
+                id=m.id,
+                name=m.name,
+                email=m.email,
+                reason=m.reason,
+                company=m.company,
+                message=m.message,
+                flagged=m.flagged,
+                read=m.read_at is not None,
+                created_at=m.created_at,
+            )
+            for m in messages
+        ]
+        return Inbox(items=items, unread=sum(1 for m in items if not m.read))
+
+    async def _message(self, user: User, message_id: uuid.UUID) -> PortfolioMessage:
+        row = await self._row(user)
+        message = await self.db.get(PortfolioMessage, message_id)
+        if message is None or message.profile_id != row.id:
+            raise NotFoundError("That message isn't here.")
+        return message
+
+    async def mark_read(self, user: User, message_id: uuid.UUID) -> None:
+        message = await self._message(user, message_id)
+        if message.read_at is None:
+            message.read_at = utcnow()
+
+    async def delete_message(self, user: User, message_id: uuid.UUID) -> None:
+        await self.db.delete(await self._message(user, message_id))
 
     # ── visitors ─────────────────────────────────────────────────────────
 
@@ -291,6 +374,13 @@ class PublicProfileService:
         )
         return ContactOut(email=str(settings.contact_email))
 
+    async def send_message(self, slug: str, data: MessageIn, ip: str) -> None:
+        row, _ = await self._published_or_404(slug)
+        settings = PageSettings.model_validate(row.settings or {})
+        if not settings.portfolio.contact_form:
+            raise NotFoundError("This page doesn't take messages.")
+        await receive(self.db, row, data, ip)
+
     def og_url(self, page: PublicPage) -> str:
         version = og.inputs_hash(page)[:12]
         base = get_settings().public_web_url.rstrip("/")
@@ -317,20 +407,6 @@ class PublicProfileService:
         if old:
             await storage.delete(old)
         return data
-
-    async def cv(self, slug: str, ip: str) -> tuple[bytes, str]:
-        row, _ = await self._published_or_404(slug)
-        await rate_limit.enforce(
-            f"public-cv:{ip}",
-            limit=CV_DOWNLOADS_PER_HOUR,
-            window_seconds=3600,
-            message="Too many downloads. Try again in a while.",
-        )
-        document, _ = await self._profile(row.user_id)
-        assert document is not None
-        settings = PageSettings.model_validate(row.settings or {})
-        pdf = await to_pdf(public_cv_html(document, settings))
-        return pdf, f"{row.slug}-CV.pdf"
 
     async def is_owner(self, row: PublicProfile, user_id: uuid.UUID | None) -> bool:
         return user_id is not None and row.user_id == user_id

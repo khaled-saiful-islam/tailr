@@ -736,6 +736,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public-profile/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft
+         * @description AI suggestions for your story, expertise and case studies; nothing is saved.
+         */
+        post: operations["draft_api_v1_public_profile_draft_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Inbox
+         * @description Messages people sent through your portfolio's contact form.
+         */
+        get: operations["inbox_api_v1_public_profile_messages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/messages/{message_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read Message */
+        post: operations["read_message_api_v1_public_profile_messages__message_id__read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/messages/{message_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Message */
+        delete: operations["delete_message_api_v1_public_profile_messages__message_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public-profile/qr.svg": {
         parameters: {
             query?: never;
@@ -793,6 +867,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/profiles/{slug}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Message
+         * @description The contact form. The owner gets it by email and in Tailr; their address stays private.
+         */
+        post: operations["send_message_api_v1_public_profiles__slug__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/profiles/{slug}/og.jpg": {
         parameters: {
             query?: never;
@@ -802,23 +896,6 @@ export interface paths {
         };
         /** Og Image */
         get: operations["og_image_api_v1_public_profiles__slug__og_jpg_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/public/profiles/{slug}/cv.pdf": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Public Cv */
-        get: operations["public_cv_api_v1_public_profiles__slug__cv_pdf_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1006,6 +1083,17 @@ export interface components {
              */
             mode: "replace" | "merge";
         };
+        /** Award */
+        Award: {
+            /** Title */
+            title: string;
+            /** Issuer */
+            issuer?: string | null;
+            /** Year */
+            year?: number | null;
+            /** Detail */
+            detail?: string | null;
+        };
         /** Basics */
         Basics: {
             /** Full Name */
@@ -1089,6 +1177,32 @@ export interface components {
             bullet_id: string;
             /** Issues */
             issues: ("placeholder" | "weak_opener" | "no_metric" | "too_short" | "too_long")[];
+        };
+        /**
+         * CaseStudy
+         * @description A project told as a story: the problem, the decisions, the outcome.
+         */
+        CaseStudy: {
+            /** Overview */
+            overview?: string | null;
+            /** Role */
+            role?: string | null;
+            /** Timeline */
+            timeline?: string | null;
+            /** Team */
+            team?: string | null;
+            /** Problem */
+            problem?: string | null;
+            /** Approach */
+            approach?: string[];
+            /** Outcome */
+            outcome?: string | null;
+            /** Lessons */
+            lessons?: string | null;
+            /** Tools */
+            tools?: string[];
+            /** Gallery */
+            gallery?: string[];
         };
         /** Certification */
         Certification: {
@@ -1257,6 +1371,11 @@ export interface components {
             /** Visibility */
             visibility?: ("off" | "link" | "public") | null;
         };
+        /** DraftRequest */
+        DraftRequest: {
+            /** Parts */
+            parts: ("story" | "expertise" | "case_studies")[];
+        };
         /** Education */
         Education: {
             /** Institution */
@@ -1299,6 +1418,18 @@ export interface components {
             bullets?: components["schemas"]["Bullet"][];
             /** Id */
             id?: string;
+        };
+        /** Expertise */
+        Expertise: {
+            /** Title */
+            title: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Tools */
+            tools?: string[];
         };
         /** FactCheck */
         FactCheck: {
@@ -1432,6 +1563,13 @@ export interface components {
          * @enum {string}
          */
         ImportStatus: "queued" | "reading" | "understanding" | "ready" | "applied" | "failed";
+        /** Inbox */
+        Inbox: {
+            /** Items */
+            items: components["schemas"]["MessageOut"][];
+            /** Unread */
+            unread: number;
+        };
         /** InsightsOut */
         InsightsOut: {
             /** Summary */
@@ -1749,6 +1887,68 @@ export interface components {
              */
             status: "seen" | "saved" | "dismissed" | "new";
         };
+        /** MessageIn */
+        MessageIn: {
+            /** Name */
+            name: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /**
+             * Reason
+             * @default job
+             * @enum {string}
+             */
+            reason: "job" | "freelance" | "hello";
+            /** Company */
+            company?: string | null;
+            /** Message */
+            message: string;
+            /** Website */
+            website?: string | null;
+            /**
+             * Token
+             * @default
+             */
+            token: string;
+        };
+        /** MessageOut */
+        MessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "job" | "freelance" | "hello";
+            /** Company */
+            company: string | null;
+            /** Message */
+            message: string;
+            /** Flagged */
+            flagged: boolean;
+            /** Read */
+            read: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** MessageSent */
+        MessageSent: {
+            /** Sent */
+            sent: boolean;
+        };
         /** NotificationOut */
         NotificationOut: {
             /**
@@ -1793,6 +1993,29 @@ export interface components {
          * @enum {string}
          */
         OnboardingStep: "import" | "review" | "radar" | "done";
+        /** PageCase */
+        PageCase: {
+            /** Overview */
+            overview: string | null;
+            /** Role */
+            role: string | null;
+            /** Timeline */
+            timeline: string | null;
+            /** Team */
+            team: string | null;
+            /** Problem */
+            problem: string | null;
+            /** Approach */
+            approach: string[];
+            /** Outcome */
+            outcome: string | null;
+            /** Lessons */
+            lessons: string | null;
+            /** Tools */
+            tools: string[];
+            /** Gallery */
+            gallery: components["schemas"]["PageImage"][];
+        };
         /** PageCertification */
         PageCertification: {
             /** Name */
@@ -1838,6 +2061,15 @@ export interface components {
             /** Bullets */
             bullets: string[];
         };
+        /** PageImage */
+        PageImage: {
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
+        };
         /** PageLanguage */
         PageLanguage: {
             /** Name */
@@ -1856,6 +2088,8 @@ export interface components {
         PageProject: {
             /** Id */
             id: string;
+            /** Path */
+            path: string;
             /** Name */
             name: string;
             /** Role */
@@ -1874,6 +2108,7 @@ export interface components {
             image_height: number | null;
             /** Featured */
             featured: boolean;
+            case: components["schemas"]["PageCase"] | null;
         };
         /** PageSettings */
         PageSettings: {
@@ -1898,12 +2133,13 @@ export interface components {
             /** Featured Project Id */
             featured_project_id?: string | null;
             /** Hidden Sections */
-            hidden_sections?: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages")[];
+            hidden_sections?: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages" | "about" | "expertise" | "achievements" | "testimonials" | "contact")[];
             /**
              * Show Location
              * @default true
              */
             show_location: boolean;
+            portfolio?: components["schemas"]["PortfolioContent"];
         };
         /** PageSkillGroup */
         PageSkillGroup: {
@@ -1932,6 +2168,73 @@ export interface components {
             key: string;
             /** Label */
             label: string;
+        };
+        /**
+         * PortfolioContent
+         * @description What makes it a portfolio rather than a CV: the story, in the owner's voice.
+         */
+        PortfolioContent: {
+            /** Hero Line */
+            hero_line?: string | null;
+            /** About */
+            about?: string[];
+            /** Currently */
+            currently?: string | null;
+            /** Interests */
+            interests?: string[];
+            /** Expertise */
+            expertise?: components["schemas"]["Expertise"][];
+            /** Awards */
+            awards?: components["schemas"]["Award"][];
+            /** Testimonials */
+            testimonials?: components["schemas"]["Testimonial"][];
+            /** Case Studies */
+            case_studies?: {
+                [key: string]: components["schemas"]["CaseStudy"];
+            };
+            /**
+             * Layout
+             * @default one_page
+             * @enum {string}
+             */
+            layout: "one_page" | "multi_page";
+            /**
+             * Contact Form
+             * @default true
+             */
+            contact_form: boolean;
+            /** Whatsapp */
+            whatsapp?: string | null;
+        };
+        /**
+         * PortfolioDraft
+         * @description AI suggestions for the portfolio's words. Nothing is saved until the owner applies it.
+         */
+        PortfolioDraft: {
+            /** Hero Line */
+            hero_line?: string | null;
+            /**
+             * About
+             * @default []
+             */
+            about: string[];
+            /**
+             * Expertise
+             * @default []
+             */
+            expertise: components["schemas"]["Expertise"][];
+            /**
+             * Case Studies
+             * @default {}
+             */
+            case_studies: {
+                [key: string]: components["schemas"]["CaseStudy"];
+            };
+            /**
+             * Needs Input
+             * @default []
+             */
+            needs_input: string[];
         };
         /** PreviewJobOut */
         PreviewJobOut: {
@@ -2099,14 +2402,39 @@ export interface components {
             /** Languages */
             languages: components["schemas"]["PageLanguage"][];
             /** Hidden Sections */
-            hidden_sections: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages")[];
+            hidden_sections: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages" | "about" | "expertise" | "achievements" | "testimonials" | "contact")[];
             /** Cv Url */
-            cv_url: string;
+            cv_url: string | null;
             /**
              * Updated At
              * Format: date-time
              */
             updated_at: string;
+            /** Hero Line */
+            hero_line: string | null;
+            /** About */
+            about: string[];
+            /** Currently */
+            currently: string | null;
+            /** Interests */
+            interests: string[];
+            /** Expertise */
+            expertise: components["schemas"]["Expertise"][];
+            /** Awards */
+            awards: components["schemas"]["Award"][];
+            /** Testimonials */
+            testimonials: components["schemas"]["Testimonial"][];
+            /**
+             * Layout
+             * @enum {string}
+             */
+            layout: "one_page" | "multi_page";
+            /** Contact Form */
+            contact_form: boolean;
+            /** Whatsapp Url */
+            whatsapp_url: string | null;
+            /** Form Token */
+            form_token: string | null;
         };
         /** PublicProfileOut */
         PublicProfileOut: {
@@ -2444,6 +2772,20 @@ export interface components {
             experience_id: string;
             /** Bullets */
             bullets?: components["schemas"]["TailoredBullet"][];
+        };
+        /**
+         * Testimonial
+         * @description A real recommendation, entered by the owner. Tailr never writes these.
+         */
+        Testimonial: {
+            /** Quote */
+            quote: string;
+            /** Name */
+            name: string;
+            /** Role */
+            role?: string | null;
+            /** Relationship */
+            relationship?: string | null;
         };
         /** TextImportRequest */
         TextImportRequest: {
@@ -3870,6 +4212,117 @@ export interface operations {
             };
         };
     };
+    draft_api_v1_public_profile_draft_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioDraft"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inbox_api_v1_public_profile_messages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Inbox"];
+                };
+            };
+        };
+    };
+    read_message_api_v1_public_profile_messages__message_id__read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_message_api_v1_public_profile_messages__message_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     qr_code_api_v1_public_profile_qr_svg_get: {
         parameters: {
             query?: {
@@ -3961,7 +4414,7 @@ export interface operations {
             };
         };
     };
-    og_image_api_v1_public_profiles__slug__og_jpg_get: {
+    send_message_api_v1_public_profiles__slug__messages_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3970,14 +4423,20 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageIn"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MessageSent"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -3990,7 +4449,7 @@ export interface operations {
             };
         };
     };
-    public_cv_api_v1_public_profiles__slug__cv_pdf_get: {
+    og_image_api_v1_public_profiles__slug__og_jpg_get: {
         parameters: {
             query?: never;
             header?: never;

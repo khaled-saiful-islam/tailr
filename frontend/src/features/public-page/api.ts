@@ -99,3 +99,66 @@ export function useUploadImage() {
 export function imageUrl(id: string | null | undefined): string | null {
   return id ? `/api/v1/images/${id}.webp` : null;
 }
+
+export type PortfolioContent = Schemas["PortfolioContent"];
+export type PortfolioDraft = Schemas["PortfolioDraft"];
+export type CaseStudy = Schemas["CaseStudy"];
+export type Inbox = Schemas["Inbox"];
+export type DraftPart = Schemas["DraftRequest"]["parts"][number];
+
+/** AI suggestions for the portfolio's words; nothing is saved until applied. */
+export function useDraftPortfolio() {
+  return useMutation({
+    mutationFn: (parts: DraftPart[]) =>
+      unwrap(api.POST("/api/v1/public-profile/draft", { body: { parts } })),
+  });
+}
+
+export const inboxKey = ["public-page", "inbox"] as const;
+
+export function useInbox() {
+  return useQuery({
+    queryKey: inboxKey,
+    queryFn: () => unwrap(api.GET("/api/v1/public-profile/messages", {})),
+  });
+}
+
+export function useMarkMessageRead() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(
+        api.POST("/api/v1/public-profile/messages/{message_id}/read", {
+          params: { path: { message_id: id } },
+        }),
+      ),
+    onSettled: () => client.invalidateQueries({ queryKey: inboxKey }),
+  });
+}
+
+export function useDeleteMessage() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      unwrap(
+        api.DELETE("/api/v1/public-profile/messages/{message_id}", {
+          params: { path: { message_id: id } },
+        }),
+      ),
+    onSettled: () => client.invalidateQueries({ queryKey: inboxKey }),
+  });
+}
+
+export const EMPTY_PORTFOLIO: PortfolioContent = {
+  hero_line: null,
+  about: [],
+  currently: null,
+  interests: [],
+  expertise: [],
+  awards: [],
+  testimonials: [],
+  case_studies: {},
+  layout: "one_page",
+  contact_form: true,
+  whatsapp: null,
+};

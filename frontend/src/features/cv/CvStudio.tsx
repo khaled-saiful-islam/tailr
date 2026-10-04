@@ -196,7 +196,7 @@ export function CvStudio() {
         />
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] xl:gap-10">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] xl:gap-10">
         <div className={cn(view === "preview" && "hidden lg:block")}>
           <Tabs.Root value={tab} onValueChange={setTab}>
             <Tabs.List
