@@ -102,31 +102,31 @@ class BriefService:
         ).scalar_one_or_none()
         if radar is None:
             raise UnprocessableError(
-                "Set up your radar first, so Tailr knows what to look for.", code="no_radar"
+                "Set your job preferences first, so Tailr knows what to look for.", code="no_radar"
             )
         await rate_limit.enforce(
             f"brief-run:{user.id}",
             limit=RUNS_PER_DAY,
             window_seconds=24 * 3600,
-            message="You've run a lot of briefs today. The next one arrives on schedule.",
+            message="You've searched a lot today. Tailr searches again tomorrow morning.",
         )
         await self.db.commit()  # the builder reads in its own transactions
         brief_id = await start_brief(user.id, "manual")
         if brief_id is None:
-            raise NotFoundError("We couldn't start your brief.")
+            raise NotFoundError("We couldn't start the job search.")
         from app.modules.brief.tasks import build_brief
 
         await build_brief.kiq(str(brief_id))
         brief = await self.db.get(Brief, brief_id)
         if brief is None:
-            raise NotFoundError("We couldn't find that brief.")
+            raise NotFoundError("We couldn't find that job search.")
         await self.db.refresh(brief)
         return await self._brief_out(brief)
 
     async def get(self, user: User, brief_id: uuid.UUID) -> BriefOut:
         brief = await self.db.get(Brief, brief_id)
         if brief is None or brief.user_id != user.id:
-            raise NotFoundError("We couldn't find that brief.")
+            raise NotFoundError("We couldn't find that job search.")
         return await self._brief_out(brief)
 
     async def matches(

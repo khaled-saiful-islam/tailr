@@ -72,13 +72,13 @@ export function AddJobDialog() {
         icon={<Plus className="size-4" />}
         onClick={() => setOpen(true)}
       >
-        Add a job
+        Add a job by link
       </Button>
       <Dialog
         open={open}
         onOpenChange={(next) => !paste.isPending && setOpen(next)}
         title="Add a job"
-        description="Found a job somewhere else? Tailr measures your fit and can tailor an application for it."
+        description="Found a job somewhere else? Paste it here. Tailr shows how well you match and can prepare your application."
       >
         <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
           <Segmented
@@ -159,7 +159,7 @@ export function AddJobDialog() {
               loading={paste.isPending}
               disabled={mode === "link" ? !linkOk : !textOk}
             >
-              Add and measure
+              Add the job
             </Button>
           </div>
         </form>

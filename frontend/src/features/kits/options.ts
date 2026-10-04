@@ -23,19 +23,18 @@ export const TONE_OPTIONS: { value: Tone; label: string; hint: string }[] = [
 export const STAGES: { key: string; label: string; detail: string }[] = [
   {
     key: "reading",
-    label: "Reading the job",
-    detail: "What they need, in their own words",
+    label: "Reading the job ad",
+    detail: "What they're asking for, in their own words",
   },
   {
     key: "tailoring",
-    label: "Tailoring your application",
-    detail:
-      "Resume, cover letter, answers and interview prep, written together",
+    label: "Writing your CV and cover letter",
+    detail: "Plus answers to common questions and interview prep",
   },
   {
     key: "checking",
     label: "Checking every line",
-    detail: "Each claim is traced back to your profile",
+    detail: "Each line is checked against your profile",
   },
 ];
 
@@ -45,4 +44,11 @@ export function stageIndex(stage: string): number {
     0,
     STAGES.findIndex((s) => s.key === stage),
   );
+}
+
+/** "LinkedIn", "JobStreet", or a plain fallback, from the job's address. */
+export function siteName(url: string): string {
+  if (/linkedin\./i.test(url)) return "LinkedIn";
+  if (/jobstreet\./i.test(url)) return "JobStreet";
+  return "the job site";
 }

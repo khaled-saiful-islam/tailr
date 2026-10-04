@@ -6,10 +6,10 @@ type Streak = Momentum["streak"];
 type DayState = Streak["week"][number]["state"];
 
 const STATE_LABEL: Record<DayState, string> = {
-  checked: "brief opened",
-  missed: "brief missed",
-  off: "no brief scheduled",
-  today: "today, not opened yet",
+  checked: "you checked your new jobs",
+  missed: "not checked",
+  off: "no daily update that day",
+  today: "today, not checked yet",
   ahead: "still to come",
   before: "before your streak began",
 };
@@ -30,13 +30,13 @@ function longDay(iso: string): string {
 
 function message(streak: Streak): string {
   if (streak.current === 0)
-    return "Open your brief each morning to start a streak.";
+    return "Open Tailr each morning to check your new jobs. Your days in a row add up here.";
   if (streak.checked_today)
-    return "Today's brief is checked. Come back tomorrow to keep it going.";
-  return "Open today's brief to keep it going.";
+    return "You've checked today's jobs. Come back tomorrow to keep it going.";
+  return "Check today's new jobs to keep it going.";
 }
 
-/** Days in a row you opened your brief, and this week day by day. */
+/** Days in a row you checked your new jobs, and this week day by day. */
 export function StreakCard({ streak }: { streak: Streak }) {
   return (
     <div className="flex flex-col rounded-panel border border-line bg-surface p-5 sm:p-6">
@@ -72,8 +72,8 @@ export function StreakCard({ streak }: { streak: Streak }) {
       </ol>
 
       <p className="mt-auto pt-4 text-[0.8125rem] text-ink-3">
-        Best: {streak.best} {streak.best === 1 ? "day" : "days"}. Days without a
-        brief don't break it.
+        Best: {streak.best} {streak.best === 1 ? "day" : "days"}. Days with no
+        daily update don't break it.
       </p>
     </div>
   );

@@ -32,7 +32,7 @@ export function AppShell() {
           <NavLink
             to="/"
             className="w-fit rounded-control px-2"
-            aria-label="Tailr, today"
+            aria-label="Tailr, home"
           >
             <Logo />
           </NavLink>
@@ -91,7 +91,7 @@ export function AppShell() {
 
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-line bg-canvas/90 px-4 py-3 backdrop-blur lg:hidden">
-          <NavLink to="/" aria-label="Tailr, today">
+          <NavLink to="/" aria-label="Tailr, home">
             <Logo />
           </NavLink>
           <div className="flex items-center gap-1">
@@ -105,7 +105,7 @@ export function AppShell() {
         {showTabBar && (
           <nav
             aria-label="Main"
-            className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-surface/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5 backdrop-blur lg:hidden"
+            className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-surface/95 px-0.5 min-[360px]:px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5 backdrop-blur lg:hidden"
           >
             {tabItems.map((item) => (
               <NavLink
@@ -114,8 +114,8 @@ export function AppShell() {
                 end={item.to === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "flex flex-1 flex-col items-center gap-1 rounded-control py-1.5 text-[0.75rem] font-medium",
-                    isActive ? "text-ink" : "text-ink-3",
+                    "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-control py-1.5 text-[0.6875rem] font-medium leading-tight tracking-[-0.01em]",
+                    isActive ? "text-ink" : "text-ink-2",
                   )
                 }
               >
@@ -129,7 +129,9 @@ export function AppShell() {
                     >
                       <item.icon className="size-[18px]" aria-hidden />
                     </span>
-                    {item.label}
+                    <span className="text-center">
+                      {item.short ?? item.label}
+                    </span>
                   </>
                 )}
               </NavLink>

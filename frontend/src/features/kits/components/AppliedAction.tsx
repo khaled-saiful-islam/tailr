@@ -31,7 +31,7 @@ export function AppliedAction({ kit }: { kit: Kit }) {
         : STAGE_LABEL[application.stage];
     return (
       <Link
-        to={`/tracker?open=${application.id}`}
+        to={`/applications?open=${application.id}`}
         className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-2 px-4 text-[0.9375rem] font-medium text-ink hover:bg-surface-3"
       >
         <Check className="size-4 text-fit-strong" aria-hidden />

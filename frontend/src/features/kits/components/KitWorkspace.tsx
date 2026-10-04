@@ -1,7 +1,5 @@
-import { Copy, Download } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useState, type ReactNode } from "react";
-import { Button } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/choice";
 import { copyText } from "@/lib/clipboard";
 import { cn } from "@/lib/cn";
@@ -15,8 +13,8 @@ import {
   type TailoredResume,
 } from "../api";
 import { letterAsText } from "../edit";
+import { ApplySteps } from "./ApplySteps";
 import { DocumentFrame } from "./DocumentFrame";
-import { AppliedAction } from "./AppliedAction";
 import { AnswersPanel, InterviewPanel } from "./ExtrasPanels";
 import { KitProof } from "./KitProof";
 import { LetterEditor } from "./LetterEditor";
@@ -28,13 +26,13 @@ interface Draft {
 }
 
 const TABS = [
-  { value: "resume", label: "Resume" },
+  { value: "resume", label: "CV" },
   { value: "letter", label: "Cover letter" },
   { value: "answers", label: "Answers" },
   { value: "interview", label: "Interview prep" },
 ] as const;
 
-/** A finished kit: proof it's truthful, then the documents to edit, preview and download. */
+/** A prepared application: the steps to apply, the check, then each document to edit. */
 export function KitWorkspace({
   kit,
   reload,
@@ -66,48 +64,40 @@ export function KitWorkspace({
 
   return (
     <>
-      <div className="mt-6 flex flex-wrap items-center gap-2.5">
-        <DownloadButton
-          busy={busy}
-          href={documentUrl(kit.id, "resume", "pdf")}
-          variant="tape"
-        >
-          Resume PDF
-        </DownloadButton>
-        <DownloadButton
-          busy={busy}
-          href={documentUrl(kit.id, "letter", "pdf")}
-          variant="secondary"
-        >
-          Cover letter PDF
-        </DownloadButton>
-        <Button
-          variant="ghost"
-          icon={<Copy className="size-4" />}
-          onClick={() =>
-            void copyText(
-              letterAsText(draft.cover_letter, kit.candidate_name ?? ""),
-              "Cover letter",
-            )
-          }
-        >
-          Copy letter text
-        </Button>
-        <AppliedAction kit={kit} />
-        <div className="ml-auto">
-          <SaveIndicator
-            status={editor.status}
-            onRetry={editor.retry}
-            onReload={() => void editor.reload()}
-          />
-        </div>
+      <ApplySteps
+        kit={kit}
+        busy={busy}
+        onOpen={(next) => {
+          setTab(next);
+          document
+            .getElementById("application-tabs")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+        onCopyLetter={() =>
+          void copyText(
+            letterAsText(draft.cover_letter, kit.candidate_name ?? ""),
+            "Cover letter",
+          )
+        }
+      />
+      <div className="mt-4 flex justify-end">
+        <SaveIndicator
+          status={editor.status}
+          onRetry={editor.retry}
+          onReload={() => void editor.reload()}
+        />
       </div>
 
       <div className="mt-6">
         <KitProof kit={kit} />
       </div>
 
-      <Tabs.Root value={tab} onValueChange={setTab} className="mt-10">
+      <Tabs.Root
+        id="application-tabs"
+        value={tab}
+        onValueChange={setTab}
+        className="mt-10 scroll-mt-6"
+      >
         <Tabs.List
           aria-label="Your application"
           className="flex flex-wrap gap-x-1 border-b border-line"
@@ -144,7 +134,7 @@ export function KitWorkspace({
             preview={
               <DocumentFrame
                 src={documentUrl(kit.id, "resume", "html", kit.version)}
-                title="Resume preview"
+                title="CV preview"
               />
             }
           />
@@ -233,33 +223,5 @@ function EditAndPreview({
         </div>
       </div>
     </>
-  );
-}
-
-function DownloadButton({
-  busy,
-  href,
-  variant,
-  children,
-}: {
-  busy: boolean;
-  href: string;
-  variant: "tape" | "secondary";
-  children: ReactNode;
-}) {
-  if (busy) {
-    return (
-      <Button variant={variant} loading>
-        {children}
-      </Button>
-    );
-  }
-  return (
-    <Button asChild variant={variant}>
-      <a href={href} download>
-        <Download className="size-4" aria-hidden />
-        {children}
-      </a>
-    </Button>
   );
 }

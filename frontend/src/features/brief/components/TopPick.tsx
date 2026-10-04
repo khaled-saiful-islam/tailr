@@ -7,7 +7,7 @@ import type { Match } from "../api";
 import { sentence } from "../format";
 import { MatchActions, MatchMeta } from "./MatchParts";
 
-/** The best job of the morning, given room to make its case. */
+/** The best new job, given room to show why it matches. */
 export function TopPick({ match }: { match: Match }) {
   const review = match.review;
   return (
@@ -24,7 +24,7 @@ export function TopPick({ match }: { match: Match }) {
       />
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_17rem]">
         <div className="min-w-0">
-          <p className="type-label text-ink-2">Top pick</p>
+          <p className="type-label text-ink-2">Best match today</p>
           <h2 id={`top-${match.id}`} className="type-title mt-2">
             <Link
               to={`/jobs/${match.id}`}
@@ -79,7 +79,7 @@ export function TopPick({ match }: { match: Match }) {
           )}
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Button asChild>
-              <Link to={`/jobs/${match.id}`}>See the full fit</Link>
+              <Link to={`/jobs/${match.id}`}>See why it matches</Link>
             </Button>
             <MatchActions match={match} compact />
           </div>
@@ -87,7 +87,7 @@ export function TopPick({ match }: { match: Match }) {
         <div className="flex flex-col justify-start gap-3 lg:border-l lg:border-line lg:pl-6">
           <FitTape score={match.score} size="lg" />
           <p className="text-[0.875rem] text-ink-3">
-            Measured against your profile and radar.
+            Compared with your CV and job preferences.
           </p>
         </div>
       </div>

@@ -19,29 +19,29 @@ export function exact(value: number): string {
 }
 
 const PURPOSES: Record<string, string> = {
-  "kits.tailor": "Tailoring",
+  "kits.tailor": "Preparing applications",
   "kits.letter": "Cover letters",
   "kits.extras": "Answers and interview prep",
-  "kits.judge": "Fact checks",
+  "kits.judge": "Checks against the profile",
   "kits.translate": "Translations",
-  "matching.review": "Fit reviews",
+  "matching.review": "Job match reviews",
   "jobs.insights": "Reading job ads",
   "jobs.embed": "Job search index",
-  "radar.relevance": "Relevance checks",
-  "radar.suggest": "Radar suggestions",
+  "radar.relevance": "Job title checks",
+  "radar.suggest": "Job title suggestions",
   "cv.improve": "CV edits",
   "profile.extract": "CV imports",
   "profile.ocr": "Reading scanned CVs",
-  "profile.coach": "Bullet Coach",
+  "profile.coach": "Improve this point",
   "profile.summary": "Profile summaries",
   "profile.embed": "Profile search index",
-  "portfolio.draft": "Portfolio drafts",
-  "portfolio.judge": "Portfolio checks",
-  "public.highlights": "Portfolio highlights",
+  "portfolio.draft": "Website drafts",
+  "portfolio.judge": "Website checks",
+  "public.highlights": "Website key numbers",
   "tracker.follow_up": "Follow-up drafts",
 };
 
-/** "kits.tailor" → "Tailoring"; unknown keys read as themselves. */
+/** "kits.tailor" → "Preparing applications"; unknown keys read as themselves. */
 export function purposeLabel(key: string): string {
   return PURPOSES[key] ?? key;
 }

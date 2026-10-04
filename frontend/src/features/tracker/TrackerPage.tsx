@@ -22,15 +22,14 @@ const CHEERS: Partial<Record<Stage, string>> = {
 function Empty() {
   return (
     <section className="rounded-sheet border border-dashed border-line-strong px-6 py-12 text-center">
-      <h2 className="type-heading">Nothing on your tracker yet</h2>
+      <h2 className="type-heading">No applications yet</h2>
       <p className="mx-auto mt-2 max-w-[34rem] text-ink-2">
-        Jobs arrive here when you save one from your brief or tailor an
-        application. Move them along as things happen, and Tailr reminds you to
-        follow up.
+        A job lands here when you save it or prepare an application for it. Move
+        it along as things happen, and Tailr reminds you to follow up.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button asChild>
-          <Link to="/">See today's jobs</Link>
+          <Link to="/jobs">See your jobs</Link>
         </Button>
         <AddJobDialog />
       </div>
@@ -86,10 +85,11 @@ export function TrackerPage() {
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="min-w-[min(100%,22rem)] flex-1"
         >
-          <h1 className="type-title">Your applications</h1>
+          <h1 className="type-title">My applications</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            From saved to signed. Move a card when something changes; Tailr
-            nudges you to follow up and reminds you before each next step.
+            Every job you're going for, from saved to offer. Move a card when
+            something changes. Tailr reminds you to follow up and before each
+            next step.
           </p>
         </motion.div>
         <div className="flex flex-wrap items-center gap-3">

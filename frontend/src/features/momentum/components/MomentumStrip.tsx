@@ -10,17 +10,19 @@ import { StreakCard } from "./StreakCard";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** This week at a glance: applications against your goal, and your brief streak. */
+/** This week at a glance: applications against your goal, and days in a row checked. */
 export function MomentumStrip() {
   const momentum = useMomentum();
   if (!momentum.data) return null;
   return (
-    <section
-      aria-label="Your momentum"
-      className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
-    >
-      <GoalCard momentum={momentum.data} />
-      <StreakCard streak={momentum.data.streak} />
+    <section aria-labelledby="week-heading">
+      <h2 id="week-heading" className="type-heading">
+        This week
+      </h2>
+      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <GoalCard momentum={momentum.data} />
+        <StreakCard streak={momentum.data.streak} />
+      </div>
     </section>
   );
 }
@@ -92,7 +94,7 @@ function GoalCard({ momentum }: { momentum: Momentum }) {
         <p className="mt-4 text-[0.9375rem] text-ink-2">
           {daysLeftLabel(days_left)}.{" "}
           {done === 0
-            ? "Tailor a job you like and send it."
+            ? "Prepare an application for a job you like, then send it."
             : `${target - done} more to reach your goal.`}
         </p>
       )}
@@ -102,10 +104,10 @@ function GoalCard({ momentum }: { momentum: Momentum }) {
           Change goal
         </Button>
         <Link
-          to="/tracker"
+          to="/applications"
           className="inline-flex h-8 items-center gap-1.5 rounded-control px-3 text-[0.8125rem] font-semibold text-chalk hover:bg-surface-2"
         >
-          Open tracker <ArrowRight className="size-3.5" aria-hidden />
+          My applications <ArrowRight className="size-3.5" aria-hidden />
         </Link>
       </div>
       <GoalDialog open={editing} onOpenChange={setEditing} current={target} />

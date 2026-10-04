@@ -93,7 +93,7 @@ class RadarSettings(BaseModel):
     def _days(cls, values: list[int]) -> list[int]:
         days = sorted({day for day in values if 0 <= day <= 6})
         if not days:
-            raise ValueError("Pick at least one day for your brief.")
+            raise ValueError("Pick at least one day for your daily job update.")
         return days
 
     @field_validator("work_modes")

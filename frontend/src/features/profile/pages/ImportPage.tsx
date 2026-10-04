@@ -37,10 +37,10 @@ export function ImportPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="type-title">Build your profile</h1>
+        <h1 className="type-title">Upload your CV</h1>
         <p className="mt-3 max-w-[38rem] text-[1.0625rem] text-ink-2">
-          Start with your CV. Tailr reads it and fills in every section, and you
-          check everything before it's saved.
+          Tailr reads it and fills in your profile for you. You check everything
+          before it's saved.
         </p>
       </motion.header>
 

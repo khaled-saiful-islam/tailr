@@ -109,7 +109,7 @@ class KitService:
     async def _own(self, user: User, kit_id: uuid.UUID) -> Kit:
         kit = await self.db.get(Kit, kit_id)
         if kit is None or kit.user_id != user.id:
-            raise NotFoundError("We couldn't find that application kit.")
+            raise NotFoundError("We couldn't find that application.")
         return kit
 
     async def _start(self, kit: Kit) -> None:
@@ -134,7 +134,7 @@ class KitService:
             f"kits:{user.id}",
             limit=KITS_PER_DAY,
             window_seconds=24 * 3600,
-            message="You've tailored a lot of applications today. Try again tomorrow.",
+            message="You've prepared a lot of applications today. Try again tomorrow.",
         )
         kit = existing or Kit(user_id=user.id, job_id=match.job_id, match_id=match.id)
         kit.status, kit.stage, kit.error = "building", "reading", None
@@ -160,7 +160,7 @@ class KitService:
             f"kits:{user.id}",
             limit=KITS_PER_DAY,
             window_seconds=24 * 3600,
-            message="You've tailored a lot of applications today. Try again tomorrow.",
+            message="You've prepared a lot of applications today. Try again tomorrow.",
         )
         kit.language = data.language or kit.language
         kit.tone = data.tone or kit.tone

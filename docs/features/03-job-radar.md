@@ -2,6 +2,8 @@
 
 **Status:** shipped in M2.
 
+> **Users see:** *Job preferences* (`/preferences`). "Radar" is the internal name. Saving with **Save and find jobs** starts a search straight away and opens the Jobs page.
+
 The radar is what Tailr looks for every morning: which roles, where, at what level and pay,
 what to skip, and when the brief arrives. Its live preview scans real job sites while you
 change settings, so you see the effect of every choice before saving.

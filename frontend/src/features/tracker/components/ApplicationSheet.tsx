@@ -51,7 +51,7 @@ function Remove({
         icon={<Trash2 className="size-3.5" />}
         onClick={() => setSure(true)}
       >
-        Remove from tracker
+        Remove from My applications
       </Button>
     );
   }
@@ -65,7 +65,7 @@ function Remove({
         onClick={() =>
           remove.mutate(app.id, {
             onSuccess: () => {
-              toast("Removed from your tracker.");
+              toast("Removed from My applications.");
               onDone();
             },
             onError: (error) => toast.error(error.message),
@@ -93,8 +93,8 @@ function Body({
   const { save, state } = useFieldSave(app.id);
   const links = [
     { to: app.job.url, label: "Job ad", external: true },
-    app.match_id && { to: `/jobs/${app.match_id}`, label: "Fit and details" },
-    app.kit_id && { to: `/kits/${app.kit_id}`, label: "Your kit" },
+    app.match_id && { to: `/jobs/${app.match_id}`, label: "Job details" },
+    app.kit_id && { to: `/apply/${app.kit_id}`, label: "Your application" },
   ].filter(Boolean) as { to: string; label: string; external?: boolean }[];
 
   return (

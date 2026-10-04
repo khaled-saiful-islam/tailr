@@ -72,7 +72,8 @@ export function FollowUp({ app }: { app: ApplicationDetail }) {
             </p>
           </div>
           <p className="mt-2 text-[0.8125rem] text-ink-3">
-            Written only from your profile and kit. Read it before you send it.
+            Written only from your profile and your application. Read it before
+            you send it.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button

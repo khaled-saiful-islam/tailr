@@ -170,17 +170,19 @@ async def add_tracker(
     notes = [
         (
             "brief.ready",
-            f"{len(todays)} new jobs fit you",
-            f"Your best fit today is {jobs[best.key][1].score}% at {best.company}.",
-            "/",
+            "New jobs for you",
+            f"{len(todays)} new jobs today; the best is a {jobs[best.key][1].score}% match "
+            f"at {best.company}.",
+            "/jobs",
             timedelta(minutes=50),
             False,
         ),
         (
             "kit.ready",
             "Your application for Senior AI Engineer is ready",
-            "Teratai Bank. Resume, cover letter and answers, every line checked.",
-            f"/kits/{kits['teratai'].id}",
+            "Teratai Bank. Your CV, cover letter and answers, every line checked against "
+            "your profile.",
+            f"/apply/{kits['teratai'].id}",
             timedelta(minutes=25),
             True,
         ),
@@ -189,7 +191,7 @@ async def add_tracker(
             "Follow up with Gajah Logistics?",
             "You applied for Lead Machine Learning Engineer a week ago. "
             "Tailr can draft a short note.",
-            f"/tracker?open={apps['gajah'].id}",
+            f"/applications?open={apps['gajah'].id}",
             timedelta(days=1),
             False,
         ),
@@ -198,7 +200,7 @@ async def add_tracker(
             "New message from Farah Lim",
             "Hi Aina, we're building a support assistant for our cafes and would love "
             "your help for three months.",
-            "/profile/portfolio",
+            "/profile/website",
             timedelta(hours=20),
             False,
         ),

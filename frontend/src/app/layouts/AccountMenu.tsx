@@ -99,7 +99,7 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
           <DropdownMenu.Item asChild className={item}>
             <Link to="/settings">
               <Settings className="size-4 text-ink-2" aria-hidden />
-              Settings
+              Account settings
             </Link>
           </DropdownMenu.Item>
           {user.role === "admin" && (

@@ -168,12 +168,12 @@ export function AuthCanvas() {
 
       <div className="relative max-w-[30rem]">
         <h2 className="text-[clamp(2rem,1.2rem+1.6vw,2.875rem)] font-[760] leading-[1.04] tracking-[-0.025em] text-white [font-stretch:125%]">
-          Jobs that fit. Applications made to measure.
+          Find jobs that match your CV. Apply with a CV written for each one.
         </h2>
         <p className="mt-4 max-w-[26rem] text-[1rem] leading-relaxed text-[#c9d1e2]">
-          Every morning, fresh jobs from LinkedIn and JobStreet, scored against
-          your profile. Pick one and Tailr tailors your resume and cover letter
-          for it.
+          Every morning Tailr searches LinkedIn and JobStreet and shows how well
+          each job matches you. Pick one, and Tailr prepares your CV and cover
+          letter for it, using only your real experience.
         </p>
       </div>
     </div>

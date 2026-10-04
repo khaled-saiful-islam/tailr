@@ -13,7 +13,7 @@ const FRESHNESS: Record<number, string> = {
   7: "the last week",
 };
 
-/** Plain-language reasons for jobs the radar left out. */
+/** Plain-language reasons for jobs the preview left out. */
 const DROPPED: Record<string, (n: number) => string> = {
   off_target: (n) =>
     `${n} ${n === 1 ? "wasn't" : "weren't"} the kind of role you're after`,
@@ -27,10 +27,11 @@ const DROPPED: Record<string, (n: number) => string> = {
   seniority: (n) => `${n} ${n === 1 ? "was" : "were"} at a different level`,
   salary: (n) => `${n} paid below your minimum`,
   no_salary: (n) => `${n} didn't show a salary`,
-  excluded_word: (n) => `${n} mentioned a word you skip`,
+  excluded_word: (n) => `${n} mentioned a word you leave out`,
   excluded_company: (n) =>
-    `${n} ${n === 1 ? "was" : "were"} at companies you skip`,
-  missing_must_have: (n) => `${n} didn't mention your must-haves`,
+    `${n} ${n === 1 ? "was" : "were"} at companies you leave out`,
+  missing_must_have: (n) =>
+    `${n} didn't mention any of the words a job must mention`,
 };
 
 interface PreviewPanelProps {
@@ -63,23 +64,27 @@ export function PreviewPanel({
       aria-labelledby="preview-title"
       className="rounded-sheet border border-line bg-surface p-5 sm:p-6"
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <h2 id="preview-title" className="type-heading">
-          Radar preview
+          A quick look: jobs on LinkedIn and JobStreet right now
         </h2>
         <button
           type="button"
           onClick={onRescan}
           disabled={scanning || !hasRoles}
-          className="flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-[0.875rem] font-semibold text-chalk hover:bg-chalk-soft disabled:opacity-50"
+          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[8px] px-2 py-1.5 text-[0.875rem] font-semibold text-chalk hover:bg-chalk-soft disabled:opacity-50"
         >
           <RefreshCw
             className={cn("size-3.5", scanning && "animate-spin")}
             aria-hidden
           />
-          Scan again
+          Look again
         </button>
       </div>
+      <p className="mt-2 rounded-control bg-surface-2 px-3 py-2 text-[0.875rem] text-ink-2">
+        This is only a preview. Press <strong>Save and find jobs</strong> to add
+        jobs to your Jobs page.
+      </p>
 
       <div className="mt-4 flex flex-col items-center">
         <RadarScope contacts={preview?.matching ?? 0} scanning={scanning} />
@@ -88,7 +93,7 @@ export function PreviewPanel({
       <div className="mt-4 text-center" aria-live="polite">
         {!hasRoles ? (
           <p className="text-ink-2">
-            Add a role and the radar starts scanning.
+            Add a job title and Tailr takes a quick look.
           </p>
         ) : error ? (
           <p className="text-pin">{error}</p>
@@ -104,23 +109,23 @@ export function PreviewPanel({
             </p>
             <p className="mt-2 font-semibold">
               {preview.matching === 1
-                ? "fresh job matches"
-                : "fresh jobs match"}{" "}
-              right now
+                ? "recent job matches"
+                : "recent jobs match"}{" "}
+              your preferences
             </p>
             <p className="mt-1 text-[0.9375rem] text-ink-2">
-              From {preview.found} found in{" "}
+              Out of {preview.found} posted in{" "}
               {FRESHNESS[freshness] ?? "recent days"}.
             </p>
           </>
         ) : (
           <p className="flex items-center justify-center gap-2 text-ink-2">
-            <Spinner className="size-4" /> Scanning LinkedIn and JobStreet…
+            <Spinner className="size-4" /> Looking on LinkedIn and JobStreet…
           </p>
         )}
         {scanning && preview && (
           <p className="mt-2 text-[0.8125rem] text-ink-3">
-            Scanning with your changes…
+            Looking again with your changes…
           </p>
         )}
       </div>
@@ -195,7 +200,7 @@ export function PreviewPanel({
 
           {preview.samples.length > 0 && (
             <div className="mt-6 border-t border-line pt-4">
-              <h3 className="type-label text-ink-2">Newest on your radar</h3>
+              <h3 className="type-label text-ink-2">Newest jobs found</h3>
               <ul className="mt-3 flex flex-col gap-3">
                 {preview.samples.map((job) => (
                   <li key={job.url}>
@@ -232,8 +237,8 @@ export function PreviewPanel({
                 ))}
               </ul>
               <p className="mt-4 text-[0.8125rem] text-ink-3">
-                Fit scores come with your morning brief, measured against your
-                full profile.
+                Match scores appear on your Jobs page once you save and search,
+                worked out from your whole profile.
               </p>
             </div>
           )}

@@ -9,7 +9,7 @@ import { LANGUAGE_OPTIONS, TONE_OPTIONS } from "../options";
 
 /**
  * "Written in English with a confident tone." Pick another language or tone and
- * tailor again. Replacing a finished kit asks first, because edits are lost.
+ * write it again. Replacing a finished application asks first: edits are lost.
  */
 export function TailorSettings({ kit }: { kit: Kit }) {
   const [language, setLanguage] = useState<Language>(kit.language);
@@ -59,21 +59,21 @@ export function TailorSettings({ kit }: { kit: Kit }) {
         onClick={() => (kit.status === "ready" ? setConfirming(true) : run())}
         className="ml-auto"
       >
-        Tailor again
+        Write it again
       </Button>
 
       <Dialog
         open={confirming}
         onOpenChange={setConfirming}
-        title="Tailor this application again?"
-        description={`Tailr will write a fresh resume, cover letter and answers in ${languageName}. Edits you made to this version will be replaced.`}
+        title="Write this application again?"
+        description={`Tailr will write a fresh CV, cover letter and answers in ${languageName}. Edits you made to this version will be replaced.`}
       >
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="secondary" onClick={() => setConfirming(false)}>
             Keep this version
           </Button>
           <Button loading={regenerate.isPending} onClick={run}>
-            Tailor again
+            Write it again
           </Button>
         </div>
       </Dialog>

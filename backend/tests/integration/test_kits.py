@@ -201,7 +201,7 @@ async def test_kit_end_to_end(signed_in: httpx.AsyncClient, ai: FakeAIClient) ->
     assert kit["candidate_name"]
     notes = (await signed_in.get("/api/v1/notifications")).json()["items"]
     assert notes[0]["kind"] == "kit.ready"
-    assert notes[0]["link"] == f"/kits/{kit['id']}"
+    assert notes[0]["link"] == f"/apply/{kit['id']}"
     assert "AI Engineer" in notes[0]["title"]
     assert "role" in {s["kind"] for s in kit["sections"]}
     role_ids = {s["id"] for s in kit["sections"] if s["kind"] == "role"}

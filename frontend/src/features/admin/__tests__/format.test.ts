@@ -32,7 +32,7 @@ describe("numbers", () => {
 
 describe("labels", () => {
   it("names AI uses plainly", () => {
-    expect(purposeLabel("kits.tailor")).toBe("Tailoring");
+    expect(purposeLabel("kits.tailor")).toBe("Preparing applications");
     expect(purposeLabel("tracker.follow_up")).toBe("Follow-up drafts");
     expect(purposeLabel("something.new")).toBe("something.new");
   });

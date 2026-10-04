@@ -9,10 +9,10 @@ import { PasswordField } from "@/components/ui/Field";
 import { EXPORT_URL, useDeleteAccount } from "../api";
 
 const GOES = [
-  "Your profile, imported CVs and job radar",
-  "Every brief, match and application kit",
-  "Your CV, your portfolio and its messages",
-  "Your tracker, goals and streak",
+  "Your profile, uploaded CVs and job preferences",
+  "Every job Tailr found for you, and every prepared application",
+  "Your CV, your website and its messages",
+  "My applications, your weekly goal and days in a row",
   "Every picture you uploaded",
 ];
 
@@ -65,7 +65,7 @@ function DeleteDialog({
         </ul>
         <p className="text-[0.875rem] text-ink-3">
           Want to keep a copy? Download it first. Shared links to your CV and
-          portfolio stop working straight away.
+          website stop working straight away.
         </p>
         <PasswordField
           label="Your password"
@@ -104,8 +104,9 @@ export function DataPanel() {
         <div>
           <h3 className="type-heading text-[1.0625rem]">Download a copy</h3>
           <p className="mt-1 max-w-[38rem] text-[0.9375rem] text-ink-2">
-            One JSON file with your profile, briefs, kits, CV, portfolio,
-            tracker and AI use. Pictures are listed by their address.
+            One JSON file with your profile, the jobs Tailr found, your prepared
+            applications, CV, website, My applications and AI use. Pictures are
+            listed by their address.
           </p>
           <Button asChild variant="secondary" className="mt-4">
             <a href={EXPORT_URL} download>
@@ -118,7 +119,7 @@ export function DataPanel() {
           <h3 className="type-heading text-[1.0625rem]">Delete your account</h3>
           <p className="mt-1 max-w-[38rem] text-[0.9375rem] text-ink-2">
             Removes your account and everything in it, including your public CV
-            and portfolio.
+            and website.
           </p>
           <Button
             variant="danger"

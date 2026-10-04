@@ -2,6 +2,8 @@
 
 **Status:** shipped in M5.
 
+> **Users see:** *Prepare my application* and *Your application* (`/apply/<id>`), with a four-step checklist: check your CV, check your cover letter, apply on the job site, mark as applied. "Kit" is the internal name; the fact check is shown as *Checked against your profile*.
+
 Pick a job and Tailr writes the application for it: a tailored resume, a cover letter,
 answers for the application form, a note to the recruiter and interview prep. Every line is
 checked against the profile before it's shown. It runs in the background; Tailr says when

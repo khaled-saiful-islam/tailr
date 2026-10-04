@@ -20,7 +20,7 @@ export function SettingsPage() {
   return (
     <div className="mx-auto w-full max-w-[72rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
       <header>
-        <h1 className="type-title">Settings</h1>
+        <h1 className="type-title">Account settings</h1>
         <p className="mt-2 max-w-[40rem] text-ink-2">
           Your account, how Tailr reaches you, and your data.
         </p>

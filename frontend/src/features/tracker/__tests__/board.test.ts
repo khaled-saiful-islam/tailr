@@ -121,10 +121,10 @@ describe("status line", () => {
     expect(line.text.startsWith("Panel interview, ")).toBe(true);
   });
 
-  it("knows when a kit is ready", () => {
+  it("knows when an application is ready", () => {
     const ready = app("a", { stage: "preparing", kit_status: "ready" });
     expect(statusLine(ready, NOW)).toEqual({
-      text: "Kit ready to send",
+      text: "Application ready to send",
       tone: "good",
     });
   });

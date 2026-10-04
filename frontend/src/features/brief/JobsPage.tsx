@@ -1,25 +1,31 @@
-import { AnimatePresence } from "motion/react";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { RefreshCw } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
 import { AddJobDialog } from "@/features/kits/components/AddJobDialog";
-import { useMatches, type MatchStatus } from "./api";
-import { MatchRow } from "./components/MatchRow";
+import { useRadar } from "@/features/radar/api";
+import {
+  useJobList,
+  useRunBrief,
+  useToday,
+  type Match,
+  type MatchStatus,
+} from "./api";
+import { BriefProgress } from "./components/BriefProgress";
+import { JobGroups } from "./components/JobGroups";
 
 type Tab = "all" | MatchStatus;
 
 const TABS: { key: Tab; label: string; empty: string }[] = [
-  {
-    key: "all",
-    label: "All",
-    empty: "No jobs yet. Your morning brief fills this page.",
-  },
+  { key: "all", label: "All", empty: "" },
   {
     key: "new",
     label: "New",
-    empty: "Nothing new. You've looked at everything.",
+    empty: "Nothing new. You've looked at every job.",
   },
   {
     key: "saved",
@@ -28,37 +34,120 @@ const TABS: { key: Tab; label: string; empty: string }[] = [
   },
   {
     key: "dismissed",
-    label: "Not for me",
-    empty: "Jobs you pass on go here, in case you change your mind.",
+    label: "Hidden",
+    empty: "Jobs you hide go here, in case you change your mind.",
   },
 ];
 
-/** Every job Tailr has measured for you, newest first. */
+function nextSearch(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  return new Intl.DateTimeFormat("en-MY", {
+    weekday: "long",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
+}
+
+function Empty({
+  title,
+  body,
+  action,
+}: {
+  title?: string;
+  body: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="rounded-sheet border border-dashed border-line-strong px-6 py-10 text-center">
+      {title && <h2 className="type-heading">{title}</h2>}
+      <p className={cn("mx-auto max-w-[34rem] text-ink-2", title && "mt-2")}>
+        {body}
+      </p>
+      {action && <div className="mt-5 flex justify-center">{action}</div>}
+    </div>
+  );
+}
+
+/** Every job Tailr found for you, best match first. */
 export function JobsPage() {
   const [tab, setTab] = useState<Tab>("all");
-  const query = useMatches(tab);
-  const counts = query.data?.counts ?? {};
+  const list = useJobList(tab);
+  const today = useToday();
+  const radar = useRadar();
+  const run = useRunBrief();
+  const client = useQueryClient();
+
+  const brief = today.data?.brief;
+  const searching = brief?.status === "building";
+  const ready = today.data?.radar_ready && today.data?.profile_ready;
+  const bar = radar.data?.settings.min_fit ?? 60;
+  const next = nextSearch(today.data?.next_brief_at);
+
+  // When a search finishes, show what it found.
+  const wasSearching = useRef(searching);
+  useEffect(() => {
+    if (wasSearching.current && !searching)
+      void client.invalidateQueries({ queryKey: ["matches"] });
+    wasSearching.current = searching;
+  }, [searching, client]);
+
+  const counts = list.data?.pages[0]?.counts ?? {};
+  const countFor = (key: Tab) =>
+    key === "all"
+      ? (counts.new ?? 0) + (counts.seen ?? 0) + (counts.saved ?? 0)
+      : (counts[key] ?? 0);
+  const items: Match[] = (list.data?.pages ?? [])
+    .flatMap((page) => page.items)
+    .filter((m) => (tab === "dismissed") === (m.status === "dismissed"))
+    .filter((m) => tab === "all" || tab === "dismissed" || m.status === tab);
   const current = TABS.find((t) => t.key === tab) ?? TABS[0]!;
+
+  const findNow = () =>
+    run.mutate(undefined, { onError: (error) => toast.error(error.message) });
+  const findButton = (
+    <Button
+      variant="secondary"
+      icon={<RefreshCw className={cn("size-4", searching && "animate-spin")} />}
+      onClick={findNow}
+      disabled={searching || run.isPending || !ready}
+    >
+      {searching ? "Searching" : "Find new jobs now"}
+    </Button>
+  );
 
   return (
     <div className="mx-auto w-full max-w-[64rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-[min(100%,18rem)] flex-1">
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+        <div className="min-w-[min(100%,22rem)] flex-1">
           <h1 className="type-title">Jobs</h1>
-          <p className="mt-2 text-ink-2">
-            Every job Tailr has measured for you, newest first.
+          <p className="mt-2 max-w-[40rem] text-ink-2">
+            Every job Tailr found for you on LinkedIn and JobStreet, best match
+            first. Tailr adds new ones every morning.
           </p>
+          {next && ready && (
+            <p className="mt-1 text-[0.875rem] text-ink-3">
+              Next search: {next}.
+            </p>
+          )}
         </div>
-        <AddJobDialog />
+        <div className="flex flex-wrap gap-2">
+          {findButton}
+          <AddJobDialog />
+        </div>
       </header>
+
+      {searching && brief && (
+        <div className="mt-6">
+          <BriefProgress brief={brief} compact />
+        </div>
+      )}
 
       <div
         role="tablist"
-        aria-label="Filter jobs"
+        aria-label="Show"
         className="mt-8 flex flex-wrap gap-2"
       >
         {TABS.map((item) => {
-          const count = item.key === "all" ? undefined : counts[item.key];
           const selected = tab === item.key;
           return (
             <button
@@ -74,43 +163,70 @@ export function JobsPage() {
               )}
             >
               {item.label}
-              {count !== undefined && (
-                <span className={selected ? "opacity-75" : "text-ink-3"}>
-                  {count}
-                </span>
-              )}
+              <span className={selected ? "opacity-75" : "text-ink-3"}>
+                {countFor(item.key)}
+              </span>
             </button>
           );
         })}
       </div>
 
       <div className="mt-6">
-        {query.isPending ? (
+        {list.isPending || today.isPending ? (
           <div className="grid min-h-[30vh] place-items-center">
             <Spinner className="size-7 text-ink-3" />
           </div>
-        ) : query.isError ? (
-          <p className="text-pin">{query.error.message}</p>
-        ) : query.data.items.length === 0 ? (
-          <div className="rounded-sheet border border-dashed border-line-strong p-10 text-center">
-            <p className="text-ink-2">{current.empty}</p>
-            {tab === "all" && (
-              <Button asChild variant="secondary" className="mt-5">
-                <Link to="/">Go to today's brief</Link>
-              </Button>
+        ) : list.isError ? (
+          <p role="alert" className="text-pin">
+            {list.error.message}
+          </p>
+        ) : items.length > 0 ? (
+          <>
+            <JobGroups items={items} bar={bar} hidden={tab === "dismissed"} />
+            {list.hasNextPage && (
+              <div className="mt-6 flex justify-center">
+                <Button
+                  variant="secondary"
+                  loading={list.isFetchingNextPage}
+                  onClick={() => void list.fetchNextPage()}
+                >
+                  Show older jobs
+                </Button>
+              </div>
             )}
-          </div>
-        ) : (
-          <ul className="overflow-hidden rounded-panel border border-line bg-surface">
-            <AnimatePresence initial={false}>
-              {query.data.items
-                .filter((m) => tab === "dismissed" || m.status !== "dismissed")
-                .filter((m) => tab === "all" || m.status === tab)
-                .map((match, index) => (
-                  <MatchRow key={match.id} match={match} index={index} />
-                ))}
-            </AnimatePresence>
-          </ul>
+          </>
+        ) : tab !== "all" ? (
+          <Empty body={current.empty} />
+        ) : !today.data?.profile_ready ? (
+          <Empty
+            title="Add your CV first"
+            body="Tailr compares every job with your experience, so it needs your CV before it can search."
+            action={
+              <Button asChild>
+                <Link to="/profile">Add my CV</Link>
+              </Button>
+            }
+          />
+        ) : !today.data?.radar_ready ? (
+          <Empty
+            title="Tell Tailr what job you want"
+            body="Pick the roles, places and pay you're looking for. Tailr then searches LinkedIn and JobStreet and lists the jobs here."
+            action={
+              <Button asChild>
+                <Link to="/preferences">Set your job preferences</Link>
+              </Button>
+            }
+          />
+        ) : searching ? null : (
+          <Empty
+            title="No jobs yet"
+            body={`Tailr searches every morning${next ? `; the next search is ${next}` : ""}. Or search right now: it takes about a minute.`}
+            action={
+              <Button onClick={findNow} loading={run.isPending}>
+                Find new jobs now
+              </Button>
+            }
+          />
         )}
       </div>
     </div>

@@ -1,51 +1,24 @@
-import { Check, CircleAlert, ScanText } from "lucide-react";
+import { CircleAlert, ScanText } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
-import { Spinner } from "@/components/ui/Spinner";
-import { cn } from "@/lib/cn";
 import { useApplyImport, useImport, useProfile } from "../api";
+import { ReadingStatus } from "../components/ReadingStatus";
 import { ResumePreview } from "../components/ResumePreview";
+import {
+  ScanningDocument,
+  type ScanStage,
+} from "../components/ScanningDocument";
 import { normalize, type ImportOut } from "../types";
 
-type Stage = { key: string; label: string; detail: string };
+const FINAL = new Set<ImportOut["status"]>(["ready", "failed", "applied"]);
 
-const STAGES: Stage[] = [
-  { key: "queued", label: "Uploaded", detail: "Your file is safely stored." },
-  {
-    key: "reading",
-    label: "Reading your CV",
-    detail: "Pulling out every line of text.",
-  },
-  {
-    key: "understanding",
-    label: "Understanding your experience",
-    detail: "Sorting roles, achievements and skills.",
-  },
-  {
-    key: "ready",
-    label: "Ready to review",
-    detail: "Check it, then save it to your profile.",
-  },
-];
-
-const ORDER = ["queued", "reading", "understanding", "ready"];
-
-function stageState(
-  stage: string,
-  status: ImportOut["status"],
-): "done" | "active" | "waiting" {
-  if (status === "applied") return "done";
-  const current = ORDER.indexOf(status === "failed" ? "queued" : status);
-  const index = ORDER.indexOf(stage);
-  if (
-    stage === "queued" ||
-    index < current ||
-    (status === "ready" && stage === "ready")
-  )
-    return "done";
-  return index === current ? "active" : "waiting";
+/** Where the import is, in the scanner's terms. */
+function scanStage(status: ImportOut["status"] | undefined): ScanStage {
+  if (status === "understanding") return "understanding";
+  if (status === "ready" || status === "applied") return "done";
+  return status ? "reading" : "uploading";
 }
 
 export function ImportProgressPage() {
@@ -77,11 +50,20 @@ export function ImportProgressPage() {
       </Shell>
     );
   }
-  if (!item) {
+  if (!item || !FINAL.has(item.status)) {
+    const stage = scanStage(item?.status);
     return (
       <Shell>
-        <div className="grid min-h-[40vh] place-items-center">
-          <Spinner className="size-7 text-ink-3" />
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+          <ReadingStatus
+            stage={stage}
+            filename={item?.filename}
+            startedAt={item?.created_at}
+            scanned={item?.used_vision}
+          />
+          <div className="pattern-paper rounded-sheet border border-line py-4 sm:py-6">
+            <ScanningDocument stage={stage} />
+          </div>
         </div>
       </Shell>
     );
@@ -98,81 +80,26 @@ export function ImportProgressPage() {
         <div className="flex flex-col">
           <h1 className="type-title">
             {ready
-              ? "Here's what we found"
+              ? "Check what Tailr found"
               : failed
                 ? "We couldn't read that CV"
-                : "Reading your CV"}
+                : "Reading your CV…"}
           </h1>
           <p className="mt-3 text-ink-2 [overflow-wrap:anywhere]">
             {item.filename}
           </p>
 
-          {failed ? (
+          {failed && (
             <Problem message={item.error ?? "Something went wrong."} />
-          ) : (
-            <ol className="mt-8 flex flex-col">
-              {STAGES.map((stage, index) => {
-                const state = stageState(stage.key, item.status);
-                return (
-                  <li
-                    key={stage.key}
-                    className="relative flex gap-4 pb-6 last:pb-0"
-                  >
-                    {index < STAGES.length - 1 && (
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "absolute left-[0.9375rem] top-9 h-[calc(100%-2.25rem)] w-px",
-                          state === "done"
-                            ? "bg-ink"
-                            : "bg-[linear-gradient(var(--line-strong)_55%,transparent_0)] bg-[length:1px_8px]",
-                        )}
-                      />
-                    )}
-                    <span
-                      className={cn(
-                        "relative grid size-8 shrink-0 place-items-center rounded-full border",
-                        state === "done" && "border-ink bg-ink text-canvas",
-                        state === "active" &&
-                          "border-tape bg-tape text-tape-ink",
-                        state === "waiting" &&
-                          "border-line-strong bg-surface text-ink-3",
-                      )}
-                    >
-                      {state === "done" ? (
-                        <Check className="size-4" aria-hidden />
-                      ) : state === "active" ? (
-                        <Spinner className="size-4" label={stage.label} />
-                      ) : (
-                        <span className="size-1.5 rounded-full bg-current" />
-                      )}
-                    </span>
-                    <div className="pt-0.5">
-                      <p
-                        className={cn(
-                          "font-semibold",
-                          state === "waiting" && "text-ink-3",
-                        )}
-                      >
-                        {stage.label}
-                      </p>
-                      <p className="text-[0.9375rem] text-ink-2">
-                        {stage.detail}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
           )}
 
-          {item.used_vision && !failed && (
+          {item.used_vision && ready && (
             <p className="mt-6 flex gap-2.5 rounded-control bg-chalk-soft px-4 py-3 text-[0.9375rem] text-ink">
               <ScanText
                 className="mt-0.5 size-4 shrink-0 text-chalk"
                 aria-hidden
               />
-              Your file is a scan, so Tailr read it like a person would. Check
+              Your file was a scan, so Tailr read it like a person would. Check
               names and numbers carefully.
             </p>
           )}
@@ -262,10 +189,7 @@ export function ImportProgressPage() {
               <ResumePreview doc={draft} />
             </motion.div>
           ) : (
-            <StitchingSheet
-              active={!failed}
-              understanding={item.status === "understanding"}
-            />
+            <ScanningDocument stage="uploading" still />
           )}
         </div>
       </div>
@@ -299,78 +223,6 @@ function Problem({ message }: { message: string }) {
           <Link to="/profile">Fill it in myself</Link>
         </Button>
       </div>
-    </div>
-  );
-}
-
-/** A blank page whose lines stitch themselves in while the CV is read. */
-function StitchingSheet({
-  active,
-  understanding,
-}: {
-  active: boolean;
-  understanding: boolean;
-}) {
-  const lines = [
-    44, 28, 0, 92, 86, 74, 0, 36, 90, 82, 88, 64, 0, 30, 78, 70, 84,
-  ];
-  return (
-    <div
-      aria-hidden
-      className="relative mx-auto aspect-[210/297] w-full max-w-[30rem] overflow-hidden rounded-doc bg-white p-[9%] shadow-sheet"
-    >
-      <div className="flex flex-col gap-3.5">
-        {lines.map((width, index) =>
-          width === 0 ? (
-            <div key={index} className="h-3" />
-          ) : (
-            <div
-              key={index}
-              className="relative h-2.5 overflow-hidden rounded-full bg-[#eef1f6]"
-            >
-              <motion.div
-                className={cn(
-                  "absolute inset-y-0 left-0 rounded-full",
-                  index < 2 ? "bg-[#14213d]" : "bg-[#9aa6bd]",
-                )}
-                initial={{ width: 0 }}
-                animate={
-                  active
-                    ? {
-                        width: understanding
-                          ? `${width}%`
-                          : [`0%`, `${width}%`, `${width}%`],
-                      }
-                    : { width: 0 }
-                }
-                transition={
-                  understanding
-                    ? { duration: 0.6, delay: index * 0.08, ease: "easeOut" }
-                    : {
-                        duration: 2.4,
-                        delay: index * 0.12,
-                        repeat: Infinity,
-                        repeatDelay: 0.6,
-                        times: [0, 0.6, 1],
-                      }
-                }
-              />
-            </div>
-          ),
-        )}
-      </div>
-      {active && !understanding && (
-        <motion.div
-          className="absolute inset-x-0 h-6 bg-tape/80 shadow-[0_2px_12px_rgb(245_197_24/0.5)]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg, rgb(29 26 14 / 0.55) 0 1px, transparent 1px 12px)",
-          }}
-          initial={{ top: "-8%" }}
-          animate={{ top: ["-8%", "104%"] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
     </div>
   );
 }

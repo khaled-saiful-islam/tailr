@@ -43,7 +43,7 @@ function fingerprint(text: string): string {
 const TABS = [
   { value: "design", label: "Design" },
   { value: "words", label: "Words" },
-  { value: "ai", label: "AI edits" },
+  { value: "ai", label: "Improve with AI" },
   { value: "share", label: "Share" },
 ] as const;
 
@@ -112,7 +112,7 @@ export function CvStudio() {
           <h1 className="type-title">Your CV starts with your profile</h1>
           <p className="mt-3 text-ink-2">{cv.error.message}</p>
           <Button asChild className="mt-6">
-            <Link to="/profile">Build my profile</Link>
+            <Link to="/profile">Fill in my profile</Link>
           </Button>
         </div>
       </div>
@@ -130,10 +130,10 @@ export function CvStudio() {
       <ProfileTabs />
       <header className="mt-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-[min(100%,20rem)] flex-1">
-          <h1 className="type-title">Your CV</h1>
+          <h1 className="type-title">My CV</h1>
           <p className="mt-2 max-w-[42rem] text-ink-2">
-            Made from your profile. Pick a design, polish the words with AI,
-            then download it or share a link. Changes save as you type.
+            Your CV in five designs. Download it as a PDF or share a link. It's
+            made from your profile, and changes save as you type.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">

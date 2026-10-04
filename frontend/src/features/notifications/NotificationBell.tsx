@@ -1,4 +1,11 @@
-import { Bell, CircleAlert, Scissors, Sunrise } from "lucide-react";
+import {
+  Bell,
+  BriefcaseBusiness,
+  CalendarClock,
+  CircleAlert,
+  FileText,
+  Mail,
+} from "lucide-react";
 import { Popover } from "radix-ui";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -10,13 +17,27 @@ import {
   useNotifications,
   type Notification,
 } from "./api";
+import { plainBody, plainLink, plainTitle } from "./plain";
 
 function KindIcon({ kind }: { kind: string }) {
-  if (kind.endsWith(".failed"))
-    return <CircleAlert className="size-4 text-pin" aria-hidden />;
-  if (kind.startsWith("kit."))
-    return <Scissors className="size-4 text-ink-2" aria-hidden />;
-  return <Sunrise className="size-4 text-ink-2" aria-hidden />;
+  const Icon = kind.endsWith(".failed")
+    ? CircleAlert
+    : kind.startsWith("tracker.")
+      ? CalendarClock
+      : kind.startsWith("message.")
+        ? Mail
+        : kind.startsWith("kit.") || kind.startsWith("cv.")
+          ? FileText
+          : BriefcaseBusiness;
+  return (
+    <Icon
+      className={cn(
+        "size-4",
+        kind.endsWith(".failed") ? "text-pin" : "text-ink-2",
+      )}
+      aria-hidden
+    />
+  );
 }
 
 /** The bell: what finished while you were elsewhere. */
@@ -38,7 +59,8 @@ export function NotificationBell({
   const openNote = (note: Notification) => {
     if (!note.read) markRead.mutate(note.id);
     setOpen(false);
-    if (note.link) navigate(note.link);
+    const link = plainLink(note.link);
+    if (link) navigate(link);
   };
 
   return (
@@ -78,7 +100,7 @@ export function NotificationBell({
           </div>
           {items.length === 0 ? (
             <p className="px-4 py-6 text-[0.9375rem] text-ink-2">
-              Nothing yet. When an application is ready or your brief arrives,
+              Nothing yet. When Tailr finds new jobs or an application is ready,
               it shows up here.
             </p>
           ) : (
@@ -100,11 +122,11 @@ export function NotificationBell({
                           note.read ? "text-ink-2" : "font-semibold",
                         )}
                       >
-                        {note.title}
+                        {plainTitle(note)}
                       </span>
                       {note.body && (
                         <span className="mt-0.5 block text-[0.875rem] text-ink-2">
-                          {note.body}
+                          {plainBody(note)}
                         </span>
                       )}
                       <span className="mt-1 block text-[0.8125rem] text-ink-3">
@@ -112,10 +134,9 @@ export function NotificationBell({
                       </span>
                     </span>
                     {!note.read && (
-                      <span
-                        className="mt-2 size-2 shrink-0 rounded-full bg-tape"
-                        aria-label="Unread"
-                      />
+                      <span className="mt-2 size-2 shrink-0 rounded-full bg-tape">
+                        <span className="sr-only">Unread</span>
+                      </span>
                     )}
                   </button>
                 </li>

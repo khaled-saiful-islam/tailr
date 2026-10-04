@@ -102,7 +102,8 @@ JOBS: list[DemoJob] = [
         nice=["Recommendation systems", "Mentoring"],
         summary="Lead a team of five building demand forecasting and routing models, "
         "and the platform that keeps them in production.",
-        headline="You've run models in production on Kubernetes and led a team: a strong lead fit.",
+        headline="You've run models in production on Kubernetes and led a team: "
+        "a strong match for a lead role.",
         why=[
             "You migrated training jobs to Kubernetes, cutting weekly retraining "
             "from 9 hours to 2.",
@@ -258,7 +259,7 @@ JOBS: list[DemoJob] = [
         required=["Python", "LangChain", "AWS", "Stakeholder management"],
         nice=["Customer service"],
         summary="Bring GenAI into the airline's customer service and operations teams.",
-        headline="Your staff-facing assistant and stakeholder work fit their brief.",
+        headline="Your staff-facing assistant and stakeholder work match what they want.",
         why=[
             "You built an assistant 40,000 staff use and cut HR questions by 50%.",
             "Stakeholder management is on your profile.",
@@ -326,7 +327,7 @@ JOBS: list[DemoJob] = [
         required=["Python", "NLP", "PyTorch", "Bahasa Malaysia"],
         nice=["Open source"],
         summary="Build Malay language models for chat and search.",
-        headline="Native Malay plus 50,000 labelled Malay reviews: a natural fit.",
+        headline="Native Malay plus 50,000 labelled Malay reviews: a natural match.",
         why=[
             "You labelled 50,000 Malay reviews and published them as an open dataset.",
             "Bahasa Malaysia is your native language.",

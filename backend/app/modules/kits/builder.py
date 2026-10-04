@@ -208,7 +208,7 @@ async def run_kit(kit_id: uuid.UUID) -> None:
             kind="kit.ready",
             title=f"Your application for {job.title} is ready",
             body=f"{job.company}. Resume, cover letter and answers, checked against your profile.",
-            link=f"/kits/{kit_id}",
+            link=f"/apply/{kit_id}",
         )
         log.info("kit_ready", kit=str(kit_id), issues=len(fact_check.issues))
     except Exception as error:
@@ -230,5 +230,5 @@ async def run_kit(kit_id: uuid.UUID) -> None:
             kind="kit.failed",
             title="Tailr couldn't finish an application",
             body=f"{message} Open it to try again.",
-            link=f"/kits/{kit_id}",
+            link=f"/apply/{kit_id}",
         )

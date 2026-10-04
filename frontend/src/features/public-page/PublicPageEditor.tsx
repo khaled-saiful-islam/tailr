@@ -52,13 +52,13 @@ const TABS = [
   { value: "about", label: "About" },
   { value: "highlights", label: "Highlights" },
   { value: "projects", label: "Projects" },
-  { value: "inbox", label: "Inbox" },
+  { value: "inbox", label: "Messages" },
 ] as const;
 
 const STATUS_LABEL: Record<PageDraft["visibility"], string> = {
-  off: "Off",
-  link: "Live, link only",
-  public: "Live, public",
+  off: "Not published",
+  link: "Online, link only",
+  public: "Online, public",
 };
 
 /** Errors that mean one choice can't be saved: undo that choice, keep the rest. */
@@ -154,13 +154,13 @@ export function PublicPageEditor() {
   if (preview.isError) {
     return (
       <div className="mx-auto max-w-[36rem] px-5 py-16 text-center">
-        <h1 className="type-title">Your page starts with your profile</h1>
+        <h1 className="type-title">Your website starts with your profile</h1>
         <p className="mt-3 text-ink-2">
-          Build your profile first. Your page is made from it, so it's never out
-          of date.
+          Fill in your profile first. Your website is made from it, so it's
+          never out of date.
         </p>
         <Button asChild className="mt-6">
-          <Link to="/profile">Build my profile</Link>
+          <Link to="/profile">Fill in my profile</Link>
         </Button>
       </div>
     );
@@ -180,10 +180,10 @@ export function PublicPageEditor() {
       <ProfileTabs />
       <header className="mt-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-[min(100%,20rem)] flex-1">
-          <h1 className="type-title">Your portfolio</h1>
+          <h1 className="type-title">My website</h1>
           <p className="mt-2 max-w-[42rem] text-ink-2">
-            A personal website made from your profile: your story, your work as
-            case studies, and a way to reach you. Changes save as you type.
+            A personal website made from your profile: your story, your projects
+            and a way to reach you. Changes save as you type.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -213,7 +213,7 @@ export function PublicPageEditor() {
             <Button variant="secondary" asChild>
               <a href={saved.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="size-4" aria-hidden />
-                Open page
+                Open my website
               </a>
             </Button>
           )}
@@ -232,11 +232,11 @@ export function PublicPageEditor() {
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-8 lg:mt-8 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] xl:gap-10">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:mt-8 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] xl:gap-10">
         <div className={cn(view === "preview" && "hidden lg:block")}>
           <Tabs.Root value={tab} onValueChange={setTab}>
             <Tabs.List
-              aria-label="Portfolio tools"
+              aria-label="Website tools"
               className="mb-5 flex flex-wrap border-b border-line"
             >
               {TABS.map((item) => (

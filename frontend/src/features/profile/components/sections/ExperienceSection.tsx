@@ -32,7 +32,7 @@ export function ExperienceSection({ doc, update, issues }: SectionProps) {
     <Panel
       id="experience"
       title="Experience"
-      description="Newest first. Your achievements here are what Tailr tailors from."
+      description="Newest first. Tailr writes your CVs and applications from the achievements here."
     >
       {items.length === 0 && (
         <EmptyHint>

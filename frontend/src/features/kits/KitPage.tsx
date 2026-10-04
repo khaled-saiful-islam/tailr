@@ -8,7 +8,7 @@ import { KitBuilding } from "./components/KitBuilding";
 import { KitWorkspace } from "./components/KitWorkspace";
 import { TailorSettings } from "./components/TailorSettings";
 
-/** One job's application kit: tailored resume, cover letter, answers and interview prep. */
+/** One job's prepared application: CV, cover letter, answers and interview prep. */
 export function KitPage() {
   const { kitId = "" } = useParams();
   const query = useKit(kitId);
@@ -39,14 +39,19 @@ export function KitPage() {
         to={kit.match_id ? `/jobs/${kit.match_id}` : "/jobs"}
         className="inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-ink-2 hover:text-ink"
       >
-        <ArrowLeft className="size-4" aria-hidden /> The job
+        <ArrowLeft className="size-4" aria-hidden /> Job details
       </Link>
 
       <header className="mt-6 flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
         <div className="min-w-[min(100%,20rem)] flex-1">
-          <h1 className="type-title">{kit.job_title}</h1>
+          <p className="text-[0.9375rem] font-medium text-ink-2">
+            Your application
+          </p>
+          <h1 className="type-title mt-1">
+            {kit.job_title}{" "}
+            <span className="font-normal text-ink-2">at {kit.company}</span>
+          </h1>
           <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[1.125rem] font-medium">
-            {kit.company}
             {kit.job_url.startsWith("http") && (
               <a
                 href={kit.job_url}
@@ -92,7 +97,7 @@ function KitFailed({ kit }: { kit: Kit }) {
       <div>
         <p className="font-semibold">Tailr couldn't finish this application.</p>
         <p className="mt-1 text-ink-2">
-          {kit.error ?? "Something went wrong while writing it."} Use Tailor
+          {kit.error ?? "Something went wrong while writing it."} Press Write it
           again above to try once more.
         </p>
       </div>

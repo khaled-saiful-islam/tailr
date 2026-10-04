@@ -118,7 +118,7 @@ export function Column({
   );
 }
 
-/** "Not this time": a drop zone under the board that opens into a list. */
+/** "Not successful": a drop zone under the board that opens into a list. */
 export function ClosedZone({
   ids,
   byId,

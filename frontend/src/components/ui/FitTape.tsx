@@ -36,7 +36,7 @@ const geometry = {
 } as const;
 
 /**
- * The Fit tape: a strip of measuring tape with a pin at the match score.
+ * The match tape: a strip of measuring tape with a pin at the match score.
  * Tailr shows every match this way, so a glance reads like a tailor's measure.
  */
 export function FitTape({
@@ -53,11 +53,15 @@ export function FitTape({
   const { width, height, figure } = geometry[size];
   const level = fitLevel(clamped);
   const text = label ?? fitLabel[level];
+  // A match score reads "86% match"; a custom label (profile completeness) keeps its own words.
+  const spoken = label
+    ? `${text}: ${clamped} ${measure}`
+    : `${clamped}% match, ${text.toLowerCase()}`;
   const clipId = useId();
 
   const progress = useMotionValue(animated && !reduce ? 0 : clamped);
   const markerX = useTransform(progress, (v) => (v / 100) * width);
-  const shown = useTransform(progress, (v) => Math.round(v).toString());
+  const shown = useTransform(progress, (v) => `${Math.round(v)}%`);
 
   useEffect(() => {
     if (!animated || reduce) {
@@ -79,7 +83,7 @@ export function FitTape({
         className,
       )}
       role="img"
-      aria-label={`${text}: ${clamped} ${measure}`}
+      aria-label={spoken}
     >
       {size === "lg" && (
         <div className="flex items-baseline gap-3">
@@ -153,12 +157,14 @@ export function FitTape({
           >
             {shown}
           </motion.span>
-          {showLabel && (
+          {showLabel ? (
             <span
               className={cn("type-label whitespace-nowrap", levelText[level])}
             >
               {text}
             </span>
+          ) : (
+            !label && <span className="text-[0.8125rem] text-ink-3">match</span>
           )}
         </span>
       )}

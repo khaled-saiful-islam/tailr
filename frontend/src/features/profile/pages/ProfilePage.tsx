@@ -77,10 +77,10 @@ export function ProfilePage() {
       <ProfileTabs />
       <header className="mt-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-[min(100%,20rem)] flex-1">
-          <h1 className="type-title">Your profile</h1>
+          <h1 className="type-title">My profile</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            Everything Tailr knows about your career. Every tailored resume is
-            built from it. Changes save as you type.
+            Everything Tailr knows about your experience. Your CV, website and
+            applications are made from it. Changes save as you type.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -94,7 +94,7 @@ export function ProfilePage() {
             icon={<FileUp className="size-4" />}
             asChild
           >
-            <Link to="/profile/import">Import a CV</Link>
+            <Link to="/profile/import">Upload your CV</Link>
           </Button>
           <PreviewDialog doc={doc} />
         </div>
@@ -107,13 +107,13 @@ export function ProfilePage() {
           className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-panel border border-tape/60 bg-[color-mix(in_oklab,var(--tape)_10%,var(--surface))] p-5"
         >
           <div className="min-w-[min(100%,18rem)] flex-1">
-            <p className="font-semibold">The fastest start: import your CV</p>
+            <p className="font-semibold">The fastest start: upload your CV</p>
             <p className="mt-1 text-[0.9375rem] text-ink-2">
               Tailr fills in every section for you. You can still edit anything.
             </p>
           </div>
           <Button variant="tape" asChild>
-            <Link to="/profile/import">Import a CV</Link>
+            <Link to="/profile/import">Upload your CV</Link>
           </Button>
         </motion.div>
       )}

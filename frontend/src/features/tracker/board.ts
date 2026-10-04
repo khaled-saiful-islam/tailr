@@ -90,9 +90,9 @@ export function statusLine(app: Application, now = new Date()): StatusLine {
       };
     case "preparing":
       if (app.kit_status === "ready")
-        return { text: "Kit ready to send", tone: "good" };
+        return { text: "Application ready to send", tone: "good" };
       if (app.kit_status === "building")
-        return { text: "Tailoring your kit", tone: "quiet" };
+        return { text: "Writing your application", tone: "quiet" };
       return {
         text: `Since ${relativeTime(app.stage_changed_at, now)}`,
         tone: "quiet",
@@ -116,7 +116,7 @@ export function statusLine(app: Application, now = new Date()): StatusLine {
       };
     case "rejected":
       return {
-        text: `Closed ${relativeTime(app.stage_changed_at, now)}`,
+        text: `Not successful, ${relativeTime(app.stage_changed_at, now)}`,
         tone: "quiet",
       };
   }

@@ -15,7 +15,7 @@ describe("fitLevel", () => {
   });
 
   it("has a readable label for every band", () => {
-    expect(fitLabel[fitLevel(92)]).toBe("Strong fit");
-    expect(fitLabel[fitLevel(30)]).toBe("Long shot");
+    expect(fitLabel[fitLevel(92)]).toBe("Great match");
+    expect(fitLabel[fitLevel(30)]).toBe("Weak match");
   });
 });

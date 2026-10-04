@@ -31,7 +31,7 @@ function Body({ user, self }: { user: AdminUserDetail; self: boolean }) {
   const budget = user.ai_daily_budget ?? user.default_budget;
   const counts = [
     { label: "Applications", value: user.applications },
-    { label: "Kits", value: user.kits },
+    { label: "Prepared applications", value: user.kits },
     { label: "Matched jobs", value: user.matches },
     { label: "Signed-in devices", value: user.signed_in_devices },
   ];

@@ -152,16 +152,14 @@ async def test_run_builds_a_brief_end_to_end(
     assert set(top["parts"]) == {"skills", "role", "experience", "location", "pay", "similarity"}
 
     assert len(emails) == 1
-    assert (
-        "fits you this morning" in emails[0]["subject"]
-        or "fit you this morning" in emails[0]["subject"]
-    )
+    assert emails[0]["subject"] == "2 new jobs for you this morning"
     assert "Selat Pay" in emails[0]["html"]
 
     note = (await signed_in.get("/api/v1/notifications")).json()["items"][0]
     assert note["kind"] == "brief.ready"
-    assert note["link"] == "/"
-    assert note["body"] == "2 jobs measured against your profile. Selat Pay fits best."
+    assert note["title"] == "New jobs for you"
+    assert note["link"] == "/jobs"
+    assert note["body"] == "2 new jobs: 2 are good matches; the best is at Selat Pay."
 
     # A second brief never repeats jobs you've already been shown.
     await signed_in.post("/api/v1/briefs/run")

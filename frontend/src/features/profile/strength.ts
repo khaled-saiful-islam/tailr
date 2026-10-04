@@ -1,4 +1,4 @@
-/** Profile strength wording and navigation helpers. */
+/** Profile completeness wording and navigation helpers. */
 
 export function strengthWord(score: number): string {
   if (score >= 85) return "Excellent";

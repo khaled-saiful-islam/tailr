@@ -25,7 +25,7 @@ interface BulletListProps {
   addLabel?: string;
 }
 
-/** Achievement lines ("facts"): the evidence every tailored resume is built from. */
+/** Achievement lines ("facts"): the evidence every prepared CV is built from. */
 export function BulletList({
   bullets,
   onChange,
@@ -146,7 +146,7 @@ function BulletRow({
         />
         <div className="flex shrink-0 items-center opacity-100 sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
           <IconButton
-            label="Improve with AI"
+            label="Improve this point"
             onClick={ask}
             disabled={!canCoach || coach.isPending}
           >
@@ -188,7 +188,7 @@ function BulletRow({
               onClick={ask}
               className="text-[0.8125rem] font-semibold text-chalk underline-offset-2 hover:underline"
             >
-              Improve it
+              Improve this point
             </button>
           )}
         </div>
@@ -205,8 +205,8 @@ function BulletRow({
             <div className="ml-6 mr-1 mt-2 rounded-[10px] border border-chalk/30 bg-chalk-soft/50 p-4">
               {coach.isPending && (
                 <p className="flex items-center gap-2 text-[0.9375rem] text-ink-2">
-                  <Spinner className="size-4 text-chalk" /> Stitching a stronger
-                  line…
+                  <Spinner className="size-4 text-chalk" /> Writing a stronger
+                  version…
                 </p>
               )}
               {coach.isError && (

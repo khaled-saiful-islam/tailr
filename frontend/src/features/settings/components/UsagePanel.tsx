@@ -15,7 +15,7 @@ export function UsagePanel() {
     <Panel
       id="ai"
       title="AI use"
-      description="Tailoring, drafting and reviews all use AI. Each account has a daily allowance."
+      description="Preparing applications, drafting and job match reviews all use AI. Each account has a daily allowance."
     >
       {!data ? (
         usage.isError ? (

@@ -4,7 +4,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
 import { STAGES, stageIndex } from "../options";
 
-/** The kit being made: a running stitch and the three stages it goes through. */
+/** The application being prepared: a running stitch and its three stages. */
 export function KitBuilding({ stage }: { stage: string }) {
   const current = stageIndex(stage);
   return (
@@ -32,11 +32,11 @@ export function KitBuilding({ stage }: { stage: string }) {
         />
       </svg>
       <h2 id="building-heading" className="type-heading">
-        Tailoring your application
+        Preparing your application…
       </h2>
       <p className="mt-1.5 max-w-[36rem] text-ink-2">
-        This takes about half a minute. You can leave this page; Tailr keeps
-        going and the kit will be here when you come back.
+        This takes about a minute. You can leave this page; Tailr keeps going
+        and lets you know when your application is ready.
       </p>
 
       <ol className="mt-7 flex flex-col gap-5">

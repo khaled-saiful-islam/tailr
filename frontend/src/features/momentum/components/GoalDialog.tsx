@@ -42,7 +42,7 @@ export function GoalDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Your weekly goal"
-      description="How many applications a week feels steady for you? Fewer, well-tailored ones beat many rushed ones."
+      description="How many applications a week feels steady for you? A few careful applications beat many rushed ones."
     >
       <form onSubmit={submit}>
         <label htmlFor="weekly-goal" className="type-label text-ink-2">

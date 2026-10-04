@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/cn";
 import type { Kit } from "../api";
 
-/** Why you can trust the kit: what was checked, and how well it speaks the job's language. */
+/** Why you can trust it: every line checked against your profile, and the job's keywords. */
 export function KitProof({ kit }: { kit: Kit }) {
   return (
     <div className="grid items-start gap-4 md:grid-cols-2">
@@ -39,10 +39,10 @@ function TruthCheck({ check }: { check: NonNullable<Kit["fact_check"]> }) {
             Checked against your profile
           </h2>
           <p className="mt-1 text-[0.9375rem] text-ink-2">
-            {check.lines_checked} lines traced back to facts you gave Tailr.{" "}
+            Every line comes from your CV ({check.lines_checked} checked).{" "}
             {issues.length === 0
               ? "Nothing was added that isn't yours."
-              : `${issues.length} ${issues.length === 1 ? "line went" : "lines went"} too far and ${issues.length === 1 ? "was" : "were"} put back to your own words.`}
+              : `We fixed ${issues.length} ${issues.length === 1 ? "line" : "lines"} that didn't match, using your own words.`}
           </p>
           {skillsRemoved.length > 0 && (
             <p className="mt-2 text-[0.9375rem] text-ink-2">
@@ -106,17 +106,17 @@ function Keywords({ report }: { report: NonNullable<Kit["keywords"]> }) {
       className="rounded-panel border border-line bg-surface p-5"
     >
       <h2 id="keywords-heading" className="font-semibold">
-        Speaks the job's language
+        Uses the job's keywords
       </h2>
       <p className="mt-1 text-[0.9375rem] text-ink-2">
         {gain > 0
-          ? `Your resume now uses ${report.after}% of the skills this ad asks for, up from ${report.before}%.`
-          : `Your resume uses ${report.after}% of the skills this ad asks for.`}
+          ? `Your CV now mentions ${report.after}% of the skills this ad asks for, up from ${report.before}%.`
+          : `Your CV mentions ${report.after}% of the skills this ad asks for.`}
       </p>
       <div className="mt-4 flex flex-col gap-2" aria-hidden>
         <Bar label="Before" value={report.before} className="bg-ink-3/45" />
         <Bar
-          label="Tailored"
+          label="Now"
           value={report.after}
           className="bg-tape"
           delay={0.25}
@@ -134,7 +134,7 @@ function Keywords({ report }: { report: NonNullable<Kit["keywords"]> }) {
             >
               <Check
                 className="size-3 text-fit-strong"
-                aria-label="On your resume"
+                aria-label="On your CV"
               />
               {skill}
             </li>
@@ -156,7 +156,7 @@ function Keywords({ report }: { report: NonNullable<Kit["keywords"]> }) {
       {missing.length > 0 && (
         <p className="mt-3 text-[0.8125rem] text-ink-3">
           Dashed skills aren't in your profile, so Tailr didn't claim them. If
-          you have them, add them to your profile and tailor again.
+          you have them, add them to your profile and write it again.
         </p>
       )}
     </section>

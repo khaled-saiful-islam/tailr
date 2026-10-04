@@ -20,7 +20,7 @@ const CHECK_SECTION: Record<string, string> = {
   languages: "languages",
 };
 
-/** The profile measured: score on the tape, then what to do next. */
+/** How complete the profile is, then what to add next. */
 export function StrengthPanel({
   strength,
   compact = false,
@@ -34,7 +34,7 @@ export function StrengthPanel({
 
   return (
     <div className="rounded-panel border border-line bg-surface p-5">
-      <p className="type-label text-ink-2">Profile strength</p>
+      <p className="type-label text-ink-2">Profile completeness</p>
       <FitTape
         score={strength.score}
         size={compact ? "md" : "lg"}
@@ -82,7 +82,7 @@ export function StrengthPanel({
           animate={{ opacity: 1 }}
           className="mt-5 text-[0.9375rem] text-ink-2"
         >
-          Every check passes. Tailr has everything it needs to tailor well.
+          All done. Tailr has everything it needs to write strong applications.
         </motion.p>
       )}
       {done.length > 0 && (

@@ -43,7 +43,7 @@ export function SignInPage() {
   return (
     <AuthLayout
       title="Sign in"
-      intro="Pick up where you left off. Today's brief is waiting."
+      intro="Welcome back. Your new jobs are waiting."
       footer={
         <>
           New to Tailr?{" "}

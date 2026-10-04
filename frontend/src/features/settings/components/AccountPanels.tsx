@@ -37,7 +37,7 @@ export function YouPanel({ user }: { user: User }) {
     <Panel
       id="you"
       title="You"
-      description="How Tailr greets you. Your CV and portfolio use the name in your profile."
+      description="How Tailr greets you. Your CV and website use the name in your profile."
     >
       <form onSubmit={save} className="flex flex-wrap items-end gap-3">
         <Field
@@ -96,7 +96,7 @@ export function PreferencesPanel({ user }: { user: User }) {
           onChange={(timezone) =>
             timezone !== user.timezone && save({ timezone }, "Time zone saved.")
           }
-          hint="Your morning brief arrives at your local time, and your streak counts your days."
+          hint="Your daily job update runs at your local time, and your days in a row are counted in it."
         />
 
         <div>
@@ -122,20 +122,20 @@ export function PreferencesPanel({ user }: { user: User }) {
 
         <div>
           <Switch
-            label="Email me my morning brief"
+            label="Email me my daily job update"
             checked={user.email_digest}
             onCheckedChange={(email_digest) =>
               save(
                 { email_digest },
                 email_digest
-                  ? "You'll get your brief by email too."
-                  : "No more brief emails. It's still on Today.",
+                  ? "You'll get your daily job update by email too."
+                  : "No more update emails. New jobs still show on your Jobs page.",
               )
             }
           />
           <p className="mt-1.5 pl-[3.25rem] text-[0.8125rem] text-ink-3">
-            The top jobs and their fit, on the days your radar runs. Your radar
-            can also turn this off.
+            The best new jobs and how well they match you, on the days Tailr
+            searches. You can also turn this off in Job preferences.
           </p>
         </div>
       </div>

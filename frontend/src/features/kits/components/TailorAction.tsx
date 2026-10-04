@@ -1,4 +1,4 @@
-import { ArrowRight, Scissors } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import { askToNotify } from "@/lib/browserNotifications";
 import { useCreateKit, useKitForMatch, type Language } from "../api";
 import { LANGUAGE_OPTIONS } from "../options";
 
-/** Start a kit for this job, or open the one already made. */
+/** Prepare an application for this job, or open the one already prepared. */
 export function TailorAction({ matchId }: { matchId: string }) {
   const existing = useKitForMatch(matchId);
   const create = useCreateKit();
@@ -19,7 +19,7 @@ export function TailorAction({ matchId }: { matchId: string }) {
   if (existing.isPending) {
     return (
       <Button className="w-full" variant="tape" loading>
-        Tailor my application
+        Prepare my application
       </Button>
     );
   }
@@ -32,34 +32,34 @@ export function TailorAction({ matchId }: { matchId: string }) {
           className="w-full"
           variant={building ? "secondary" : "tape"}
         >
-          <Link to={`/kits/${existing.data.id}`}>
-            {building && <Spinner className="size-4" label="Tailoring" />}
-            {building ? "Tailoring your application" : "Open my application"}
+          <Link to={`/apply/${existing.data.id}`}>
+            {building && <Spinner className="size-4" label="Preparing" />}
+            {building ? "Preparing your application" : "Open my application"}
             {!building && <ArrowRight className="size-4" aria-hidden />}
           </Link>
         </Button>
         <p className="mt-2 text-center text-[0.8125rem] text-ink-3">
           {building
             ? "Keep browsing. Tailr will let you know when it's ready."
-            : "Resume, cover letter, answers and interview prep."}
+            : "CV, cover letter, answers and interview prep, ready to check."}
         </p>
       </>
     );
   }
 
-  // Tailoring runs in the background; Tailr says when it's ready.
+  // Preparing runs in the background; Tailr says when it's ready.
   const start = () => {
     askToNotify();
     create.mutate(
       { match_id: matchId, language, tone: "confident" },
       {
         onSuccess: (kit) =>
-          toast.success("Tailoring your application", {
+          toast.success("Preparing your application", {
             description:
-              "It takes about half a minute. Keep browsing; Tailr will let you know when it's ready.",
+              "It takes about a minute. Keep browsing; Tailr will let you know when it's ready.",
             action: {
               label: "Watch",
-              onClick: () => navigate(`/kits/${kit.id}`),
+              onClick: () => navigate(`/apply/${kit.id}`),
             },
           }),
         onError: (error) => toast.error(error.message),
@@ -82,15 +82,15 @@ export function TailorAction({ matchId }: { matchId: string }) {
       <Button
         className="w-full"
         variant="tape"
-        icon={<Scissors className="size-4" />}
+        icon={<FileText className="size-4" />}
         loading={create.isPending}
         onClick={start}
       >
-        Tailor my application
+        Prepare my application
       </Button>
       <p className="text-center text-[0.8125rem] text-ink-3">
-        A resume, cover letter and answers made for this job, using only what's
-        in your profile.
+        Tailr writes a CV and cover letter for this job using only your real
+        experience. Takes about a minute.
       </p>
     </div>
   );

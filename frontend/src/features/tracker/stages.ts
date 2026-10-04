@@ -2,7 +2,7 @@ import type { Schemas } from "@/lib/api/client";
 
 export type Stage = Schemas["Stage"];
 
-/** The way forward, left to right. "Not this time" sits apart from it. */
+/** The way forward, left to right. "Not successful" sits apart from it. */
 export const PATH: Stage[] = [
   "saved",
   "preparing",
@@ -16,19 +16,19 @@ export const STAGE_LABEL: Record<Stage, string> = {
   saved: "Saved",
   preparing: "Preparing",
   applied: "Applied",
-  interview: "Interviewing",
+  interview: "Interview",
   offer: "Offer",
-  rejected: "Not this time",
+  rejected: "Not successful",
 };
 
 /** What each column is for, in a line. */
 export const STAGE_HINT: Record<Stage, string> = {
-  saved: "Jobs you liked. Tailor one when you're ready.",
-  preparing: "Your kit is being made, or ready to send.",
-  applied: "Sent. Tailr nudges you to follow up after a week.",
+  saved: "Jobs you liked. Prepare an application when you're ready.",
+  preparing: "Your application is being written, or ready to send.",
+  applied: "Sent. Tailr reminds you to follow up after a week.",
   interview: "Talking to them. Add the date of your next step.",
   offer: "They want you.",
-  rejected: "Closed for now. Every no is practice.",
+  rejected: "They said no this time. Every no is practice.",
 };
 
 export function isStage(value: string | null): value is Stage {

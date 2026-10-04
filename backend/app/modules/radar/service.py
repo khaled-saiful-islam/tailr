@@ -223,7 +223,7 @@ class RadarService:
             f"radar-preview:{user.id}",
             limit=PREVIEWS_PER_HOUR,
             window_seconds=3600,
-            message="The radar needs a short rest. Try the preview again in a few minutes.",
+            message="That's a lot of searches in a short time. Try again in a few minutes.",
         )
         queries = build_queries(settings, limit=PREVIEW_PER_QUERY)
         outcomes = await search_many(settings.sources, queries)

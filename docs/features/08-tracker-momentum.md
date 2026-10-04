@@ -2,6 +2,8 @@
 
 **Status:** shipped in M8.
 
+> **Users see:** *My applications* (`/applications`), with the stages Saved, Preparing, Applied, Interview, Offer, Not successful; *This week* and *What employers want* on Home.
+
 The tracker is where every job you're pursuing lives, from saved to signed. Momentum is what
 brings you back: a weekly goal, a streak of brief-check days, an honest funnel, and a pulse of
 what your market asks for and pays.

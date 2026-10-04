@@ -48,6 +48,7 @@ log = get_logger(__name__)
 REVIEW_CONCURRENCY = 4
 QUICK_MARGIN = 20  # review jobs whose quick score is within this of the user's bar
 CLOSEST_WHEN_EMPTY = 3
+MAX_SAVED = 60  # jobs added to the Jobs page per search
 
 
 @dataclass
@@ -240,7 +241,7 @@ async def run_brief(brief_id: uuid.UUID) -> None:
     try:
         context = await _context(user_id)
         if context is None:
-            raise AppError("Finish your profile and radar first.", code="not_ready")
+            raise AppError("Finish your profile and job preferences first.", code="not_ready")
 
         fresh, stats = await _search(context)
         await _stage(brief_id, user_id, "reading", **stats)
@@ -286,11 +287,16 @@ async def run_brief(brief_id: uuid.UUID) -> None:
                 else quick.parts
             )
             finals.append((job, parts, review, quick))
-        finals.sort(key=lambda row: row[1].score, reverse=True)
-        keep = [row for row in finals if row[1].score >= bar]
-        below_bar = not keep
-        if below_bar:
-            keep = finals[:CLOSEST_WHEN_EMPTY]
+        # Every job that passed the preferences goes on the Jobs page, best first: the
+        # ones the AI reviewed with their refined score, the rest with the quick score.
+        reviewed = {job.id for job, *_ in finals}
+        rest: list[tuple[Job, FitParts, FitReview | None, QuickFit]] = [
+            (job, quick.parts, None, quick) for job, quick in scored if job.id not in reviewed
+        ]
+        everything = sorted(finals + rest, key=lambda row: row[1].score, reverse=True)
+        keep = everything[:MAX_SAVED]
+        good = sum(1 for row in keep if row[1].score >= bar)
+        below_bar = good == 0
         saved = await _save_matches(brief_id, user_id, keep)
 
         async with session_scope() as db:
@@ -299,14 +305,19 @@ async def run_brief(brief_id: uuid.UUID) -> None:
                 brief.status = BriefStatus.READY
                 brief.stage = "done"
                 brief.finished_at = utcnow()
-                brief.stats = {**(brief.stats or {}), "matches": saved, "below_bar": below_bar}
+                brief.stats = {
+                    **(brief.stats or {}),
+                    "matches": saved,
+                    "good": good,
+                    "below_bar": below_bar,
+                }
         await publish(user_id, "brief.ready", {"id": str(brief_id), "matches": saved})
         await notify(
             user_id,
             kind="brief.ready",
-            title="Your brief is ready",
-            body=brief_summary(saved, keep[0][0].company if saved and keep else None),
-            link="/",
+            title="New jobs for you" if saved else "No new jobs this time",
+            body=brief_summary(saved, good, keep[0][0].company if keep and good else None),
+            link="/jobs",
         )
         log.info("brief_ready", brief=str(brief_id), matches=saved)
         from app.modules.brief.mailer import email_brief
@@ -316,7 +327,7 @@ async def run_brief(brief_id: uuid.UUID) -> None:
         message = (
             error.message
             if isinstance(error, AppError)
-            else "Something went wrong building your brief."
+            else "Something went wrong while searching for jobs."
         )
         if not isinstance(error, AppError):
             log.exception("brief_failed", brief=str(brief_id))
@@ -330,19 +341,22 @@ async def run_brief(brief_id: uuid.UUID) -> None:
         await notify(
             user_id,
             kind="brief.failed",
-            title="Your brief didn't finish",
+            title="Your job search didn't finish",
             body=f"{message} You can run it again from Today.",
             link="/",
         )
 
 
-def brief_summary(new_matches: int, top_company: str | None) -> str:
-    """One line for the notification: how many jobs, and who fits best."""
-    if new_matches == 0:
-        return "No new jobs fit this time. Tailr looks again tomorrow morning."
-    jobs = "1 job" if new_matches == 1 else f"{new_matches} jobs"
-    best = f" {top_company} fits best." if top_company else ""
-    return f"{jobs} measured against your profile.{best}"
+def brief_summary(new_jobs: int, good: int, top_company: str | None) -> str:
+    """One line for the notification: how many new jobs, how many match well, and the best."""
+    if new_jobs == 0:
+        return "Nothing new since the last search. Tailr looks again tomorrow morning."
+    jobs = "1 new job" if new_jobs == 1 else f"{new_jobs} new jobs"
+    if good == 0:
+        return f"{jobs}, none a strong match yet. Have a look, or widen your preferences."
+    matches = "1 is a good match" if good == 1 else f"{good} are good matches"
+    best = f"; the best is at {top_company}" if top_company else ""
+    return f"{jobs}: {matches}{best}."
 
 
 def place_label(location: str | None) -> str | None:

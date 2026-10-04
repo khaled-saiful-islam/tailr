@@ -70,8 +70,7 @@ export function AppCardBody({ app }: { app: Application }) {
               FIT_TEXT[fitLevel(app.score)],
             )}
           >
-            <span className="sr-only">Fit </span>
-            {app.score}%
+            {app.score}%<span className="font-sans text-ink-3"> match</span>
           </span>
         )}
       </div>

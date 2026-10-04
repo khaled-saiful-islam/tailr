@@ -16,7 +16,7 @@ export function Funnel({ funnel }: { funnel: Momentum["funnel"] }) {
           const previous = index > 0 ? PATH[index - 1]! : null;
           const before = previous ? funnel[previous] : 0;
           const note = !previous
-            ? "Everything on your tracker"
+            ? "Every job you're going for"
             : before
               ? `${Math.round((count / before) * 100)}% of ${STAGE_LABEL[previous].toLowerCase()}`
               : "None yet";

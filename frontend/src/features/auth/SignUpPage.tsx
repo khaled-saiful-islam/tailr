@@ -65,7 +65,7 @@ export function SignUpPage() {
   return (
     <AuthLayout
       title="Create your account"
-      intro="Two minutes to set up. Tomorrow morning, your first brief."
+      intro="A few minutes to set up. Then Tailr finds jobs that match you."
       footer={
         <>
           Already have an account?{" "}

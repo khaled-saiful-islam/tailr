@@ -52,8 +52,8 @@ interface Props {
 export function LookPanel({ draft, update, projectImages }: Props) {
   return (
     <Panel
-      title="Look"
-      description="Pick a template. Your content stays the same; switch any time."
+      title="Design"
+      description="Pick a design. Your words stay the same; switch any time."
     >
       <div
         role="radiogroup"

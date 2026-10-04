@@ -124,5 +124,5 @@ async def _deliver(owner: User, data: MessageIn) -> None:
         kind="message.new",
         title=f"New message from {data.name}",
         body=data.message[:140],
-        link="/profile/portfolio",
+        link="/profile/website",
     )

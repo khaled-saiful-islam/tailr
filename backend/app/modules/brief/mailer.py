@@ -43,6 +43,7 @@ async def email_brief(brief_id: uuid.UUID) -> bool:
         count = len(
             (await db.execute(select(Match.id).where(Match.brief_id == brief_id))).scalars().all()
         )
+        good = sum(1 for match, _ in rows if match.score >= radar.min_fit)
         if not rows:
             return False
         first_name = user.name.split(" ")[0]
@@ -58,9 +59,13 @@ async def email_brief(brief_id: uuid.UUID) -> bool:
             for match, job in rows
         ]
 
-    plural = "job fits" if count == 1 else "jobs fit"
-    subject = f"{count} new {plural} you this morning"
-    intro = f"{count} new {plural} you today. Here are the best of them."
+    jobs = "1 new job" if count == 1 else f"{count} new jobs"
+    subject = f"{jobs} for you this morning"
+    intro = (
+        f"Tailr found {jobs} for you today. Here are the best matches."
+        if good
+        else f"Tailr found {jobs} for you today, none a strong match yet. Here are the closest."
+    )
     app_url = get_settings().public_web_url
     context: dict[str, object] = {
         "subject": subject,
@@ -72,7 +77,7 @@ async def email_brief(brief_id: uuid.UUID) -> bool:
     }
     lines = [intro, ""]
     lines += [f"{item['score']}%  {item['title']}, {item['company']}" for item in items]
-    lines += ["", f"Open today's brief: {app_url}"]
+    lines += ["", f"See all your jobs: {app_url}/jobs"]
     text = "\n".join(lines)
     sent = await send_email(
         to=email, subject=subject, html=render("brief.html", **context), text=text

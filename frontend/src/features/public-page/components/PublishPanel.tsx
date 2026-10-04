@@ -36,10 +36,10 @@ export function PublishPanel({ draft, saved, update }: Props) {
   return (
     <Panel
       title="Publish"
-      description="Choose who can see your page. You can switch it off at any time."
+      description="Choose who can see your website. You can switch it off at any time."
     >
       <Segmented
-        label="Who can see your page"
+        label="Who can see your website"
         options={[...VISIBILITY]}
         value={draft.visibility}
         onChange={(visibility) => {
@@ -205,7 +205,7 @@ export function AddressField({
             <Check className="size-3.5" aria-hidden /> Free to use
           </span>
         ) : (
-          "Lowercase letters, numbers and hyphens. Shared by your online CV and portfolio; changing it breaks links you've already shared."
+          "Lowercase letters, numbers and hyphens. Shared by your online CV and website; changing it breaks links you've already shared."
         )}
       </p>
     </div>

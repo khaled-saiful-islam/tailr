@@ -49,7 +49,7 @@ export function HighlightsPanel({
 
   return (
     <Panel
-      title="By the numbers"
+      title="Key numbers"
       description="Up to four results from your profile, shown big. Every number must match a fact you wrote."
       actions={
         <Button
@@ -291,7 +291,7 @@ const SECTIONS: { key: Section; label: string }[] = [
   { key: "achievements", label: "Achievements" },
   { key: "testimonials", label: "What people say" },
   { key: "contact", label: "Contact" },
-  { key: "highlights", label: "By the numbers" },
+  { key: "highlights", label: "Key numbers" },
   { key: "projects", label: "Projects" },
   { key: "experience", label: "Experience" },
   { key: "skills", label: "Skills" },

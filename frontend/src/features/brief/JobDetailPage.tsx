@@ -2,6 +2,7 @@ import { ArrowLeft, Check, CircleDashed, Info } from "lucide-react";
 import { motion } from "motion/react";
 import { Link, useParams } from "react-router";
 import { Button } from "@/components/ui/Button";
+import { MATCH_MEANING } from "@/components/ui/fit";
 import { FitTape } from "@/components/ui/FitTape";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
@@ -177,9 +178,10 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
       className="rounded-sheet border border-line bg-surface p-5 shadow-sheet sm:p-6"
     >
       <h2 id="fit-heading" className="type-label text-ink-2">
-        Your fit
+        How well you match
       </h2>
       <FitTape score={detail.score} size="lg" className="mt-3" />
+      <p className="mt-2 text-[0.875rem] text-ink-3">{MATCH_MEANING}</p>
       {review.headline && (
         <p className="chalk-mark mt-5 leading-relaxed">{review.headline}</p>
       )}
@@ -218,7 +220,7 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
 
       {review.why.length > 0 && (
         <>
-          <h3 className="type-label mt-6">Why you fit</h3>
+          <h3 className="type-label mt-6">Why you match</h3>
           <ul className="mt-2 flex flex-col gap-2">
             {review.why.map((reason) => (
               <li
@@ -237,7 +239,7 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
       )}
       {review.gaps.length > 0 && (
         <>
-          <h3 className="type-label mt-6">Gaps worth addressing</h3>
+          <h3 className="type-label mt-6">What's missing</h3>
           <ul className="mt-2 flex flex-col gap-3">
             {review.gaps.map((gap) => (
               <li key={gap.text} className="flex gap-2.5 text-[0.9375rem]">

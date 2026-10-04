@@ -1,9 +1,10 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfSignedIn, RequireAuth } from "./guards";
 import { AppShell } from "./layouts/AppShell";
 import { NotFound } from "./NotFound";
 import { Page } from "./Page";
+import { Moved } from "./Moved";
 
 // Each page is its own chunk, so signing in doesn't download the whole app.
 const SignInPage = lazy(() =>
@@ -143,7 +144,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "tracker",
+        path: "applications",
         element: (
           <Page>
             <TrackerPage />
@@ -167,7 +168,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "kits/:kitId",
+        path: "apply/:kitId",
         element: (
           <Page>
             <KitPage />
@@ -183,7 +184,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "profile/portfolio",
+        path: "profile/website",
         element: (
           <Page>
             <PublicPageEditor />
@@ -191,13 +192,18 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "radar",
+        path: "preferences",
         element: (
           <Page>
             <RadarPage />
           </Page>
         ),
       },
+      // Old addresses (bookmarks, links in earlier notifications) still work.
+      { path: "radar", element: <Navigate to="/preferences" replace /> },
+      { path: "tracker", element: <Moved to="/applications" /> },
+      { path: "kits/:kitId", element: <Moved to="/apply/:kitId" /> },
+      { path: "profile/portfolio", element: <Moved to="/profile/website" /> },
       { path: "*", element: <NotFound /> },
     ],
   },

@@ -12,7 +12,7 @@ interface Props {
   set: (patch: Partial<CompleteSettings>) => void;
 }
 
-/** What to search for, with AI suggestions drawn from the profile. */
+/** The job titles to search for, with suggestions drawn from the CV. */
 export function RolesSection({ settings, set }: Props) {
   const suggest = useSuggestRoles();
   const known = new Set(settings.roles.map((r) => r.toLowerCase()));
@@ -24,8 +24,8 @@ export function RolesSection({ settings, set }: Props) {
   return (
     <Panel
       id="roles"
-      title="Roles"
-      description="The job titles Tailr searches for every morning. Up to six."
+      title="What job?"
+      description="The job titles Tailr searches for. Up to six."
       actions={
         <Button
           size="sm"
@@ -38,7 +38,7 @@ export function RolesSection({ settings, set }: Props) {
             })
           }
         >
-          Suggest from my profile
+          Suggest from my CV
         </Button>
       }
     >
@@ -48,7 +48,7 @@ export function RolesSection({ settings, set }: Props) {
         onChange={(roles) => set({ roles })}
         placeholder="AI Engineer, Data Scientist"
         max={6}
-        hint="Press Enter after each title. Leave out levels like Senior; set those below."
+        hint="Press Enter after each title. Leave out levels like Senior: set those under Pay and job type."
       />
       <AnimatePresence>
         {ideas.length > 0 && (
@@ -58,7 +58,7 @@ export function RolesSection({ settings, set }: Props) {
             exit={{ opacity: 0 }}
             className="mt-5 rounded-[12px] border border-chalk/30 bg-chalk-soft/50 p-4"
           >
-            <p className="type-label text-chalk">Suggested from your profile</p>
+            <p className="type-label text-chalk">Suggested from your CV</p>
             <ul className="mt-3 flex flex-col gap-2">
               {ideas.map((idea) => (
                 <li
@@ -87,7 +87,7 @@ export function RolesSection({ settings, set }: Props) {
             </ul>
             {suggest.data && suggest.data.seniority.length > 0 && (
               <p className="mt-4 text-[0.875rem] text-ink-2">
-                Your experience fits{" "}
+                Your experience suits{" "}
                 {suggest.data.seniority
                   .map((level: Seniority) =>
                     SENIORITY_LABEL[level].toLowerCase(),
@@ -106,6 +106,15 @@ export function RolesSection({ settings, set }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="mt-5">
+        <ChipInput
+          label="Must mention one of these (optional)"
+          value={settings.must_have}
+          onChange={(must_have) => set({ must_have })}
+          placeholder="Python, LLM"
+          hint="Only keep jobs whose ad mentions at least one. Leave empty to keep them all."
+        />
+      </div>
     </Panel>
   );
 }

@@ -87,10 +87,10 @@ export function SkillDemand({ skills }: { skills: Skill[] }) {
 }
 
 function compare(minimum: number, pay: Pay): string {
-  const yours = `Your minimum, RM ${money(minimum)},`;
+  const yours = `Your minimum pay, RM ${money(minimum)},`;
   if (minimum < pay.low) return `${yours} is below this range.`;
   if (minimum > pay.high)
-    return `${yours} is above this range, so fewer jobs will clear it.`;
+    return `${yours} is above this range, so fewer jobs will meet it.`;
   return `${yours} sits inside this range.`;
 }
 

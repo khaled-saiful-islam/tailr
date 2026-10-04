@@ -1,4 +1,4 @@
-import { Bookmark, BookmarkCheck, X } from "lucide-react";
+import { Bookmark, BookmarkCheck, Undo2, X } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
 import { IconButton } from "@/components/ui/controls";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { useUpdateMatch, type Match } from "../api";
 import { MatchMeta } from "./MatchParts";
 
-/** One job in a list: the tape, the job, the AI's one-line take, quick triage. */
+/** One job in a list: its match, the job, why it matches, and save or hide. */
 export function MatchRow({
   match,
   index = 0,
@@ -62,25 +62,41 @@ export function MatchRow({
             "sm:opacity-60 sm:group-hover:opacity-100",
           )}
         >
-          <IconButton
-            label={saved ? "Unsave" : "Save"}
-            onClick={() =>
-              update.mutate({ id: match.id, status: saved ? "seen" : "saved" })
-            }
-            className={saved ? "text-ink" : undefined}
-          >
-            {saved ? (
-              <BookmarkCheck className="size-[18px]" />
-            ) : (
-              <Bookmark className="size-[18px]" />
-            )}
-          </IconButton>
-          <IconButton
-            label="Not for me"
-            onClick={() => update.mutate({ id: match.id, status: "dismissed" })}
-          >
-            <X className="size-[18px]" />
-          </IconButton>
+          {match.status === "dismissed" ? (
+            <IconButton
+              label="Show again"
+              onClick={() => update.mutate({ id: match.id, status: "seen" })}
+            >
+              <Undo2 className="size-[18px]" />
+            </IconButton>
+          ) : (
+            <>
+              <IconButton
+                label={saved ? "Saved: remove from saved" : "Save job"}
+                onClick={() =>
+                  update.mutate({
+                    id: match.id,
+                    status: saved ? "seen" : "saved",
+                  })
+                }
+                className={saved ? "text-ink" : undefined}
+              >
+                {saved ? (
+                  <BookmarkCheck className="size-[18px]" />
+                ) : (
+                  <Bookmark className="size-[18px]" />
+                )}
+              </IconButton>
+              <IconButton
+                label="Not interested: hide this job"
+                onClick={() =>
+                  update.mutate({ id: match.id, status: "dismissed" })
+                }
+              >
+                <X className="size-[18px]" />
+              </IconButton>
+            </>
+          )}
         </div>
       </div>
     </motion.li>

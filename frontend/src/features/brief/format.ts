@@ -42,11 +42,11 @@ export const WORK_MODE: Record<string, string> = {
 
 export const PART_LABEL: Record<string, string> = {
   skills: "Skills",
-  role: "Role",
+  role: "Job title",
   experience: "Experience",
-  location: "Location",
+  location: "Location and work mode",
   pay: "Pay",
-  similarity: "Overall similarity",
+  similarity: "Overall",
 };
 
 export const PART_ORDER = [

@@ -2,12 +2,12 @@ import { NavLink } from "react-router";
 import { cn } from "@/lib/cn";
 
 const TABS = [
-  { to: "/profile", label: "Details", end: true },
-  { to: "/profile/cv", label: "CV", end: false },
-  { to: "/profile/portfolio", label: "Portfolio", end: false },
+  { to: "/profile", label: "My profile", end: true },
+  { to: "/profile/cv", label: "My CV", end: false },
+  { to: "/profile/website", label: "My website", end: false },
 ];
 
-/** Your profile, and the two things made from it: a CV and a portfolio site. */
+/** Your profile, and the two things made from it: a CV and a personal website. */
 export function ProfileTabs() {
   return (
     <nav

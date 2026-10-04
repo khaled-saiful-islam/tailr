@@ -2,6 +2,8 @@
 
 **Status:** shipped in M6.
 
+> **Users see:** *My CV* (`/profile/cv`).
+
 A CV made from the profile, in one of five print-quality designs. Edit it by hand or
 with AI (every line checked against the profile), download it as a PDF, or share a
 link. Profile, CV and Portfolio sit together under **Profile** as tabs.

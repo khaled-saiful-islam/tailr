@@ -214,7 +214,7 @@ async def test_nudges_follow_up_and_next_step(
     notes = (await signed_in.get("/api/v1/notifications")).json()["items"]
     kinds = {note["kind"]: note for note in notes}
     assert kinds["tracker.follow_up"]["title"] == "Follow up with Selat Pay?"
-    assert kinds["tracker.follow_up"]["link"] == f"/tracker?open={card['id']}"
+    assert kinds["tracker.follow_up"]["link"] == f"/applications?open={card['id']}"
     assert kinds["tracker.next_step"]["title"] == "Phone screen: Selat Pay"
 
 

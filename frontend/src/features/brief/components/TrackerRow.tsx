@@ -7,7 +7,7 @@ import { APPLIED_MESSAGE } from "@/features/tracker/messages";
 import { STAGE_LABEL } from "@/features/tracker/stages";
 import type { MatchDetail } from "../api";
 
-/** Where this job stands on your tracker, with the next sensible step. */
+/** Where this job stands in My applications, with the next sensible step. */
 export function TrackerRow({ match }: { match: MatchDetail }) {
   const track = useTrack();
   const update = useUpdateApplication();
@@ -17,7 +17,9 @@ export function TrackerRow({ match }: { match: MatchDetail }) {
   if (!application) {
     return (
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[0.9375rem] text-ink-2">Not on your tracker yet.</p>
+        <p className="text-[0.9375rem] text-ink-2">
+          Not in My applications yet.
+        </p>
         <Button
           variant="secondary"
           size="sm"
@@ -27,13 +29,13 @@ export function TrackerRow({ match }: { match: MatchDetail }) {
             track.mutate(
               { match_id: match.id },
               {
-                onSuccess: () => toast.success("Added to your tracker."),
+                onSuccess: () => toast.success("Added to My applications."),
                 onError: fail,
               },
             )
           }
         >
-          Add to tracker
+          Add to My applications
         </Button>
       </div>
     );
@@ -44,10 +46,10 @@ export function TrackerRow({ match }: { match: MatchDetail }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-[0.9375rem]">
-        <span className="text-ink-2">On your tracker: </span>
+        <span className="text-ink-2">In My applications: </span>
         <span className="font-semibold">{STAGE_LABEL[application.stage]}</span>
         <Link
-          to={`/tracker?open=${application.id}`}
+          to={`/applications?open=${application.id}`}
           className="ml-2 inline-flex items-center gap-1 font-semibold text-chalk hover:underline"
         >
           Open <ArrowRight className="size-3.5" aria-hidden />

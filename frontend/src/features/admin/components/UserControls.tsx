@@ -127,8 +127,8 @@ export function UserControls({
               }
             />
             <p className="mt-1 pl-[3.125rem] text-[0.8125rem] text-ink-3">
-              Off: tailoring, fit reviews, drafts and CV edits stop for them.
-              Everything else keeps working.
+              Off: preparing applications, job match reviews, drafts and CV
+              edits stop for them. Everything else keeps working.
             </p>
           </div>
         </div>

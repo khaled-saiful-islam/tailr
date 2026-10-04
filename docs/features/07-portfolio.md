@@ -2,6 +2,8 @@
 
 **Status:** shipped in M7 (foundation in M6).
 
+> **Users see:** *My website* (`/profile/website`); visitors see it at `/p/<address>`.
+
 A personal website at `/p/<address>`, made from the profile. It is a portfolio, not a CV:
 photo, about me, what I do, achievements, projects with their own case-study pages, a
 career timeline, kind words from others, and a contact form. One page or several.

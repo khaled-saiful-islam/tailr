@@ -12,7 +12,7 @@ const REASON = {
   hello: "Saying hi",
 } as const;
 
-/** Messages sent through the portfolio's contact form. */
+/** Messages sent through the website's contact form. */
 export function InboxPanel() {
   const inbox = useInbox();
   const markRead = useMarkMessageRead();
@@ -20,7 +20,7 @@ export function InboxPanel() {
 
   return (
     <Panel
-      title="Inbox"
+      title="Messages"
       description="Messages from your contact form. Each one was also emailed to you; reply from your email and your address is shared only then."
     >
       {inbox.isPending ? (
@@ -29,7 +29,7 @@ export function InboxPanel() {
         <p className="text-pin">{inbox.error.message}</p>
       ) : inbox.data.items.length === 0 ? (
         <p className="text-ink-2">
-          No messages yet. Share your portfolio to start the conversation.
+          No messages yet. Share your website to start the conversation.
         </p>
       ) : (
         <ul className="flex flex-col gap-3">

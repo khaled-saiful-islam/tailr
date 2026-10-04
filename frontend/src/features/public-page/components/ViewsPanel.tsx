@@ -26,7 +26,7 @@ export function ViewsPanel({ stats }: { stats: PageSettingsOut["stats"] }) {
   return (
     <Panel
       title="Visits"
-      description="People who opened your page in the last 30 days. Bots and you aren't counted."
+      description="People who opened your website in the last 30 days. Bots and you aren't counted."
     >
       <p className="text-[2.5rem] font-bold leading-none [font-stretch:120%]">
         {stats.last_30_days}

@@ -71,8 +71,8 @@ export function AiPanel({
   return (
     <div className="flex flex-col gap-6">
       <Panel
-        title="Edit with AI"
-        description="Tailr rewrites using only what's in your profile, then checks every line. Anything that goes too far goes back to your own words."
+        title="Improve with AI"
+        description="Tailr rewrites your CV using only what's in your profile, then checks every line against it. Anything that goes too far goes back to your own words."
       >
         {busy && !working && (
           <p className="mb-4 rounded-control bg-surface-2 px-3.5 py-2.5 text-[0.875rem] text-ink-2">

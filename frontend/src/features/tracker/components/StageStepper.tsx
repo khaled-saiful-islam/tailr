@@ -81,7 +81,7 @@ export function StageStepper({
         )}
       >
         <X className="size-3.5" aria-hidden />
-        {closed ? "Not this time (reopen)" : "Not this time"}
+        {closed ? "Not successful (reopen)" : "Not successful"}
       </button>
     </div>
   );

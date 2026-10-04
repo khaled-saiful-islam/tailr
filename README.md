@@ -4,10 +4,11 @@
 
 # Tailr
 
-**Jobs that fit. Applications made to measure.**
+**Find jobs that match your CV. Apply with a CV and cover letter written for each one.**
 
-Every morning Tailr finds fresh jobs that fit your profile and measures the fit.
-Pick one, and Tailr tailors your resume, cover letter and apply kit for that exact job. You apply yourself.
+Add your CV and tell Tailr what job you want. Every morning it searches LinkedIn and JobStreet
+and lists every job on your Jobs page, best match first. For a job you like, it prepares your
+application from your real experience. You apply yourself, and track it in one place.
 
 </div>
 
@@ -29,17 +30,20 @@ Pick one, and Tailr tailors your resume, cover letter and apply kit for that exa
 
 | | |
 |---|---|
-| **Profile Builder** | Upload a CV (PDF, Word, image) or start fresh. AI fills every section; you review and refine. |
-| **Job Radar** | Tell Tailr the roles, places, salary and deal-breakers you care about, and when you want your brief. |
-| **Morning Brief** | Fresh jobs from LinkedIn and JobStreet each morning, each with a **Fit %** you can open to see why. |
-| **Apply Kit** | One tap: a tailored resume (every line traced to your real experience), cover letter, screening answers and interview notes, in English or Bahasa Malaysia. It runs in the background and Tailr notifies you when it's ready. |
-| **Add any job** | Paste a link or the ad itself; Tailr measures it like a brief job. |
-| **CV Studio** | Your CV in five print-quality designs. Polish it with AI (every line checked against your profile), download a PDF, or share a link. |
-| **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in five designs, one page or several. |
-| **Tracker** | Saved, preparing, applied, interviewing, offer: one board you drag along, with a follow-up nudge a week after applying, a truthful drafted email, and reminders before each next step. |
-| **Momentum** | A weekly goal, a streak of brief days, an honest funnel, and a weekly pulse of the skills and pay your market asks for. |
-| **Settings** | Name, time zone, theme, email, password, signed-in devices, AI use today, download all your data, delete your account. |
-| **Admin** | People and their AI use, per-person AI switch and daily allowance, disable or re-enable accounts, job-site health. |
+| **1. My profile** | Upload a CV (PDF, Word, a photo) or start fresh. AI fills in your experience, skills and achievements; you check and edit them. |
+| **2. Job preferences** | The roles, places, pay and work mode you want, and companies or words to leave out. |
+| **3. Jobs** | Tailr searches LinkedIn and JobStreet (straight away, and again every morning) and lists every job on your Jobs page with a **% match**, best first. Open one to see how well you match and what's missing. You can also add any job by link. |
+| **4. Prepare my application** | For one job: a CV and cover letter written only from your real experience (every line checked against your profile), answers to screening questions and interview prep, in English or Bahasa Malaysia, ready as PDFs. |
+| **5. My applications** | Saved, preparing, applied, interview, offer: one board you drag along, with a reminder to follow up a week after applying (and a drafted email), and a reminder before each interview. |
+| **Home** | What's new today, your best matches, your weekly goal, and what employers in your field are asking for. |
+| **My CV** | Your CV in five designs: improve it with AI, download a PDF or share a link. |
+| **My website** | A personal website made from your profile, with project pages and a contact form, in five designs. |
+| **Account settings** | Name, time zone, theme, emails, password, signed-in devices, AI use today, download your data, delete your account. |
+| **Admin** | People and their AI use, an AI switch and daily allowance per person, disable or re-enable accounts, job-site health. |
+
+The words used across the app are in [docs/ux-language.md](docs/ux-language.md). Internally
+the daily search is a *brief*, job preferences are the *radar*, and a prepared application is a
+*kit*; the code and API keep those names.
 
 Tailr never applies on your behalf. It prepares; you decide.
 
@@ -61,7 +65,7 @@ make demo
 
 | Account | Username | Password |
 |---|---|---|
-| Demo (a full profile, brief, kits, CV, portfolio, tracker) | `demo` | `Tailr-demo-2026` |
+| Demo (a full profile, jobs, prepared applications, CV, website, applications board) | `demo` | `Tailr-demo-2026` |
 | Administrator (people, AI use, job-site health) | `admin` | `admin` |
 
 Or create your own account from the sign-up page.
@@ -173,7 +177,7 @@ make lint    # ruff + mypy (backend), eslint + tsc (frontend)
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
-| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job radar](docs/features/03-job-radar.md), [morning brief](docs/features/04-morning-brief.md), [apply kit and notifications](docs/features/05-apply-kit.md), [CV Studio](docs/features/06-cv-studio.md), [portfolio](docs/features/07-portfolio.md), [tracker and momentum](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md) |
+| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job preferences](docs/features/03-job-radar.md), [jobs and the daily search](docs/features/04-morning-brief.md), [preparing an application](docs/features/05-apply-kit.md), [my CV](docs/features/06-cv-studio.md), [my website](docs/features/07-portfolio.md), [my applications and this week](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md) |
 | [docs/job-sources.md](docs/job-sources.md) | How Tailr reads LinkedIn and JobStreet, politely |
 | [docs/adr/](docs/adr) | Architecture decision records |
 

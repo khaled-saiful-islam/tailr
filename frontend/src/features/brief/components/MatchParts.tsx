@@ -15,9 +15,11 @@ export function MatchMeta({
 }) {
   const job = match.job;
   const posted = job.posted_at ? relativeTime(job.posted_at) : job.posted_text;
+  const place = placeLabel(job.location);
+  const mode = job.work_mode ? WORK_MODE[job.work_mode] : null;
   const items = [
-    placeLabel(job.location),
-    job.work_mode ? WORK_MODE[job.work_mode] : null,
+    place,
+    mode && mode !== place ? mode : null,
     payLabel(job),
     posted ? `${sourceLabel(job.source)}, ${posted}` : sourceLabel(job.source),
   ].filter(Boolean);
@@ -35,7 +37,7 @@ export function MatchMeta({
   );
 }
 
-/** Save, dismiss and open on the job site. */
+/** Save, hide ("not interested") and open on the job site. */
 export function MatchActions({
   match,
   compact = false,
@@ -62,7 +64,7 @@ export function MatchActions({
         }
         aria-pressed={saved}
       >
-        {saved ? "Saved" : "Save"}
+        {saved ? "Saved" : "Save job"}
       </Button>
       <Button
         size="sm"
@@ -70,7 +72,7 @@ export function MatchActions({
         icon={<X className="size-4" />}
         onClick={() => update.mutate({ id: match.id, status: "dismissed" })}
       >
-        Not for me
+        Not interested
       </Button>
       {!compact && (
         <Button

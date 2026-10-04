@@ -19,7 +19,8 @@ export function Sources({ sources }: { sources: Overview["sources"] }) {
   if (!sources.length)
     return (
       <p className="text-[0.9375rem] text-ink-3">
-        No job-site searches in the last 24 hours. Briefs search when they run.
+        No job-site searches in the last 24 hours. Tailr searches during each
+        daily job update.
       </p>
     );
   return (

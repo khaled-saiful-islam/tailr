@@ -1,7 +1,9 @@
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
+  type InfiniteData,
   type QueryClient,
 } from "@tanstack/react-query";
 import { api, unwrap, type Schemas } from "@/lib/api/client";
@@ -18,7 +20,7 @@ export const todayKey = ["brief", "today"] as const;
 export const matchesKey = (status: string) => ["matches", status] as const;
 export const matchKey = (id: string) => ["match", id] as const;
 
-/** Today's brief. Refreshes live while one is being built. */
+/** The latest job search and its status. Refreshes live while one is running. */
 export function useToday() {
   const client = useQueryClient();
   const refresh = () => void client.invalidateQueries({ queryKey: todayKey });
@@ -63,6 +65,32 @@ export function useMatches(status: MatchStatus | "all") {
   });
 }
 
+const PAGE = 100;
+
+/** Every job for one filter, newest first, a hundred at a time. */
+export function useJobList(status: MatchStatus | "all") {
+  return useInfiniteQuery({
+    queryKey: ["matches", "list", status],
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) =>
+      unwrap(
+        api.GET("/api/v1/matches", {
+          params: {
+            query: {
+              status: status === "all" ? undefined : status,
+              limit: PAGE,
+              offset: pageParam,
+            },
+          },
+        }),
+      ),
+    getNextPageParam: (last, pages) => {
+      const loaded = pages.reduce((sum, page) => sum + page.items.length, 0);
+      return loaded < last.total ? loaded : undefined;
+    },
+  });
+}
+
 export function useMatch(id: string) {
   const client = useQueryClient();
   return useQuery({
@@ -99,13 +127,17 @@ function patchMatchEverywhere(
         }
       : today,
   );
-  client.setQueriesData<MatchPage>({ queryKey: ["matches"] }, (page) =>
-    page
-      ? {
-          ...page,
-          items: page.items.map((m) => (m.id === id ? { ...m, ...patch } : m)),
-        }
-      : page,
+  const patchPage = (page: MatchPage): MatchPage => ({
+    ...page,
+    items: page.items.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+  });
+  client.setQueriesData<MatchPage | InfiniteData<MatchPage>>(
+    { queryKey: ["matches"] },
+    (data) => {
+      if (!data) return data;
+      if ("pages" in data) return { ...data, pages: data.pages.map(patchPage) };
+      return patchPage(data);
+    },
   );
   client.setQueryData<MatchDetail>(matchKey(id), (detail) =>
     detail ? { ...detail, ...patch } : detail,

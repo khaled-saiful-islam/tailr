@@ -1,4 +1,4 @@
-/** Match-score bands used everywhere a Fit % appears. */
+/** Match-score bands used everywhere a match % appears. */
 
 export type FitLevel = "strong" | "good" | "stretch" | "low";
 
@@ -10,8 +10,12 @@ export function fitLevel(score: number): FitLevel {
 }
 
 export const fitLabel: Record<FitLevel, string> = {
-  strong: "Strong fit",
-  good: "Good fit",
-  stretch: "Stretch",
-  low: "Long shot",
+  strong: "Great match",
+  good: "Good match",
+  stretch: "Partial match",
+  low: "Weak match",
 };
+
+/** What a match % means, in one sentence, wherever one needs explaining. */
+export const MATCH_MEANING =
+  "How well this job suits you, based on your skills, job title, years of experience, location and work mode, and pay.";

@@ -2,6 +2,8 @@
 
 **Status:** shipped in M3 + M4.
 
+> **Users see:** *Home*, *Jobs* and the *daily job update*. "Brief" is the internal name for one search. Since the usability pass, every job a search finds (up to 60 per run) is saved to the Jobs page, best match first; jobs at or above the user's *minimum match* are their *good matches* (counted in `stats.good`, highlighted and emailed), the rest are listed below them. Scores are shown as *% match* (Great 85+, Good 70 to 84, Partial 50 to 69, Weak under 50).
+
 Every morning (at the user's chosen time and days) Tailr searches, reads every new job ad,
 measures each against the profile, and delivers the jobs that clear the user's bar, each
 with a **Fit %** and a plain explanation. Users can also **Run my brief now**.
