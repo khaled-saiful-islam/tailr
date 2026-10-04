@@ -16,6 +16,7 @@ from app.core.db import session_scope
 from app.core.errors import AppError
 from app.core.events import publish
 from app.core.logging import get_logger
+from app.modules.notifications.service import notify
 from app.modules.profile import prompts
 from app.modules.profile.document import ProfileDraft, draft_to_document
 from app.modules.profile.extraction import Extracted, FileKind, extract
@@ -76,6 +77,13 @@ async def run_import(import_id: uuid.UUID) -> None:
                 row.status = ImportStatus.READY
                 row.error = None
         await publish(user_id, "profile.import", {"id": str(item.id), "status": ImportStatus.READY})
+        await notify(
+            user_id,
+            kind="cv.read",
+            title="Your CV is read",
+            body="Check what Tailr found, then save it to your profile.",
+            link=f"/profile/import/{item.id}",
+        )
         log.info("cv_import_ready", import_id=str(item.id), vision=used_vision, chars=len(text))
     except (ImportFailedError, AppError) as error:
         message = error.message if isinstance(error, AppError) else str(error)
@@ -143,3 +151,10 @@ async def _fail(import_id: uuid.UUID, user_id: uuid.UUID, message: str) -> None:
             row.status = ImportStatus.FAILED
             row.error = message
     await publish(user_id, "profile.import", {"id": str(import_id), "status": ImportStatus.FAILED})
+    await notify(
+        user_id,
+        kind="cv.read.failed",
+        title="We couldn't read that CV",
+        body=message,
+        link="/profile/import",
+    )

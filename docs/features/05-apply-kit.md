@@ -94,7 +94,7 @@ translated, and a translation is kept only if it carries exactly the same number
 
 | Method | Path | What it does |
 |---|---|---|
-| POST | `/api/v1/jobs/paste` | Add a job by link or text; returns the match (201) |
+| POST | `/api/v1/jobs/paste` | Add a job by link or text; quick checks answer at once, then a [background task](10-background-work.md) (202) adds it and notifies with a link to the job |
 | POST | `/api/v1/kits` | Start a kit for a match (`language`, `tone`); 202 |
 | GET | `/api/v1/kits` | Your kits, newest first |
 | GET | `/api/v1/kits/by-match/{match_id}` | The kit for a job, or `null` |

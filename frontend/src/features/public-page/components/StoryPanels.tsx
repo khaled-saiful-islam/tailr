@@ -1,5 +1,4 @@
-import { Plus, Sparkles, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ChipInput } from "@/components/ui/choice";
 import {
@@ -9,98 +8,20 @@ import {
   TextArea,
 } from "@/components/ui/controls";
 import { Field } from "@/components/ui/Field";
-import {
-  useDraftPortfolio,
-  type PortfolioContent,
-  type PortfolioDraft,
-} from "../api";
+import type { PortfolioContent, PortfolioDraft } from "../api";
 import type { PortfolioUpdate } from "../draft";
-
-/** What the AI couldn't write because the profile doesn't say. */
-function NeedsInput({ items }: { items: string[] }) {
-  if (!items.length) return null;
-  return (
-    <div className="mt-3 rounded-control bg-surface-2 px-3.5 py-2.5 text-[0.875rem]">
-      <p className="font-semibold">Tailr needs more from you for:</p>
-      <ul className="mt-1 list-disc pl-5 text-ink-2">
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-      <p className="mt-1 text-ink-3">
-        Add it to your profile and draft again, or write it yourself.
-      </p>
-    </div>
-  );
-}
-
-function DraftButton({
-  label,
-  pending,
-  onClick,
-}: {
-  label: string;
-  pending: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <Button
-      size="sm"
-      variant="secondary"
-      icon={<Sparkles className="size-3.5" />}
-      loading={pending}
-      onClick={onClick}
-    >
-      {label}
-    </Button>
-  );
-}
-
-/** A suggestion to look at before it replaces anything. */
-function Suggestion({
-  title,
-  children,
-  onUse,
-  onDismiss,
-}: {
-  title: string;
-  children: React.ReactNode;
-  onUse: () => void;
-  onDismiss: () => void;
-}) {
-  return (
-    <div className="mb-5 rounded-panel border border-chalk/40 bg-chalk-soft p-4">
-      <p className="flex items-center gap-1.5 text-[0.875rem] font-semibold text-chalk">
-        <Sparkles className="size-3.5" aria-hidden /> {title}
-      </p>
-      <div className="mt-2 text-[0.9375rem]">{children}</div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Button size="sm" onClick={onUse}>
-          Use this
-        </Button>
-        <Button size="sm" variant="ghost" onClick={onDismiss}>
-          Dismiss
-        </Button>
-      </div>
-    </div>
-  );
-}
+import type { Slot } from "../useSuggestions";
+import { DraftButton, NeedsInput, Suggestion, WorkingNote } from "./Suggestion";
 
 interface Props {
   portfolio: PortfolioContent;
   update: PortfolioUpdate;
-  suggestion: PortfolioDraft | null;
-  onSuggestion: (draft: PortfolioDraft | null) => void;
+  slot: Slot<PortfolioDraft>;
 }
 
 /** The hero line, the about story, what you're doing now, and what you like. */
-export function StoryPanel({
-  portfolio,
-  update,
-  suggestion,
-  onSuggestion,
-}: Props) {
-  const draft = useDraftPortfolio();
+export function StoryPanel({ portfolio, update, slot }: Props) {
+  const suggestion = slot.value;
   const about = portfolio.about ?? [];
   const paragraphs = about.length ? about : [""];
   const setAbout = (index: number, text: string) =>
@@ -118,27 +39,23 @@ export function StoryPanel({
       actions={
         <DraftButton
           label="Draft with AI"
-          pending={draft.isPending}
-          onClick={() =>
-            draft.mutate(["story"], {
-              onSuccess: (result) => onSuggestion(result),
-              onError: (error) => toast.error(error.message),
-            })
-          }
+          running={slot.running}
+          onClick={slot.start}
         />
       }
     >
+      {slot.running && <WorkingNote stage={slot.stage} />}
       {suggestion && hasStory && (
         <Suggestion
           title="A draft from your profile"
-          onDismiss={() => onSuggestion(null)}
+          onDismiss={slot.close}
           onUse={() => {
             update((p) => ({
               ...p,
               hero_line: suggestion.hero_line ?? p.hero_line,
               about: suggestion.about.length ? suggestion.about : p.about,
             }));
-            onSuggestion(null);
+            slot.close();
           }}
         >
           {suggestion.hero_line && (
@@ -153,7 +70,12 @@ export function StoryPanel({
           ))}
         </Suggestion>
       )}
-      {suggestion && <NeedsInput items={suggestion.needs_input} />}
+      {suggestion && (
+        <NeedsInput
+          items={suggestion.needs_input}
+          onClose={hasStory ? undefined : slot.close}
+        />
+      )}
 
       <Field
         label="Your line"
@@ -243,13 +165,9 @@ export function StoryPanel({
 }
 
 /** Three or four areas you're good at, each with the tools you use there. */
-export function ExpertisePanel({
-  portfolio,
-  update,
-  suggestion,
-  onSuggestion,
-}: Props) {
-  const draft = useDraftPortfolio();
+export function ExpertisePanel({ portfolio, update, slot }: Props) {
+  const suggestion = slot.value;
+  const drafted = Boolean(suggestion?.expertise.length);
   const areas = portfolio.expertise ?? [];
   const setArea = (index: number, changes: Partial<(typeof areas)[number]>) =>
     update((p) => ({
@@ -266,23 +184,19 @@ export function ExpertisePanel({
       actions={
         <DraftButton
           label="Draft with AI"
-          pending={draft.isPending}
-          onClick={() =>
-            draft.mutate(["expertise"], {
-              onSuccess: (result) => onSuggestion(result),
-              onError: (error) => toast.error(error.message),
-            })
-          }
+          running={slot.running}
+          onClick={slot.start}
         />
       }
     >
-      {suggestion && suggestion.expertise.length > 0 && (
+      {slot.running && <WorkingNote stage={slot.stage} />}
+      {suggestion && drafted && (
         <Suggestion
           title="Areas drafted from your profile"
-          onDismiss={() => onSuggestion(null)}
+          onDismiss={slot.close}
           onUse={() => {
             update((p) => ({ ...p, expertise: suggestion.expertise }));
-            onSuggestion(null);
+            slot.close();
           }}
         >
           <ul className="flex flex-col gap-2">
@@ -294,6 +208,12 @@ export function ExpertisePanel({
             ))}
           </ul>
         </Suggestion>
+      )}
+      {suggestion && (
+        <NeedsInput
+          items={suggestion.needs_input}
+          onClose={drafted ? undefined : slot.close}
+        />
       )}
       <div className="flex flex-col gap-4">
         {areas.map((area, index) => (

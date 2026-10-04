@@ -28,6 +28,7 @@ export function useToday() {
   useLiveEvent("brief.ready", () => {
     refresh();
     void client.invalidateQueries({ queryKey: ["matches"] });
+    void client.invalidateQueries({ queryKey: ["momentum"] });
   });
   return useQuery({
     queryKey: todayKey,

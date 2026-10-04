@@ -13,6 +13,7 @@ from app.modules.profile.document import draft_to_document
 from app.modules.radar.schemas import RoleIdea, RoleIdeas
 from app.modules.sources import registry
 from app.modules.sources.base import JobCard
+from tests.background import done
 from tests.factories import sample_draft
 from tests.fakes import FakeSource
 
@@ -128,7 +129,7 @@ async def test_suggestions(signed_in: httpx.AsyncClient, fake_ai: FakeAIClient) 
             seniority=["senior", "senior", "lead"],
         ),
     )
-    body = (await signed_in.post(f"{RADAR}/suggest")).json()
+    body = done(await signed_in.post(f"{RADAR}/suggest"))
     assert [r["title"] for r in body["roles"]] == ["AI Engineer", "Machine Learning Engineer"]
     assert body["seniority"] == ["senior", "lead"]
 
@@ -149,9 +150,7 @@ async def test_preview_searches_screens_and_filters(
         "places": ["kuala_lumpur"],
         "freshness_days": 3,
     }
-    response = await signed_in.post(f"{RADAR}/preview", json={"settings": settings})
-    assert response.status_code == 200, response.text
-    body = response.json()
+    body = done(await signed_in.post(f"{RADAR}/preview", json={"settings": settings}))
     assert body["found"] == 5
     assert body["on_target"] == 4  # the support role is screened out
     assert body["matching"] == 1  # Senior AI Engineer at Selat Pay, seen on both sites
@@ -166,7 +165,7 @@ async def test_preview_searches_screens_and_filters(
 
     # Adding a role can only add jobs: each role is screened (and cached) on its own.
     more = {**settings, "roles": ["AI Engineer", "Senior AI Engineer"]}
-    bigger = (await signed_in.post(f"{RADAR}/preview", json={"settings": more})).json()
+    bigger = done(await signed_in.post(f"{RADAR}/preview", json={"settings": more}))
     assert bigger["on_target"] >= body["on_target"]
 
     # Repeating a preview reuses the cache: no new requests, no new screening.
@@ -184,7 +183,7 @@ async def test_preview_survives_a_failing_source(
     response = await signed_in.post(
         f"{RADAR}/preview", json={"settings": {"roles": ["AI Engineer"], "freshness_days": 7}}
     )
-    body = response.json()
+    body = done(response)
     by_key = {s["key"]: s for s in body["sources"]}
     assert by_key["linkedin"]["status"] == "failed"
     assert by_key["jobstreet"]["status"] == "ok"

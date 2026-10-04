@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { IconButton, TextArea } from "@/components/ui/controls";
 import { Spinner } from "@/components/ui/Spinner";
-import { cn } from "@/lib/cn";
 import { moveById, removeById, updateById } from "@/lib/list";
 import { useCoachBullet } from "../../api";
 import { newId, type Bullet, type BulletIssue } from "../../types";
@@ -115,17 +114,25 @@ function BulletRow({
   onMoveUp?: () => void;
   onMoveDown?: () => void;
 }) {
-  const coach = useCoachBullet();
-  const [open, setOpen] = useState(false);
+  const coach = useCoachBullet(bullet.text);
+  const [asked, setAsked] = useState(false);
   const canCoach = bullet.text.trim().length >= 3;
+  // Open while asking, or when an answer from an earlier visit is waiting.
+  const open = asked || coach.running || coach.task !== null;
+  const answer = coach.result;
+  const failed = coach.error !== null;
 
   const ask = () => {
-    setOpen(true);
-    coach.mutate({
+    setAsked(true);
+    coach.run({
       text: bullet.text,
       title: context.title,
       company: context.company,
     });
+  };
+  const close = () => {
+    setAsked(false);
+    coach.dismiss();
   };
 
   return (
@@ -148,7 +155,7 @@ function BulletRow({
           <IconButton
             label="Improve this point"
             onClick={ask}
-            disabled={!canCoach || coach.isPending}
+            disabled={!canCoach || coach.running}
           >
             <Sparkles className="size-4" />
           </IconButton>
@@ -203,75 +210,63 @@ function BulletRow({
             className="overflow-hidden"
           >
             <div className="ml-6 mr-1 mt-2 rounded-[10px] border border-chalk/30 bg-chalk-soft/50 p-4">
-              {coach.isPending && (
-                <p className="flex items-center gap-2 text-[0.9375rem] text-ink-2">
-                  <Spinner className="size-4 text-chalk" /> Writing a stronger
-                  version…
+              {coach.running && (
+                <p
+                  role="status"
+                  className="flex items-center gap-2 text-[0.9375rem] text-ink-2"
+                >
+                  <Spinner className="size-4 shrink-0 text-chalk" />
+                  <span>Writing a stronger version… You can keep editing.</span>
                 </p>
               )}
-              {coach.isError && (
+              {failed && (
                 <p className="text-[0.9375rem] text-pin" role="alert">
-                  {coach.error.message}
+                  {coach.error}
                 </p>
               )}
-              {coach.data && (
+              {answer && (
                 <>
                   <p className="type-label text-chalk">Suggestion</p>
                   <p className="chalk-mark mt-1.5 text-[0.9375rem] leading-relaxed">
-                    {coach.data.suggestion}
+                    {answer.suggestion}
                   </p>
                   <p className="mt-2 text-[0.875rem] text-ink-2">
-                    {coach.data.reason}
+                    {answer.reason}
                   </p>
-                  {coach.data.questions.length > 0 && (
+                  {answer.questions.length > 0 && (
                     <ul className="mt-3 list-disc space-y-1 pl-5 text-[0.875rem] text-ink-2">
-                      {coach.data.questions.map((question) => (
+                      {answer.questions.map((question) => (
                         <li key={question}>{question}</li>
                       ))}
                     </ul>
                   )}
-                  {coach.data.suggestion.includes("[") && (
+                  {answer.suggestion.includes("[") && (
                     <p className="mt-3 text-[0.8125rem] text-ink-3">
                       Replace the [brackets] with your real numbers.
                     </p>
                   )}
                 </>
               )}
-              <div
-                className={cn(
-                  "flex flex-wrap gap-2",
-                  (coach.data || coach.isError) && "mt-4",
-                )}
-              >
-                {coach.data && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {answer && (
                   <Button
                     size="sm"
                     onClick={() => {
-                      onText(coach.data.suggestion);
-                      setOpen(false);
-                      coach.reset();
+                      onText(answer.suggestion);
+                      close();
                     }}
                   >
                     Use this
                   </Button>
                 )}
-                {(coach.data || coach.isError) && (
+                {(answer || failed) && (
                   <Button size="sm" variant="secondary" onClick={ask}>
                     Try again
                   </Button>
                 )}
-                {!coach.isPending && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setOpen(false);
-                      coach.reset();
-                    }}
-                  >
-                    Keep mine
-                  </Button>
-                )}
+                <Button size="sm" variant="ghost" onClick={close}>
+                  Keep mine
+                </Button>
               </div>
             </div>
           </motion.div>

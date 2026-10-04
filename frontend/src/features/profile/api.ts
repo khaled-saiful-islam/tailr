@@ -2,6 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { meKey } from "@/features/auth/api";
 import { api, unwrap } from "@/lib/api/client";
 import { useLiveEvent } from "@/lib/events";
+import {
+  ownerOf,
+  rememberOwner,
+  useResumableTask,
+} from "@/features/tasks/useResumableTask";
 import type { ApiProfileDoc, ImportOut, ProfileOut } from "./types";
 
 export const profileKey = ["profile"] as const;
@@ -91,18 +96,44 @@ export function useApplyImport() {
   });
 }
 
-export function useCoachBullet() {
-  return useMutation({
-    mutationFn: (body: {
-      text: string;
-      title?: string | null;
-      company?: string | null;
-    }) => unwrap(api.POST("/api/v1/profile/coach/bullet", { body })),
-  });
+/** What "Improve this point" answers. Kept on the background task, so typed here. */
+export interface CoachBulletOut {
+  suggestion: string;
+  reason: string;
+  questions: string[];
 }
 
+export interface SummaryOut {
+  summary: string;
+}
+
+interface CoachBulletBody {
+  text: string;
+  title?: string | null;
+  company?: string | null;
+}
+
+/**
+ * Improve one achievement line in the background. A row picks up the latest answer
+ * written for its exact text, so leaving the page loses nothing.
+ */
+export function useCoachBullet(text: string) {
+  return useResumableTask<CoachBulletBody, CoachBulletOut>(
+    "profile.improve_point",
+    async (body) => {
+      const task = await unwrap(
+        api.POST("/api/v1/profile/coach/bullet", { body }),
+      );
+      rememberOwner(task.id, body.text.trim());
+      return task;
+    },
+    { belongs: (task) => ownerOf(task.id) === text.trim() },
+  );
+}
+
+/** Write the summary in the background; an unused draft waits for the next visit. */
 export function useWriteSummary() {
-  return useMutation({
-    mutationFn: () => unwrap(api.POST("/api/v1/profile/coach/summary")),
-  });
+  return useResumableTask<void, SummaryOut>("profile.summary", () =>
+    unwrap(api.POST("/api/v1/profile/coach/summary")),
+  );
 }

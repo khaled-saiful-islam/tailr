@@ -7,6 +7,8 @@ import { useMe } from "@/features/auth/api";
 import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { useSyncAccountTheme } from "@/features/settings/useSyncAccountTheme";
 import { useNotificationAlerts } from "@/features/notifications/useNotificationAlerts";
+import { TaskTray } from "@/features/tasks/TaskTray";
+import { useTaskAlerts } from "@/features/tasks/useTaskAlerts";
 import { navItems } from "../nav";
 import { AccountMenu } from "./AccountMenu";
 
@@ -17,6 +19,7 @@ import { AccountMenu } from "./AccountMenu";
 export function AppShell() {
   useLiveConnection();
   useNotificationAlerts();
+  useTaskAlerts();
   useSyncAccountTheme();
   const { data: me } = useMe();
   const railItems = navItems.filter(
@@ -36,7 +39,10 @@ export function AppShell() {
           >
             <Logo />
           </NavLink>
-          <NotificationBell side="bottom" align="start" />
+          <div className="flex items-center">
+            <TaskTray side="bottom" align="start" />
+            <NotificationBell side="bottom" align="start" />
+          </div>
         </div>
         <nav aria-label="Main" className="flex flex-col gap-1">
           {railItems.map((item) => (
@@ -95,6 +101,7 @@ export function AppShell() {
             <Logo />
           </NavLink>
           <div className="flex items-center gap-1">
+            <TaskTray side="bottom" align="end" />
             <NotificationBell side="bottom" align="end" />
             <AccountMenu compact />
           </div>

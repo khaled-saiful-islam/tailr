@@ -48,7 +48,7 @@ export function statusLine(
   if (!brief)
     return "You're all set up. Find your first jobs now, or wait for tomorrow morning's update.";
   if (brief.status === "building")
-    return "Tailr is searching LinkedIn and JobStreet for new jobs. It takes about a minute.";
+    return "Tailr is searching LinkedIn and JobStreet for new jobs in the background.";
   if (brief.status === "failed")
     return "The last job search didn't finish. Try again in a moment.";
   const count = brief.matches.length;

@@ -5,8 +5,9 @@
 > **Users see:** *Job preferences* (`/preferences`). "Radar" is the internal name. Saving with **Save and find jobs** starts a search straight away and opens the Jobs page.
 
 The radar is what Tailr looks for every morning: which roles, where, at what level and pay,
-what to skip, and when the brief arrives. Its live preview scans real job sites while you
-change settings, so you see the effect of every choice before saving.
+what to skip, and when the brief arrives. A quick look (**Check now**) scans real job sites
+for the current settings, so you see the effect of your choices before searching for real.
+It runs only when you ask.
 
 ## What users see (`/radar`)
 
@@ -24,7 +25,10 @@ change settings, so you see the effect of every choice before saving.
 **Radar preview** (beside the settings, on top on phones): the radar scope with one contact
 per matching job, the count ("16 fresh jobs match right now, from 54 found in the last 3
 days"), results per site, *why* the others were left out (in plain words), and the newest
-matches linking to the job pages.
+matches linking to the job pages. The page never searches on its own: it shows the last
+check and when it ran ("Checked 3 hours ago", from any visit or device), says "You've
+changed your preferences since then" when they differ, and searches again only on
+**Check now** / **Check again**. A check runs in the background, so you can keep editing.
 
 First visit: the radar is pre-filled from the profile (latest title without "Senior",
 city mapped to its state, level from the title). **Start my radar** saves it and completes
@@ -56,8 +60,8 @@ settings ─▶ searches (one per role, max 4; a single chosen state narrows the
 | `GET` | `/api/v1/radar` | Settings (or profile-based defaults), version, next brief time, searches |
 | `PUT` | `/api/v1/radar` | Save `{settings, version}`; 409 on a stale version; 422 `no_roles` |
 | `GET` | `/api/v1/radar/options` | Malaysian places and job sites (with availability) |
-| `POST` | `/api/v1/radar/suggest` | AI role suggestions and levels from the profile |
-| `POST` | `/api/v1/radar/preview` | Run the searches now for the given settings |
+| `POST` | `/api/v1/radar/suggest` | AI role suggestions and levels from the profile (202, a [background task](10-background-work.md)) |
+| `POST` | `/api/v1/radar/preview` | Run the searches now for the given settings (202, a background task) |
 
 Limits: 40 previews and 20 suggestion runs per user per hour.
 

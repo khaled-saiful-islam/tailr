@@ -99,8 +99,8 @@ with Reply-To set to the visitor, and shown in the Inbox and as a notification.
 | GET / PUT | `/api/v1/public-profile` | Settings, portfolio words and visits; save (`version`) |
 | GET | `/api/v1/public-profile/slug-check?slug=` | Is an address free |
 | GET | `/api/v1/public-profile/preview` | The page as visitors would see it |
-| POST | `/api/v1/public-profile/highlights/suggest` | Truth-checked highlights |
-| POST | `/api/v1/public-profile/draft` | Draft story, expertise or case studies (`parts`) |
+| POST | `/api/v1/public-profile/highlights/suggest` | Truth-checked highlights (202, a [background task](10-background-work.md)) |
+| POST | `/api/v1/public-profile/draft` | Draft story, expertise or case studies (`parts`); 202, a background task that notifies when done |
 | GET | `/api/v1/public-profile/messages` | The inbox |
 | POST | `/api/v1/public-profile/messages/{id}/read` | Mark a message read |
 | DELETE | `/api/v1/public-profile/messages/{id}` | Delete a message |

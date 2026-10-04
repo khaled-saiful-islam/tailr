@@ -39,6 +39,7 @@ application from your real experience. You apply yourself, and track it in one p
 | **My CV** | Your CV in five designs: improve it with AI, download a PDF or share a link. |
 | **My website** | A personal website made from your profile, with project pages and a contact form, in five designs. |
 | **Account settings** | Name, time zone, theme, emails, password, signed-in devices, AI use today, download your data, delete your account. |
+| **Working on it** | Searches, CV reading and every AI action run in the background: keep using Tailr, follow them next to the bell, and get a notification when they're done. |
 | **Admin** | People and their AI use, an AI switch and daily allowance per person, disable or re-enable accounts, job-site health. |
 
 The words used across the app are in [docs/ux-language.md](docs/ux-language.md). Internally
@@ -177,7 +178,7 @@ make lint    # ruff + mypy (backend), eslint + tsc (frontend)
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
-| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job preferences](docs/features/03-job-radar.md), [jobs and the daily search](docs/features/04-morning-brief.md), [preparing an application](docs/features/05-apply-kit.md), [my CV](docs/features/06-cv-studio.md), [my website](docs/features/07-portfolio.md), [my applications and this week](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md) |
+| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job preferences](docs/features/03-job-radar.md), [jobs and the daily search](docs/features/04-morning-brief.md), [preparing an application](docs/features/05-apply-kit.md), [my CV](docs/features/06-cv-studio.md), [my website](docs/features/07-portfolio.md), [my applications and this week](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md), [working in the background](docs/features/10-background-work.md) |
 | [docs/job-sources.md](docs/job-sources.md) | How Tailr reads LinkedIn and JobStreet, politely |
 | [docs/adr/](docs/adr) | Architecture decision records |
 
@@ -197,6 +198,7 @@ Tailr is built in milestones; each one is usable on its own.
 | M7 Portfolio site: about, expertise, achievements, case-study pages, timeline, testimonials, contact form to an inbox, one or several pages, AI drafting with a truth judge | ✅ Done |
 | M8 Tracker and Momentum: drag-and-drop board, follow-up nudges with truthful drafts, next-step reminders, weekly goal, streak, funnel, Market Pulse | ✅ Done |
 | M9 Settings, admin (people, AI use and allowances, disabling accounts, job-site health), demo account, browser smoke and accessibility tests | ✅ Done |
+| Background work: job searches, CV reading and every AI action run in the background with a "Working on it" tray, finish alerts and results kept across visits; the job-preferences check runs only when asked | ✅ Done |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.
 

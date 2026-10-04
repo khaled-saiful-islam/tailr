@@ -1,112 +1,20 @@
-import { Sparkles, Star, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/Button";
+import { Star, Trash2 } from "lucide-react";
 import { IconButton, Panel, Switch } from "@/components/ui/controls";
-import { inputClass } from "@/components/ui/styles";
 import { cn } from "@/lib/cn";
 import type { PageProject, Section } from "@/public/types";
 import {
   imageUrl,
-  useDraftPortfolio,
-  useSuggestHighlights,
   type CaseStudy,
   type ImageOut,
   type PortfolioDraft,
 } from "../api";
 import { portfolioOf, portfolioUpdater, type PageDraft } from "../draft";
+import type { Slot } from "../useSuggestions";
 import { CaseStudyEditor } from "./CaseStudyEditor";
 import { ImagePicker } from "./ImagePicker";
+import { CaseDraft, DraftButton, NeedsInput, WorkingNote } from "./Suggestion";
 
 type Update = (recipe: (draft: PageDraft) => PageDraft) => void;
-
-/** "By the numbers": achievements from your profile, every number checked. */
-export function HighlightsPanel({
-  draft,
-  update,
-}: {
-  draft: PageDraft;
-  update: Update;
-}) {
-  const suggest = useSuggestHighlights();
-  const highlights = draft.settings.highlights ?? [];
-  const set = (next: typeof highlights) =>
-    update((d) => ({ ...d, settings: { ...d.settings, highlights: next } }));
-
-  const run = () =>
-    suggest.mutate(undefined, {
-      onSuccess: (found) => {
-        if (!found.length) {
-          toast("No numbers to lead with yet", {
-            description:
-              "Add results with numbers to your profile (people, money, time, percentages) and try again.",
-          });
-          return;
-        }
-        set(found);
-      },
-      onError: (error) => toast.error(error.message),
-    });
-
-  return (
-    <Panel
-      title="Key numbers"
-      description="Up to four results from your profile, shown big. Every number must match a fact you wrote."
-      actions={
-        <Button
-          size="sm"
-          variant={highlights.length ? "secondary" : "primary"}
-          icon={<Sparkles className="size-3.5" />}
-          loading={suggest.isPending}
-          onClick={run}
-        >
-          {highlights.length ? "Suggest again" : "Suggest from my profile"}
-        </Button>
-      }
-    >
-      {highlights.length === 0 ? (
-        <p className="text-[0.9375rem] text-ink-2">
-          Nothing yet. Tailr picks results with numbers from your profile, like
-          "40,000 staff use the assistant I built".
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {highlights.map((highlight, index) => (
-            <li
-              key={`${highlight.fact_id}-${index}`}
-              className="flex items-start gap-3 rounded-control border border-line p-3"
-            >
-              <span className="min-w-[4.5rem] pt-2 text-[1.25rem] font-bold [font-stretch:115%]">
-                {highlight.value}
-              </span>
-              <label className="min-w-0 flex-1">
-                <span className="sr-only">What {highlight.value} is</span>
-                <input
-                  className={cn(inputClass, "h-10 px-3")}
-                  value={highlight.label}
-                  maxLength={90}
-                  onChange={(event) =>
-                    set(
-                      highlights.map((h, i) =>
-                        i === index ? { ...h, label: event.target.value } : h,
-                      ),
-                    )
-                  }
-                />
-              </label>
-              <IconButton
-                label={`Remove ${highlight.value}`}
-                tone="danger"
-                onClick={() => set(highlights.filter((_, i) => i !== index))}
-              >
-                <Trash2 className="size-4" aria-hidden />
-              </IconButton>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Panel>
-  );
-}
 
 /** A picture for each project, and which one leads. */
 export function ProjectsPanel({
@@ -114,17 +22,14 @@ export function ProjectsPanel({
   update,
   projects,
   onImage,
-  suggestion,
-  onSuggestion,
+  slot,
 }: {
   draft: PageDraft;
   update: Update;
   projects: PageProject[];
   onImage: (image: ImageOut) => void;
-  suggestion: PortfolioDraft | null;
-  onSuggestion: (draft: PortfolioDraft | null) => void;
+  slot: Slot<PortfolioDraft>;
 }) {
-  const drafting = useDraftPortfolio();
   const settings = draft.settings;
   const images = settings.project_images ?? {};
   const setImage = (projectId: string, imageId: string | null) =>
@@ -136,6 +41,7 @@ export function ProjectsPanel({
     });
 
   const cases = portfolioOf(draft).case_studies ?? {};
+  const suggestion = slot.value;
   const suggested = suggestion?.case_studies ?? {};
   const setCase = (projectId: string, study: CaseStudy | null) =>
     portfolioUpdater(update)((p) => {
@@ -144,6 +50,24 @@ export function ProjectsPanel({
       else delete next[projectId];
       return { ...p, case_studies: next };
     });
+  /** One drafted case study used or skipped; put the draft away when none are left. */
+  const settleDraft = (projectId: string) => {
+    if (!suggestion) return;
+    const rest = Object.fromEntries(
+      Object.entries(suggestion.case_studies).filter(
+        ([id]) => id !== projectId,
+      ),
+    );
+    const waiting = projects.some(
+      (project) => cases[project.id] === undefined && rest[project.id],
+    );
+    if (waiting || suggestion.needs_input.length)
+      slot.replace({ ...suggestion, case_studies: rest });
+    else slot.close();
+  };
+  const hasDrafts = projects.some(
+    (project) => cases[project.id] === undefined && suggested[project.id],
+  );
 
   if (!projects.length) {
     return (
@@ -162,29 +86,26 @@ export function ProjectsPanel({
       title="Projects"
       description="Each project gets its own page. Add a cover picture, choose one to lead, and tell the story as a case study."
       actions={
-        <Button
-          size="sm"
-          variant="secondary"
-          icon={<Sparkles className="size-3.5" />}
-          loading={drafting.isPending}
-          onClick={() =>
-            drafting.mutate(["case_studies"], {
-              onSuccess: (result) => {
-                onSuggestion(result);
-                if (!Object.keys(result.case_studies).length)
-                  toast("Nothing to draft yet", {
-                    description:
-                      "Add details to your projects in your profile first.",
-                  });
-              },
-              onError: (error) => toast.error(error.message),
-            })
-          }
-        >
-          Draft case studies with AI
-        </Button>
+        <DraftButton
+          label="Draft case studies with AI"
+          running={slot.running}
+          onClick={slot.start}
+        />
       }
     >
+      {slot.running && (
+        <WorkingNote stage={slot.stage} result="your case studies" />
+      )}
+      {suggestion && (
+        <NeedsInput
+          items={suggestion.needs_input}
+          onClose={
+            hasDrafts
+              ? () => slot.replace({ ...suggestion, needs_input: [] })
+              : slot.close
+          }
+        />
+      )}
       <ul className="flex flex-col gap-3">
         {projects.map((project) => {
           const imageId = images[project.id];
@@ -251,25 +172,14 @@ export function ProjectsPanel({
                 )}
               </div>
               {cases[project.id] === undefined && suggested[project.id] && (
-                <div className="w-full rounded-control border border-chalk/40 bg-chalk-soft p-3 text-[0.875rem]">
-                  <p className="font-semibold text-chalk">
-                    A drafted case study is ready.
-                  </p>
-                  <p className="mt-1 text-ink-2">
-                    {suggested[project.id]?.overview ??
-                      suggested[project.id]?.problem}
-                  </p>
-                  <div className="mt-2 flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        setCase(project.id, suggested[project.id] ?? null)
-                      }
-                    >
-                      Use this
-                    </Button>
-                  </div>
-                </div>
+                <CaseDraft
+                  study={suggested[project.id]!}
+                  onUse={() => {
+                    setCase(project.id, suggested[project.id] ?? null);
+                    settleDraft(project.id);
+                  }}
+                  onSkip={() => settleDraft(project.id)}
+                />
               )}
               <CaseStudyEditor
                 name={project.id}

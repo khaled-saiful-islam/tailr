@@ -3,6 +3,7 @@ import { Switch as RadixSwitch } from "radix-ui";
 import {
   forwardRef,
   useCallback,
+  useEffect,
   useId,
   useLayoutEffect,
   useRef,
@@ -58,6 +59,21 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     }, [autoGrow]);
 
     useLayoutEffect(resize, [resize, value]);
+
+    // A narrower box wraps to more lines: grow again when the width changes (a phone
+    // rotating, a window resized). Height changes are ignored, since resize sets them.
+    useEffect(() => {
+      const el = inner.current;
+      if (!el || !autoGrow || typeof ResizeObserver === "undefined") return;
+      let width = el.clientWidth;
+      const observer = new ResizeObserver(() => {
+        if (el.clientWidth === width) return;
+        width = el.clientWidth;
+        resize();
+      });
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [autoGrow, resize]);
 
     return (
       <textarea

@@ -45,6 +45,14 @@ PREVIEW_PER_QUERY = 20
 SAMPLE_SIZE = 6
 
 
+def check_preview(settings: RadarSettings) -> None:
+    """A preview needs something to search for, and somewhere to search."""
+    if not settings.roles:
+        raise UnprocessableError("Add at least one job title to search for.", code="no_roles")
+    if not settings.sources:
+        raise UnprocessableError("Turn on at least one job site.", code="no_sources")
+
+
 def build_queries(settings: RadarSettings, *, limit: int | None = None) -> list[SearchQuery]:
     """One search per role. A single chosen state narrows the search; otherwise all of Malaysia."""
     location = "Malaysia"
@@ -215,10 +223,7 @@ class RadarService:
         return SuggestionsOut(roles=roles[:6], seniority=list(dict.fromkeys(ideas.seniority))[:2])
 
     async def preview(self, user: User, settings: RadarSettings) -> PreviewOut:
-        if not settings.roles:
-            raise UnprocessableError("Add at least one role to search for.", code="no_roles")
-        if not settings.sources:
-            raise UnprocessableError("Turn on at least one job source.", code="no_sources")
+        check_preview(settings)
         await rate_limit.enforce(
             f"radar-preview:{user.id}",
             limit=PREVIEWS_PER_HOUR,

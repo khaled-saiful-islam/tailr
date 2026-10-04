@@ -14,9 +14,10 @@ interface Props {
 
 /** The job titles to search for, with suggestions drawn from the CV. */
 export function RolesSection({ settings, set }: Props) {
-  const suggest = useSuggestRoles();
+  const suggest = useSuggestRoles((message) => toast.error(message));
+  const answer = suggest.result;
   const known = new Set(settings.roles.map((r) => r.toLowerCase()));
-  const ideas = (suggest.data?.roles ?? []).filter(
+  const ideas = (answer?.roles ?? []).filter(
     (idea) => !known.has(idea.title.toLowerCase()),
   );
   const full = settings.roles.length >= 6;
@@ -31,14 +32,10 @@ export function RolesSection({ settings, set }: Props) {
           size="sm"
           variant="secondary"
           icon={<Sparkles className="size-4" />}
-          loading={suggest.isPending}
-          onClick={() =>
-            suggest.mutate(undefined, {
-              onError: (error) => toast.error(error.message),
-            })
-          }
+          loading={suggest.running}
+          onClick={() => suggest.run()}
         >
-          Suggest from my CV
+          {suggest.running ? "Suggesting…" : "Suggest from my CV"}
         </Button>
       }
     >
@@ -50,6 +47,11 @@ export function RolesSection({ settings, set }: Props) {
         max={6}
         hint="Press Enter after each title. Leave out levels like Senior: set those under Pay and job type."
       />
+      {suggest.running && (
+        <p role="status" className="mt-4 text-[0.9375rem] text-ink-2">
+          Reading your CV for job titles… You can keep editing.
+        </p>
+      )}
       <AnimatePresence>
         {ideas.length > 0 && (
           <motion.div
@@ -58,7 +60,16 @@ export function RolesSection({ settings, set }: Props) {
             exit={{ opacity: 0 }}
             className="mt-5 rounded-[12px] border border-chalk/30 bg-chalk-soft/50 p-4"
           >
-            <p className="type-label text-chalk">Suggested from your CV</p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <p className="type-label text-chalk">Suggested from your CV</p>
+              <button
+                type="button"
+                onClick={suggest.dismiss}
+                className="rounded-[6px] text-[0.875rem] font-semibold text-ink-2 hover:text-ink"
+              >
+                Hide suggestions
+              </button>
+            </div>
             <ul className="mt-3 flex flex-col gap-2">
               {ideas.map((idea) => (
                 <li
@@ -85,10 +96,10 @@ export function RolesSection({ settings, set }: Props) {
                 </li>
               ))}
             </ul>
-            {suggest.data && suggest.data.seniority.length > 0 && (
+            {answer && answer.seniority.length > 0 && (
               <p className="mt-4 text-[0.875rem] text-ink-2">
                 Your experience suits{" "}
-                {suggest.data.seniority
+                {answer.seniority
                   .map((level: Seniority) =>
                     SENIORITY_LABEL[level].toLowerCase(),
                   )
@@ -97,7 +108,7 @@ export function RolesSection({ settings, set }: Props) {
                 <button
                   type="button"
                   className="font-semibold text-chalk hover:underline"
-                  onClick={() => set({ seniority: suggest.data.seniority })}
+                  onClick={() => set({ seniority: answer.seniority })}
                 >
                   Use these levels
                 </button>

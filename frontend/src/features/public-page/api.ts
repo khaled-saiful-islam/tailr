@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Task } from "@/features/tasks/api";
 import { api, ApiError, unwrap, type Schemas } from "@/lib/api/client";
 
 export type PageSettingsOut = Schemas["PublicProfileOut"];
@@ -47,11 +48,9 @@ export function checkSlug(slug: string) {
   );
 }
 
-export function useSuggestHighlights() {
-  return useMutation({
-    mutationFn: () =>
-      unwrap(api.POST("/api/v1/public-profile/highlights/suggest", {})),
-  });
+/** Find key numbers in the background; the result is a list of highlights. */
+export function startHighlights(): Promise<Task> {
+  return unwrap(api.POST("/api/v1/public-profile/highlights/suggest", {}));
 }
 
 /** Multipart upload: the typed client doesn't do files, so this is plain fetch. */
@@ -101,17 +100,24 @@ export function imageUrl(id: string | null | undefined): string | null {
 }
 
 export type PortfolioContent = Schemas["PortfolioContent"];
-export type PortfolioDraft = Schemas["PortfolioDraft"];
 export type CaseStudy = Schemas["CaseStudy"];
+export type Expertise = Schemas["Expertise"];
 export type Inbox = Schemas["Inbox"];
 export type DraftPart = Schemas["DraftRequest"]["parts"][number];
 
-/** AI suggestions for the portfolio's words; nothing is saved until applied. */
-export function useDraftPortfolio() {
-  return useMutation({
-    mutationFn: (parts: DraftPart[]) =>
-      unwrap(api.POST("/api/v1/public-profile/draft", { body: { parts } })),
-  });
+/** AI suggestions for the portfolio's words, left on a background task. */
+export interface PortfolioDraft {
+  hero_line: string | null;
+  about: string[];
+  expertise: Expertise[];
+  case_studies: Record<string, CaseStudy>;
+  /** What the AI needed but the profile doesn't say. */
+  needs_input: string[];
+}
+
+/** Draft the portfolio's words in the background; nothing is saved until applied. */
+export function startDraft(parts: DraftPart[]): Promise<Task> {
+  return unwrap(api.POST("/api/v1/public-profile/draft", { body: { parts } }));
 }
 
 export const inboxKey = ["public-page", "inbox"] as const;

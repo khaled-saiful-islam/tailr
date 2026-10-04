@@ -124,6 +124,7 @@ export function BasicsSection({ doc, update }: SectionProps) {
 
 export function SummarySection({ doc, update }: SectionProps) {
   const writer = useWriteSummary();
+  const draft = writer.result;
   const summary = doc.basics.summary ?? "";
   const words = summary.trim() ? summary.trim().split(/\s+/).length : 0;
   const setSummary = (value: string) =>
@@ -139,10 +140,10 @@ export function SummarySection({ doc, update }: SectionProps) {
           size="sm"
           variant="secondary"
           icon={<Sparkles className="size-4" />}
-          loading={writer.isPending}
-          onClick={() => writer.mutate()}
+          loading={writer.running}
+          onClick={() => writer.run()}
         >
-          Write it for me
+          {writer.running ? "Writing…" : "Write it for me"}
         </Button>
       }
     >
@@ -162,13 +163,18 @@ export function SummarySection({ doc, update }: SectionProps) {
       >
         {words} {words === 1 ? "word" : "words"}. Aim for 40 to 80.
       </p>
-      {writer.isError && (
+      {writer.running && (
+        <p role="status" className="mt-3 text-[0.9375rem] text-ink-2">
+          Writing your summary from your profile… You can keep editing.
+        </p>
+      )}
+      {writer.error && (
         <p role="alert" className="mt-3 text-[0.9375rem] text-pin">
-          {writer.error.message}
+          {writer.error}
         </p>
       )}
       <AnimatePresence>
-        {writer.data && (
+        {draft && (
           <motion.div
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -176,15 +182,13 @@ export function SummarySection({ doc, update }: SectionProps) {
             className="mt-4 rounded-[12px] border border-chalk/30 bg-chalk-soft/50 p-4"
           >
             <p className="type-label text-chalk">Written from your profile</p>
-            <p className="chalk-mark mt-2 leading-relaxed">
-              {writer.data.summary}
-            </p>
+            <p className="chalk-mark mt-2 leading-relaxed">{draft.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button
                 size="sm"
                 onClick={() => {
-                  setSummary(writer.data.summary);
-                  writer.reset();
+                  setSummary(draft.summary);
+                  writer.dismiss();
                 }}
               >
                 Use this
@@ -192,11 +196,11 @@ export function SummarySection({ doc, update }: SectionProps) {
               <Button
                 size="sm"
                 variant="secondary"
-                onClick={() => writer.mutate()}
+                onClick={() => writer.run()}
               >
                 Write another
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => writer.reset()}>
+              <Button size="sm" variant="ghost" onClick={writer.dismiss}>
                 Keep mine
               </Button>
             </div>

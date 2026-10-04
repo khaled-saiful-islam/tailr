@@ -16,16 +16,12 @@ import {
   usePagePreview,
   usePageSettings,
   useSavePage,
-  type PortfolioDraft,
   type ImageOut,
   type PageSettingsOut,
 } from "./api";
 import { AboutPanel } from "./components/AboutPanel";
-import {
-  HighlightsPanel,
-  ProjectsPanel,
-  SectionsPanel,
-} from "./components/ContentPanels";
+import { ProjectsPanel, SectionsPanel } from "./components/ContentPanels";
+import { HighlightsPanel } from "./components/HighlightsPanel";
 import { LivePreview } from "./components/LivePreview";
 import { InboxPanel } from "./components/InboxPanel";
 import { LookPanel } from "./components/LookPanel";
@@ -45,6 +41,7 @@ import {
   portfolioUpdater,
   type PageDraft,
 } from "./draft";
+import { useSuggestions } from "./useSuggestions";
 
 const TABS = [
   { value: "publish", label: "Publish" },
@@ -100,7 +97,8 @@ export function PublicPageEditor() {
   const images = useRef(new Map<string, ImageOut>());
   const [view, setView] = useState<"edit" | "preview">("edit");
   const [tab, setTab] = useState<string>("publish");
-  const [suggestion, setSuggestion] = useState<PortfolioDraft | null>(null);
+  // AI suggestions run in the background and live here, so switching tabs loses nothing.
+  const suggestions = useSuggestions();
   const inbox = useInbox();
 
   const editor = useVersionedAutosave<PageSettingsOut, PageDraft>({
@@ -286,21 +284,23 @@ export function PublicPageEditor() {
               <StoryPanel
                 portfolio={portfolio}
                 update={updatePortfolio}
-                suggestion={suggestion}
-                onSuggestion={setSuggestion}
+                slot={suggestions.story}
               />
               <ExpertisePanel
                 portfolio={portfolio}
                 update={updatePortfolio}
-                suggestion={suggestion}
-                onSuggestion={setSuggestion}
+                slot={suggestions.expertise}
               />
             </Tabs.Content>
             <Tabs.Content
               value="highlights"
               className="flex flex-col gap-6 focus-visible:outline-none"
             >
-              <HighlightsPanel draft={draft} update={update} />
+              <HighlightsPanel
+                draft={draft}
+                update={update}
+                slot={suggestions.highlights}
+              />
               <AwardsPanel portfolio={portfolio} update={updatePortfolio} />
               <TestimonialsPanel
                 portfolio={portfolio}
@@ -316,8 +316,7 @@ export function PublicPageEditor() {
                 update={update}
                 projects={preview.data?.projects ?? []}
                 onImage={onImage}
-                suggestion={suggestion}
-                onSuggestion={setSuggestion}
+                slot={suggestions.case_studies}
               />
             </Tabs.Content>
             <Tabs.Content value="inbox" className="focus-visible:outline-none">

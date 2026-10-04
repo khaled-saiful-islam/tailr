@@ -32,7 +32,7 @@
   --pin-soft: #fde8e8;
   --fit-strong: #13805a;
   --fit-good: #2f6fd6;
-  --fit-stretch: #a76a07;
+  --fit-stretch: #8f5c05; /* 5.7:1 on surface, 4.6:1 on surface-3 */
   --fit-low: #66718a;
   --overlay: rgb(20 33 61 / 0.42);
   --shadow-sheet:

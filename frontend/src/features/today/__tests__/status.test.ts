@@ -57,7 +57,7 @@ describe("Home status", () => {
     expect(statusLine(null, null, NOW)).toContain("Find your first jobs now");
     expect(
       statusLine({ ...brief([]), status: "building" }, null, NOW),
-    ).toContain("searching LinkedIn and JobStreet");
+    ).toContain("in the background");
     expect(statusLine(brief([]), "Monday 7:00 am", NOW)).toBe(
       "No new jobs since the last search. Tailr looks again Monday 7:00 am.",
     );

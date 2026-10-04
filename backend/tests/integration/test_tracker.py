@@ -18,6 +18,7 @@ from app.modules.profile.document import draft_to_document
 from app.modules.tracker.followup import _Draft
 from app.modules.tracker.nudges import send_due
 from app.modules.tracker.tasks import send_nudges
+from tests.background import done
 from tests.factories import sample_draft
 
 AD = "We need an AI engineer who builds RAG systems in Python and runs them on Kubernetes. " * 6
@@ -46,8 +47,8 @@ async def _paste(client: httpx.AsyncClient, title: str = "AI Engineer") -> dict[
     response = await client.post(
         "/api/v1/jobs/paste", json={"title": title, "company": "Selat Pay", "text": AD}
     )
-    assert response.status_code == 201, response.text
-    return response.json()
+    match_id = done(response)["match_id"]
+    return (await client.get(f"/api/v1/matches/{match_id}")).json()  # type: ignore[no-any-return]
 
 
 async def _board(client: httpx.AsyncClient) -> dict[str, Any]:
@@ -183,12 +184,12 @@ async def test_follow_up_draft_and_done(signed_in: httpx.AsyncClient, ai: FakeAI
         "tracker.follow_up",
         lambda m, s: _Draft(subject="Hi", body="Hello,\nI tripled revenue 3x.\nNur Aina"),
     )
-    draft = (await signed_in.post(f"{url}/follow-up/draft")).json()["follow_up_draft"]
+    draft = done(await signed_in.post(f"{url}/follow-up/draft"))["follow_up_draft"]
     assert draft["subject"].startswith("Following up on my application")  # the template
     assert "Nur Aina Rahman" in draft["body"]
 
-    done = (await signed_in.post(f"{url}/follow-up/done")).json()
-    assert done["followed_up_at"] is not None
+    marked = (await signed_in.post(f"{url}/follow-up/done")).json()
+    assert marked["followed_up_at"] is not None
     events = (await signed_in.get(url)).json()["events"]
     assert events[0]["kind"] == "followed_up"
 

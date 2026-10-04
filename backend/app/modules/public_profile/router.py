@@ -19,14 +19,14 @@ from app.api.deps import CurrentUser, DbSession, client_ip, session_token
 from app.core.config import Environment, get_settings
 from app.core.errors import NotFoundError
 from app.modules.auth.service import AuthService
+from app.modules.background.schemas import TaskOut
+from app.modules.background.service import BackgroundService
 from app.modules.public_profile.schemas import (
     ContactOut,
     DraftRequest,
-    Highlight,
     Inbox,
     MessageIn,
     MessageSent,
-    PortfolioDraft,
     PublicPage,
     PublicProfileOut,
     PublicProfileUpdate,
@@ -90,16 +90,20 @@ async def preview(user: CurrentUser, db: DbSession) -> PublicPage:
     return await PublicProfileService(db).preview(user)
 
 
-@owner_router.post("/highlights/suggest", response_model=list[Highlight])
-async def suggest(user: CurrentUser, db: DbSession) -> list[Highlight]:
+@owner_router.post(
+    "/highlights/suggest", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED
+)
+async def suggest(user: CurrentUser, db: DbSession) -> TaskOut:
     """Up to four numbers worth leading with, each checked against your profile."""
-    return await PublicProfileService(db).suggest_highlights(user)
+    return await BackgroundService(db).start(user, "website.highlights", "Finding your key numbers")
 
 
-@owner_router.post("/draft", response_model=PortfolioDraft)
-async def draft(data: DraftRequest, user: CurrentUser, db: DbSession) -> PortfolioDraft:
+@owner_router.post("/draft", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED)
+async def draft(data: DraftRequest, user: CurrentUser, db: DbSession) -> TaskOut:
     """AI suggestions for your story, expertise and case studies; nothing is saved."""
-    return await PublicProfileService(db).draft(user, data.parts)
+    return await BackgroundService(db).start(
+        user, "website.draft", "Drafting your website", {"parts": list(data.parts)}
+    )
 
 
 @owner_router.get("/messages", response_model=Inbox)

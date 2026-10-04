@@ -59,3 +59,17 @@ test("my profile, CV, website, job preferences and account settings", async ({ p
   }
   await accessible(page); // settings
 });
+
+test("job preferences never search on their own, only on Check now", async ({ page }) => {
+  const searches: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && request.url().includes("/radar/preview")) {
+      searches.push(request.url());
+    }
+  });
+  await page.goto("/preferences");
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /a quick look/i })).toBeVisible();
+  await page.waitForTimeout(2500); // the old page started a search a moment after opening
+  expect(searches).toEqual([]);
+});

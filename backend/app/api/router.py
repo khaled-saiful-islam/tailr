@@ -8,6 +8,7 @@ from app.api import system
 from app.modules.account.router import router as account_router
 from app.modules.admin.router import router as admin_router
 from app.modules.auth.router import router as auth_router
+from app.modules.background.router import router as tasks_router
 from app.modules.brief.router import router as brief_router
 from app.modules.cv.router import owner_router as cv_router
 from app.modules.cv.router import public_router as public_cv_router
@@ -28,6 +29,7 @@ api_router.include_router(system.router)
 v1 = APIRouter(prefix="/v1")
 v1.include_router(auth_router)
 v1.include_router(account_router)
+v1.include_router(tasks_router)
 v1.include_router(admin_router)
 v1.include_router(profile_router)
 v1.include_router(radar_router)

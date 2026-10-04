@@ -76,8 +76,8 @@ apply ─▶ replace or merge into profiles.document (version + 1), onboarding m
 | `POST` | `/api/v1/profile/imports/text` | Paste CV text → 202 + import |
 | `GET` | `/api/v1/profile/imports/{id}` | Status, error, draft and stats |
 | `POST` | `/api/v1/profile/imports/{id}/apply` | `{mode: "replace" \| "merge"}` |
-| `POST` | `/api/v1/profile/coach/bullet` | `{text, title?, company?}` → suggestion, reason, questions |
-| `POST` | `/api/v1/profile/coach/summary` | → summary written from the profile |
+| `POST` | `/api/v1/profile/coach/bullet` | `{text, title?, company?}` → a [background task](10-background-work.md) whose result is the suggestion, reason and questions |
+| `POST` | `/api/v1/profile/coach/summary` | → a background task whose result is a summary written from the profile |
 
 Limits: 12 imports per hour, 60 coaching calls per hour, AI daily token budget per user.
 Error codes: `unsupported_file`, `bad_file`, `file_too_large`, `version_conflict`,

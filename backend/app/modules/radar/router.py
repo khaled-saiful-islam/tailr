@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from app.api.deps import CurrentUser, DbSession
+from app.modules.background.schemas import TaskOut
+from app.modules.background.service import BackgroundService
+from app.modules.profile.service import ProfileService
 from app.modules.radar.schemas import (
-    PreviewOut,
     PreviewRequest,
     RadarOptionsOut,
     RadarOut,
     RadarUpdate,
-    SuggestionsOut,
 )
-from app.modules.radar.service import RadarService
+from app.modules.radar.service import RadarService, check_preview
 
 router = APIRouter(prefix="/radar", tags=["radar"])
 
@@ -32,12 +33,24 @@ async def radar_options(user: CurrentUser) -> RadarOptionsOut:
     return RadarService.options()
 
 
-@router.post("/suggest", response_model=SuggestionsOut)
-async def suggest_roles(user: CurrentUser, db: DbSession) -> SuggestionsOut:
-    return await RadarService(db).suggest(user)
+@router.post("/suggest", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED)
+async def suggest_roles(user: CurrentUser, db: DbSession) -> TaskOut:
+    """Suggest job titles and searches from your CV, in the background."""
+    await ProfileService(db).require_experience(
+        user.id, "Add your experience to your profile first, so suggestions fit you."
+    )
+    return await BackgroundService(db).start(
+        user, "preferences.suggest", "Suggesting job titles from your CV"
+    )
 
 
-@router.post("/preview", response_model=PreviewOut)
-async def preview_radar(data: PreviewRequest, user: CurrentUser, db: DbSession) -> PreviewOut:
-    """Run the searches now and show what this radar would catch (results cached for an hour)."""
-    return await RadarService(db).preview(user, data.settings)
+@router.post("/preview", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED)
+async def preview_radar(data: PreviewRequest, user: CurrentUser, db: DbSession) -> TaskOut:
+    """A quick look at what these preferences would find, searched in the background."""
+    check_preview(data.settings)
+    return await BackgroundService(db).start(
+        user,
+        "preferences.preview",
+        "A quick look at LinkedIn and JobStreet",
+        {"settings": data.settings.model_dump(mode="json")},
+    )

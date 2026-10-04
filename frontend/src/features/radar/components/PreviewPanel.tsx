@@ -1,6 +1,7 @@
 import { ArrowUpRight, Lock, RefreshCw } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
 import { relativeTime } from "@/lib/format";
@@ -41,6 +42,8 @@ interface PreviewPanelProps {
   freshness: number;
   options: RadarOptions | undefined;
   hasRoles: boolean;
+  /** The preferences changed since the check on screen. */
+  outdated: boolean;
   onRescan: () => void;
 }
 
@@ -51,6 +54,7 @@ export function PreviewPanel({
   freshness,
   options,
   hasRoles,
+  outdated,
   onRescan,
 }: PreviewPanelProps) {
   const [showDropped, setShowDropped] = useState(false);
@@ -68,18 +72,20 @@ export function PreviewPanel({
         <h2 id="preview-title" className="type-heading">
           A quick look: jobs on LinkedIn and JobStreet right now
         </h2>
-        <button
-          type="button"
-          onClick={onRescan}
-          disabled={scanning || !hasRoles}
-          className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[8px] px-2 py-1.5 text-[0.875rem] font-semibold text-chalk hover:bg-chalk-soft disabled:opacity-50"
-        >
-          <RefreshCw
-            className={cn("size-3.5", scanning && "animate-spin")}
-            aria-hidden
-          />
-          Look again
-        </button>
+        {(preview || scanning) && (
+          <button
+            type="button"
+            onClick={onRescan}
+            disabled={scanning || !hasRoles}
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[8px] px-2 py-1.5 text-[0.875rem] font-semibold text-chalk hover:bg-chalk-soft disabled:opacity-50"
+          >
+            <RefreshCw
+              className={cn("size-3.5", scanning && "animate-spin")}
+              aria-hidden
+            />
+            {scanning ? "Checking…" : "Check again"}
+          </button>
+        )}
       </div>
       <p className="mt-2 rounded-control bg-surface-2 px-3 py-2 text-[0.875rem] text-ink-2">
         This is only a preview. Press <strong>Save and find jobs</strong> to add
@@ -118,14 +124,54 @@ export function PreviewPanel({
               {FRESHNESS[freshness] ?? "recent days"}.
             </p>
           </>
+        ) : scanning ? (
+          <>
+            <p className="flex items-center justify-center gap-2 text-ink-2">
+              <Spinner className="size-4 shrink-0" />
+              <span>Looking at LinkedIn and JobStreet…</span>
+            </p>
+            <p className="mt-1 text-[0.8125rem] text-ink-3">
+              This takes about half a minute. You can keep editing.
+            </p>
+          </>
         ) : (
-          <p className="flex items-center justify-center gap-2 text-ink-2">
-            <Spinner className="size-4" /> Looking on LinkedIn and JobStreet…
+          <>
+            <p className="text-ink-2">
+              See how many recent jobs on LinkedIn and JobStreet fit these
+              preferences.
+            </p>
+            <Button
+              className="mt-3"
+              icon={<RefreshCw className="size-4" aria-hidden />}
+              onClick={onRescan}
+            >
+              Check now
+            </Button>
+            <p className="mt-2 text-[0.8125rem] text-ink-3">
+              Takes about half a minute. You can keep editing.
+            </p>
+          </>
+        )}
+        {scanning && preview && hasRoles && (
+          <p className="mt-2 text-[0.8125rem] text-ink-3">
+            Checking again. You can keep editing.
           </p>
         )}
-        {scanning && preview && (
+        {!scanning && preview && hasRoles && !error && (
           <p className="mt-2 text-[0.8125rem] text-ink-3">
-            Looking again with your changes…
+            Checked {relativeTime(preview.searched_at)}.
+          </p>
+        )}
+        {!scanning && preview && hasRoles && outdated && (
+          <p className="mt-1 text-[0.875rem] text-ink-2">
+            You've changed your preferences since then.{" "}
+            <button
+              type="button"
+              onClick={onRescan}
+              className="font-semibold text-chalk underline-offset-2 hover:underline"
+            >
+              Check again
+            </button>
           </p>
         )}
       </div>

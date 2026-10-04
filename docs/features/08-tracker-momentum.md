@@ -95,7 +95,7 @@ changing the next step's date re-arms its reminder.
 | GET | `/api/v1/applications/{id}` | One application with its history |
 | PATCH | `/api/v1/applications/{id}` | Move (`stage`, `position`) or edit; only sent fields change, `null` clears |
 | DELETE | `/api/v1/applications/{id}` | Remove from the tracker |
-| POST | `/api/v1/applications/{id}/follow-up/draft` | Draft a truthful follow-up email |
+| POST | `/api/v1/applications/{id}/follow-up/draft` | Draft a truthful follow-up email (202, a [background task](10-background-work.md); saved on the application and notified) |
 | POST | `/api/v1/applications/{id}/follow-up/done` | Record that you followed up |
 | GET | `/api/v1/momentum` | Weekly goal, streak (with this week's days) and funnel |
 | PUT | `/api/v1/momentum/goal` | Set the weekly goal |

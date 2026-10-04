@@ -74,6 +74,22 @@ def check_url(url: str) -> SplitResult:
     return parts
 
 
+def check_link(url: str) -> SplitResult:
+    """What can be refused at once, before any network: a bad shape, a private IP written
+    into the link, or localhost. Names that resolve privately are still caught on fetch."""
+    parts = check_url(url)
+    host = (parts.hostname or "").strip("[]").lower()
+    if host == "localhost" or host.endswith(".localhost"):
+        raise BlockedUrlError()
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        return parts
+    if not is_public(host):
+        raise BlockedUrlError()
+    return parts
+
+
 async def _addresses(host: str, port: int) -> list[str]:
     try:
         infos = await asyncio.get_running_loop().getaddrinfo(host, port, type=socket.SOCK_STREAM)

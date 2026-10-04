@@ -18,6 +18,7 @@ from app.ai.fake import FakeAIClient
 from app.core.config import get_settings
 from app.modules.profile.document import draft_to_document
 from app.modules.public_profile.models import PublicProfileViews
+from tests.background import done
 from tests.factories import sample_draft
 
 SHELL = (
@@ -226,7 +227,7 @@ async def test_highlights_are_suggested_and_checked(
         }
 
     fake_ai.on("public.highlights", suggest)
-    suggested = (await signed_in.post("/api/v1/public-profile/highlights/suggest")).json()
+    suggested = done(await signed_in.post("/api/v1/public-profile/highlights/suggest"))
     assert [h["value"] for h in suggested] == ["40,000"]
 
     assert (await _save(signed_in, settings={"highlights": suggested})).status_code == 200

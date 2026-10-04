@@ -139,6 +139,7 @@ export function RadarPage() {
               freshness={settings.freshness_days}
               options={options.data}
               hasRoles={settings.roles.length > 0}
+              outdated={editor.previewOutdated}
               onRescan={editor.scan}
             />
           </div>

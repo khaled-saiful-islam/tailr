@@ -241,6 +241,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tasks
+         * @description Everything working for you now, and what finished in the last hour.
+         */
+        get: operations["tasks_api_v1_tasks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/latest/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest
+         * @description The most recent task of a kind, so a page can show a result you left behind.
+         */
+        get: operations["latest_api_v1_tasks_latest__kind__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Task */
+        get: operations["task_api_v1_tasks__task_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/overview": {
         parameters: {
             query?: never;
@@ -391,7 +448,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Coach Bullet */
+        /**
+         * Coach Bullet
+         * @description A stronger version of one point, written in the background.
+         */
         post: operations["coach_bullet_api_v1_profile_coach_bullet_post"];
         delete?: never;
         options?: never;
@@ -463,7 +523,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Suggest Roles */
+        /**
+         * Suggest Roles
+         * @description Suggest job titles and searches from your CV, in the background.
+         */
         post: operations["suggest_roles_api_v1_radar_suggest_post"];
         delete?: never;
         options?: never;
@@ -482,7 +545,7 @@ export interface paths {
         put?: never;
         /**
          * Preview Radar
-         * @description Run the searches now and show what this radar would catch (results cached for an hour).
+         * @description A quick look at what these preferences would find, searched in the background.
          */
         post: operations["preview_radar_api_v1_radar_preview_post"];
         delete?: never;
@@ -597,7 +660,8 @@ export interface paths {
         put?: never;
         /**
          * Paste
-         * @description Add any job by link or text; Tailr reads it and measures your fit (takes ~10 seconds).
+         * @description Add any job by link or text. Quick checks answer now; reading and matching the job
+         *     run in the background (about 15 seconds), and Tailr notifies you when it's on Jobs.
          */
         post: operations["paste_api_v1_jobs_paste_post"];
         delete?: never;
@@ -773,7 +837,8 @@ export interface paths {
         put?: never;
         /**
          * Draft Follow Up
-         * @description A short, truthful follow-up email, saved on the application.
+         * @description A short, truthful follow-up email, written in the background and saved on the
+         *     application.
          */
         post: operations["draft_follow_up_api_v1_applications__application_id__follow_up_draft_post"];
         delete?: never;
@@ -1752,15 +1817,6 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
-        };
-        /** CoachBulletOut */
-        CoachBulletOut: {
-            /** Suggestion */
-            suggestion: string;
-            /** Reason */
-            reason: string;
-            /** Questions */
-            questions: string[];
         };
         /** CoachBulletRequest */
         CoachBulletRequest: {
@@ -2920,98 +2976,9 @@ export interface components {
             /** Whatsapp */
             whatsapp?: string | null;
         };
-        /**
-         * PortfolioDraft
-         * @description AI suggestions for the portfolio's words. Nothing is saved until the owner applies it.
-         */
-        PortfolioDraft: {
-            /** Hero Line */
-            hero_line?: string | null;
-            /**
-             * About
-             * @default []
-             */
-            about: string[];
-            /**
-             * Expertise
-             * @default []
-             */
-            expertise: components["schemas"]["Expertise"][];
-            /**
-             * Case Studies
-             * @default {}
-             */
-            case_studies: {
-                [key: string]: components["schemas"]["CaseStudy"];
-            };
-            /**
-             * Needs Input
-             * @default []
-             */
-            needs_input: string[];
-        };
-        /** PreviewJobOut */
-        PreviewJobOut: {
-            /** Source */
-            source: string;
-            /** Title */
-            title: string;
-            /** Company */
-            company: string;
-            /** Location */
-            location: string | null;
-            /** Url */
-            url: string;
-            /** Posted At */
-            posted_at: string | null;
-            /** Posted Text */
-            posted_text: string | null;
-            /** Salary Text */
-            salary_text: string | null;
-            work_mode: components["schemas"]["WorkMode"] | null;
-        };
-        /** PreviewOut */
-        PreviewOut: {
-            /**
-             * Searched At
-             * Format: date-time
-             */
-            searched_at: string;
-            /** Searches */
-            searches: string[];
-            /** Found */
-            found: number;
-            /** On Target */
-            on_target: number;
-            /** Matching */
-            matching: number;
-            /** Dropped */
-            dropped: {
-                [key: string]: number;
-            };
-            /** Sources */
-            sources: components["schemas"]["PreviewSourceOut"][];
-            /** Samples */
-            samples: components["schemas"]["PreviewJobOut"][];
-        };
         /** PreviewRequest */
         PreviewRequest: {
             settings: components["schemas"]["RadarSettings"];
-        };
-        /** PreviewSourceOut */
-        PreviewSourceOut: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-            /** Status */
-            status: string;
-            /** Found */
-            found: number;
-            /** Matching */
-            matching: number;
-            /** Error */
-            error?: string | null;
         };
         /** ProfileDocument */
         ProfileDocument: {
@@ -3389,13 +3356,6 @@ export interface components {
          * @enum {string}
          */
         Role: "user" | "admin";
-        /** RoleSuggestionOut */
-        RoleSuggestionOut: {
-            /** Title */
-            title: string;
-            /** Reason */
-            reason: string;
-        };
         /** ScreeningAnswer */
         ScreeningAnswer: {
             /** Question */
@@ -3528,18 +3488,6 @@ export interface components {
             /** Bullet Issues */
             bullet_issues: components["schemas"]["BulletIssueOut"][];
         };
-        /** SuggestionsOut */
-        SuggestionsOut: {
-            /** Roles */
-            roles: components["schemas"]["RoleSuggestionOut"][];
-            /** Seniority */
-            seniority: ("intern" | "entry" | "mid" | "senior" | "lead" | "manager")[];
-        };
-        /** SummaryOut */
-        SummaryOut: {
-            /** Summary */
-            summary: string;
-        };
         /** TailoredBullet */
         TailoredBullet: {
             /** Text */
@@ -3574,6 +3522,52 @@ export interface components {
             /** Bullets */
             bullets?: components["schemas"]["TailoredBullet"][];
         };
+        /**
+         * TaskList
+         * @description What's running now and what finished in the last hour, newest first.
+         */
+        TaskList: {
+            /** Items */
+            items: components["schemas"]["TaskOut"][];
+            /** Running */
+            running: number;
+        };
+        /**
+         * TaskOut
+         * @description One piece of background work. `result` appears when it's done.
+         */
+        TaskOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            status: components["schemas"]["TaskStatus"];
+            /** Title */
+            title: string;
+            /** Stage */
+            stage?: string | null;
+            /** Result */
+            result?: unknown;
+            /** Link */
+            link?: string | null;
+            /** Error */
+            error?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finished At */
+            finished_at?: string | null;
+        };
+        /**
+         * TaskStatus
+         * @enum {string}
+         */
+        TaskStatus: "queued" | "running" | "done" | "failed";
         /**
          * Testimonial
          * @description A real recommendation, entered by the owner. Tailr never writes these.
@@ -4067,6 +4061,88 @@ export interface operations {
             };
         };
     };
+    tasks_api_v1_tasks_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskList"];
+                };
+            };
+        };
+    };
+    latest_api_v1_tasks_latest__kind__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskOut"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    task_api_v1_tasks__task_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     overview_api_v1_admin_overview_get: {
         parameters: {
             query?: never;
@@ -4386,12 +4462,12 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CoachBulletOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
             /** @description Validation Error */
@@ -4415,12 +4491,12 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SummaryOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
         };
@@ -4508,12 +4584,12 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SuggestionsOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
         };
@@ -4532,12 +4608,12 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PreviewOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
             /** @description Validation Error */
@@ -4736,12 +4812,12 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            201: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MatchDetailOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
             /** @description Validation Error */
@@ -5164,12 +5240,12 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApplicationOut"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
             /** @description Validation Error */
@@ -5541,12 +5617,12 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Highlight"][];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
         };
@@ -5565,12 +5641,12 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            200: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PortfolioDraft"];
+                    "application/json": components["schemas"]["TaskOut"];
                 };
             };
             /** @description Validation Error */

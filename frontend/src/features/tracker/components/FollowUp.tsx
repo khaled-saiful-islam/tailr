@@ -1,6 +1,7 @@
 import { Copy, Mail, MailCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { copyText } from "@/lib/clipboard";
 import {
   followUpDue,
@@ -21,9 +22,25 @@ function mailto(app: ApplicationDetail): string {
   return `mailto:${app.contact_email ?? ""}?${query}`;
 }
 
+/** The note is written on the server; the sheet and the board stay usable meanwhile. */
+function Writing() {
+  return (
+    <div className="mt-3 flex items-start gap-2.5 rounded-control bg-surface-2 px-3.5 py-2.5 text-[0.875rem]">
+      <Spinner className="mt-0.5 size-4 shrink-0 text-chalk" label="Working" />
+      <p>
+        <span className="font-semibold">Writing a short note…</span>{" "}
+        <span className="text-ink-2">
+          About 15 seconds. You can keep going; it will show up here, and we'll
+          let you know when it's ready.
+        </span>
+      </p>
+    </div>
+  );
+}
+
 /** A week after applying: a short, truthful note, ready to copy or send. */
 export function FollowUp({ app }: { app: ApplicationDetail }) {
-  const draft = useDraftFollowUp();
+  const draft = useDraftFollowUp(app.id, (message) => toast.error(message));
   const done = useFollowedUp();
   const due = followUpDue(app);
   const text = app.follow_up_draft;
@@ -41,8 +58,7 @@ export function FollowUp({ app }: { app: ApplicationDetail }) {
     );
   }
 
-  const write = () =>
-    draft.mutate(app.id, { onError: (error) => toast.error(error.message) });
+  const write = () => draft.run();
 
   return (
     <div
@@ -110,37 +126,45 @@ export function FollowUp({ app }: { app: ApplicationDetail }) {
             <Button
               size="sm"
               variant="ghost"
-              loading={draft.isPending}
+              loading={draft.running}
               onClick={write}
             >
-              Draft again
+              {draft.running ? "Writing…" : "Draft again"}
             </Button>
           </div>
+          {draft.running && <Writing />}
         </div>
       ) : (
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant={due ? "tape" : "secondary"}
-            icon={<Sparkles className="size-3.5" />}
-            loading={draft.isPending}
-            onClick={write}
-          >
-            {due ? "Draft a follow-up" : "Draft one now"}
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            loading={done.isPending}
-            onClick={() =>
-              done.mutate(app.id, {
-                onError: (error) => toast.error(error.message),
-              })
-            }
-          >
-            I already followed up
-          </Button>
-        </div>
+        <>
+          {draft.running && <Writing />}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={due ? "tape" : "secondary"}
+              icon={<Sparkles className="size-3.5" />}
+              loading={draft.running}
+              onClick={write}
+            >
+              {draft.running
+                ? "Writing…"
+                : due
+                  ? "Draft a follow-up"
+                  : "Draft one now"}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              loading={done.isPending}
+              onClick={() =>
+                done.mutate(app.id, {
+                  onError: (error) => toast.error(error.message),
+                })
+              }
+            >
+              I already followed up
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );

@@ -2,21 +2,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
 import { AddJobDialog } from "@/features/kits/components/AddJobDialog";
 import { useRadar } from "@/features/radar/api";
-import {
-  useJobList,
-  useRunBrief,
-  useToday,
-  type Match,
-  type MatchStatus,
-} from "./api";
-import { BriefProgress } from "./components/BriefProgress";
+import { useJobList, useToday, type Match, type MatchStatus } from "./api";
+import { SearchBanner } from "./components/BriefProgress";
 import { JobGroups } from "./components/JobGroups";
+import { useFindNow } from "./useFindNow";
 
 type Tab = "all" | MatchStatus;
 
@@ -74,7 +68,7 @@ export function JobsPage() {
   const list = useJobList(tab);
   const today = useToday();
   const radar = useRadar();
-  const run = useRunBrief();
+  const { find: findNow, starting } = useFindNow();
   const client = useQueryClient();
 
   const brief = today.data?.brief;
@@ -102,14 +96,12 @@ export function JobsPage() {
     .filter((m) => tab === "all" || tab === "dismissed" || m.status === tab);
   const current = TABS.find((t) => t.key === tab) ?? TABS[0]!;
 
-  const findNow = () =>
-    run.mutate(undefined, { onError: (error) => toast.error(error.message) });
   const findButton = (
     <Button
       variant="secondary"
       icon={<RefreshCw className={cn("size-4", searching && "animate-spin")} />}
       onClick={findNow}
-      disabled={searching || run.isPending || !ready}
+      disabled={searching || starting || !ready}
     >
       {searching ? "Searching" : "Find new jobs now"}
     </Button>
@@ -138,7 +130,7 @@ export function JobsPage() {
 
       {searching && brief && (
         <div className="mt-6">
-          <BriefProgress brief={brief} compact />
+          <SearchBanner brief={brief} />
         </div>
       )}
 
@@ -220,9 +212,9 @@ export function JobsPage() {
         ) : searching ? null : (
           <Empty
             title="No jobs yet"
-            body={`Tailr searches every morning${next ? `; the next search is ${next}` : ""}. Or search right now: it takes about a minute.`}
+            body={`Tailr searches every morning${next ? `; the next search is ${next}` : ""}. Or search right now; it runs in the background while you carry on.`}
             action={
-              <Button onClick={findNow} loading={run.isPending}>
+              <Button onClick={findNow} loading={starting}>
                 Find new jobs now
               </Button>
             }

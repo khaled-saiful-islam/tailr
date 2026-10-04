@@ -22,6 +22,7 @@ from app.modules.kits.schemas import (
 )
 from app.modules.matching.review import FitReview
 from app.modules.profile.document import draft_to_document
+from tests.background import done
 from tests.factories import sample_draft
 
 AD = "We need an AI engineer who builds RAG systems in Python and runs them on Kubernetes. " * 6
@@ -123,8 +124,8 @@ async def _pasted_match(client: httpx.AsyncClient) -> dict[str, Any]:
     response = await client.post(
         "/api/v1/jobs/paste", json={"title": "AI Engineer", "company": "Selat Pay", "text": AD}
     )
-    assert response.status_code == 201, response.text
-    return response.json()
+    match_id = done(response)["match_id"]
+    return (await client.get(f"/api/v1/matches/{match_id}")).json()  # type: ignore[no-any-return]
 
 
 async def test_paste_a_job_by_text(signed_in: httpx.AsyncClient, ai: FakeAIClient) -> None:

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, unwrap, type Schemas } from "@/lib/api/client";
 import { useLiveEvent } from "@/lib/events";
+import { tasksKey } from "@/features/tasks/api";
 
 export type Kit = Schemas["KitOut"];
 export type TailoredResume = Schemas["TailoredResume"];
@@ -97,7 +98,12 @@ export function useSaveKit(id: string) {
   });
 }
 
+/**
+ * Add a job from a link or pasted ad. Quick checks answer at once; reading the job and
+ * matching it runs in the background, and a notification links to the job when it's in.
+ */
 export function usePasteJob() {
+  const client = useQueryClient();
   return useMutation({
     mutationFn: (body: {
       url?: string;
@@ -105,6 +111,7 @@ export function usePasteJob() {
       company?: string;
       text?: string;
     }) => unwrap(api.POST("/api/v1/jobs/paste", { body })),
+    onSuccess: () => void client.invalidateQueries({ queryKey: tasksKey }),
   });
 }
 

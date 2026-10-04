@@ -5,6 +5,7 @@ from __future__ import annotations
 from app.ai.models import AiRun
 from app.core.db import Base
 from app.modules.auth.models import Session, User
+from app.modules.background.models import BackgroundTask
 from app.modules.brief.models import Brief, Match
 from app.modules.cv.models import Cv
 from app.modules.jobs.models import Job
@@ -27,6 +28,7 @@ __all__ = [
     "AiRun",
     "Application",
     "ApplicationEvent",
+    "BackgroundTask",
     "Base",
     "Brief",
     "Cv",

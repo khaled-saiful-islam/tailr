@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/choice";
 import { Labelled, TextArea } from "@/components/ui/controls";
@@ -30,7 +30,6 @@ export function AddJobDialog() {
   const [text, setText] = useState("");
   const [problem, setProblem] = useState<string | null>(null);
   const paste = usePasteJob();
-  const navigate = useNavigate();
 
   const linkOk = /^https?:\/\/\S+\.\S+/i.test(url.trim());
   const textOk =
@@ -49,9 +48,17 @@ export function AddJobDialog() {
             text: text.trim(),
           };
     paste.mutate(body, {
-      onSuccess: (match) => {
+      // Quick checks passed; the rest runs in the background, so nothing waits here.
+      onSuccess: () => {
         setOpen(false);
-        navigate(`/jobs/${match.id}`);
+        setUrl("");
+        setTitle("");
+        setCompany("");
+        setText("");
+        setMode("link");
+        toast("Adding the job in the background", {
+          description: "It'll appear on your Jobs page; we'll let you know.",
+        });
       },
       onError: (error) => {
         setProblem(error.message);
@@ -149,11 +156,6 @@ export function AddJobDialog() {
           )}
 
           <div className="flex flex-wrap items-center justify-end gap-3">
-            {paste.isPending && (
-              <span className="text-[0.875rem] text-ink-2">
-                Reading the job and measuring your fit
-              </span>
-            )}
             <Button
               type="submit"
               loading={paste.isPending}

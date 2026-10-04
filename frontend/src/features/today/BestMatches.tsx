@@ -29,9 +29,11 @@ export function MatchBadge({ score }: { score: number }) {
 export function BestMatches({
   matches,
   total,
+  note = "From the latest search",
 }: {
   matches: Match[];
   total: number;
+  note?: string;
 }) {
   const top = matches.slice(0, 3);
   return (
@@ -43,7 +45,7 @@ export function BestMatches({
         <h2 id="best-heading" className="type-heading">
           Best matches
         </h2>
-        <p className="text-[0.875rem] text-ink-3">From the latest search</p>
+        <p className="text-[0.875rem] text-ink-3">{note}</p>
       </div>
       <ul className="mt-3">
         {top.map((match, index) => {

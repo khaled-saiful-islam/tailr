@@ -19,7 +19,7 @@ from app.core import rate_limit
 from app.core.clock import utcnow
 from app.core.config import get_settings
 from app.core.errors import AppError, UnprocessableError
-from app.core.safe_http import fetch_public
+from app.core.safe_http import check_link, fetch_public
 from app.modules.auth.models import User
 from app.modules.brief.models import Match
 from app.modules.jobs import catalog
@@ -64,6 +64,32 @@ async def _read_any_page(url: str) -> tuple[str | None, str]:
     return (clean(title_node.text()) if title_node else None), html_to_text(
         main.html if main else ""
     )
+
+
+async def precheck_paste(
+    db: AsyncSession,
+    user: User,
+    *,
+    url: str | None,
+    title: str | None,
+    company: str | None,
+    text: str | None,
+) -> None:
+    """What can be told at once, before any fetching: answered straight away."""
+    if url:
+        check_link(url)
+    document = await ProfileService(db).document_for(user.id)
+    if document is None or document.is_empty:
+        raise UnprocessableError(
+            "Build your profile first, so Tailr can measure the job.", code="no_profile"
+        )
+    if not url:
+        if len((text or "").strip()) < MIN_TEXT:
+            raise UnprocessableError(
+                "That's too little to go on. Paste the full job description.", code="too_short"
+            )
+        if not (title or "").strip() or not (company or "").strip():
+            raise UnprocessableError("Add the job title and the company.", code="missing_title")
 
 
 async def paste_job(

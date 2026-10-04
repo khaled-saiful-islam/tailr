@@ -7,6 +7,8 @@ import uuid
 from fastapi import APIRouter, status
 
 from app.api.deps import CurrentUser, DbSession
+from app.modules.background.schemas import TaskOut
+from app.modules.background.service import BackgroundService
 from app.modules.tracker.schemas import (
     ApplicationDetail,
     ApplicationOut,
@@ -48,12 +50,22 @@ async def remove(application_id: uuid.UUID, user: CurrentUser, db: DbSession) ->
     await TrackerService(db).remove(user, application_id)
 
 
-@router.post("/{application_id}/follow-up/draft", response_model=ApplicationOut)
-async def draft_follow_up(
-    application_id: uuid.UUID, user: CurrentUser, db: DbSession
-) -> ApplicationOut:
-    """A short, truthful follow-up email, saved on the application."""
-    return await TrackerService(db).draft(user, application_id)
+@router.post(
+    "/{application_id}/follow-up/draft",
+    response_model=TaskOut,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def draft_follow_up(application_id: uuid.UUID, user: CurrentUser, db: DbSession) -> TaskOut:
+    """A short, truthful follow-up email, written in the background and saved on the
+    application."""
+    app = await TrackerService(db).detail(user, application_id)  # yours, or 404 now
+    return await BackgroundService(db).start(
+        user,
+        "applications.follow_up",
+        f"Drafting a follow-up to {app.job.company}",
+        {"application_id": str(application_id)},
+        link=f"/applications?open={application_id}",
+    )
 
 
 @router.post("/{application_id}/follow-up/done", response_model=ApplicationOut)

@@ -96,6 +96,13 @@ jitter). Tasks that matter persist their state in Postgres (import progress, bri
 kit steps), so no result backend is needed. Scheduled jobs are declared on the task with a
 cron label and picked up by the single scheduler.
 
+Anything slow a person asks for (AI writing, a job-site preview, adding a job by link) goes
+through one generic module, `modules/background`: the endpoint runs quick checks, saves a
+`background_tasks` row and answers 202; the worker runs the handler for that kind and keeps
+its result. `GET /api/v1/tasks` lists those tasks together with searches, CV reads, kits and
+CV edits, so the app has one "working on it" list. See
+[features/10-background-work.md](features/10-background-work.md).
+
 ### Live updates
 
 Workers publish small events (`kit.step`, `brief.ready`, …) to Redis channel

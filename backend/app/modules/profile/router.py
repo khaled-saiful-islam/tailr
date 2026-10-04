@@ -7,14 +7,14 @@ from fastapi import APIRouter, File, UploadFile, status
 from app.api.deps import CurrentUser, DbSession
 from app.core.config import get_settings
 from app.core.errors import UnprocessableError
+from app.modules.background.schemas import TaskOut
+from app.modules.background.service import BackgroundService
 from app.modules.profile.schemas import (
     ApplyImportRequest,
-    CoachBulletOut,
     CoachBulletRequest,
     ImportOut,
     ProfileOut,
     ProfileUpdate,
-    SummaryOut,
     TextImportRequest,
 )
 from app.modules.profile.service import ProfileService
@@ -60,13 +60,17 @@ async def apply_import(
     return await ProfileService(db).apply_import(user, import_id, data.mode)
 
 
-@router.post("/coach/bullet", response_model=CoachBulletOut)
-async def coach_bullet(
-    data: CoachBulletRequest, user: CurrentUser, db: DbSession
-) -> CoachBulletOut:
-    return await ProfileService(db).coach_bullet(user, data)
+@router.post("/coach/bullet", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED)
+async def coach_bullet(data: CoachBulletRequest, user: CurrentUser, db: DbSession) -> TaskOut:
+    """A stronger version of one point, written in the background."""
+    return await BackgroundService(db).start(
+        user, "profile.improve_point", "Improving a point", data.model_dump(mode="json")
+    )
 
 
-@router.post("/coach/summary", response_model=SummaryOut)
-async def write_summary(user: CurrentUser, db: DbSession) -> SummaryOut:
-    return await ProfileService(db).write_summary(user)
+@router.post("/coach/summary", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED)
+async def write_summary(user: CurrentUser, db: DbSession) -> TaskOut:
+    await ProfileService(db).require_experience(
+        user.id, "Add at least one role first, so the summary has something to say."
+    )
+    return await BackgroundService(db).start(user, "profile.summary", "Writing your summary")

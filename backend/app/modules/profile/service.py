@@ -233,6 +233,12 @@ class ProfileService:
             questions=[q.strip() for q in answer.questions if q.strip()][:3],
         )
 
+    async def require_experience(self, user_id: uuid.UUID, message: str) -> None:
+        """At least one role in the profile, or a clear error straight away."""
+        document = await self.document_for(user_id)
+        if document is None or not document.experiences:
+            raise UnprocessableError(message, code="profile_too_thin")
+
     async def write_summary(self, user: User) -> SummaryOut:
         await self._limit_coach(user)
         document = await self.document_for(user.id)

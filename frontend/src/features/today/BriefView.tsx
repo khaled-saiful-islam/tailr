@@ -6,31 +6,28 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useMe } from "@/features/auth/api";
-import { useRunBrief, useToday, type Brief } from "@/features/brief/api";
-import { BriefProgress } from "@/features/brief/components/BriefProgress";
+import { useToday, type Brief } from "@/features/brief/api";
+import { useFindNow } from "@/features/brief/useFindNow";
 import { MarketPulse } from "@/features/momentum/components/MarketPulse";
 import { MomentumStrip } from "@/features/momentum/components/MomentumStrip";
 import { greeting, longDate } from "@/lib/format";
 import { BestMatches } from "./BestMatches";
 import { nextUpdateLabel, searchLine, statusLine } from "./status";
+import { WhileSearching } from "./WhileSearching";
 
 /** Home once you're set up: what the latest job search found, and what to do next. */
 export function BriefView() {
   const { data: user } = useMe();
   const today = useToday();
-  const run = useRunBrief();
+  const { find: findNow, starting } = useFindNow();
   const firstName = user?.name.split(" ")[0] ?? "";
   const brief = today.data?.brief;
   const building = brief?.status === "building";
   const next = nextUpdateLabel(today.data?.next_brief_at);
   const hasPreferences = today.data?.radar_ready ?? true;
-
-  const findNow = () =>
-    run.mutate(undefined, { onError: (error) => toast.error(error.message) });
 
   return (
     <div className="mx-auto w-full max-w-[64rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12">
@@ -69,7 +66,7 @@ export function BriefView() {
                   />
                 }
                 onClick={findNow}
-                disabled={building || run.isPending}
+                disabled={building || starting}
               >
                 {building ? "Searching" : "Find new jobs now"}
               </Button>
@@ -101,22 +98,22 @@ export function BriefView() {
             <Spinner className="size-7 text-ink-3" />
           </div>
         ) : building && brief ? (
-          <BriefProgress brief={brief} />
+          <WhileSearching brief={brief} />
         ) : brief?.status === "failed" ? (
-          <Failed brief={brief} onRetry={findNow} retrying={run.isPending} />
+          <Failed brief={brief} onRetry={findNow} retrying={starting} />
         ) : brief && brief.matches.length > 0 ? (
           <Latest brief={brief} />
         ) : hasPreferences ? (
           <NothingYet
             hasSearched={Boolean(brief)}
             onFind={findNow}
-            finding={run.isPending}
+            finding={starting}
           />
         ) : null}
 
         {/* After the latest search is loaded, so opening Home already counts as a day checked. */}
         {today.data && <MomentumStrip />}
-        {today.data && !building && <MarketPulse />}
+        {today.data && <MarketPulse />}
       </div>
     </div>
   );
@@ -179,7 +176,7 @@ function NothingYet({
           <p className="mt-1 max-w-[34rem] text-ink-2">
             {hasSearched
               ? "Nothing new matched your preferences since the last search. Try widening them: another role, another place, or jobs up to a week old."
-              : "Tailr searches LinkedIn and JobStreet, reads each job and shows how well it matches you. It takes about a minute."}
+              : "Tailr searches LinkedIn and JobStreet, reads each job and shows how well it matches you. It runs in the background, so you can keep using Tailr."}
           </p>
         </div>
       </div>

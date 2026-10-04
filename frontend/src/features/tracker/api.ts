@@ -4,6 +4,12 @@ import {
   useQueryClient,
   type QueryClient,
 } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import {
+  isActive,
+  useBackgroundTask,
+  useLatestTask,
+} from "@/features/tasks/api";
 import { api, unwrap, type Schemas } from "@/lib/api/client";
 import type { Stage } from "./stages";
 
@@ -137,17 +143,64 @@ export function useRemoveApplication() {
   });
 }
 
-export function useDraftFollowUp() {
+/** Where a follow-up shows when it's done; the task carries it from the start. */
+const followUpLink = (appId: string) => `/applications?open=${appId}`;
+
+/**
+ * Write a follow-up in the background. The application keeps the draft, so closing the
+ * sheet loses nothing; reopening it while the note is being written shows that it's coming.
+ */
+export function useDraftFollowUp(
+  appId: string,
+  onFailed: (message: string) => void,
+) {
   const client = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) =>
-      unwrap(
+  const runner = useBackgroundTask<void, Application>(
+    async () => {
+      return unwrap(
         api.POST("/api/v1/applications/{application_id}/follow-up/draft", {
-          params: { path: { application_id: id } },
+          params: { path: { application_id: appId } },
         }),
-      ),
-    onSuccess: (saved) => patchBoard(client, saved.id, saved),
-  });
+      );
+    },
+    {
+      onDone: (saved) => {
+        patchBoard(client, saved.id, saved);
+        void client.invalidateQueries({ queryKey: detailKey(saved.id) });
+      },
+      onFailed,
+    },
+  );
+
+  // Started earlier (before the sheet closed, or on another page or device): follow it.
+  const latest = useLatestTask("applications.follow_up").data ?? null;
+  const earlier =
+    latest &&
+    latest.id !== runner.task?.id &&
+    latest.link === followUpLink(appId)
+      ? latest
+      : null;
+  const earlierRunning = isActive(earlier);
+  const wasRunning = useRef(false);
+  const failed =
+    earlier?.status === "failed"
+      ? (earlier.error ?? "Something went wrong. Please try again.")
+      : null;
+  const report = useRef(onFailed);
+  report.current = onFailed;
+  useEffect(() => {
+    if (wasRunning.current && !earlierRunning) {
+      void client.invalidateQueries({ queryKey: detailKey(appId) });
+      void client.invalidateQueries({ queryKey: boardKey });
+      if (failed) report.current(failed);
+    }
+    wasRunning.current = earlierRunning;
+  }, [earlierRunning, failed, appId, client]);
+
+  return {
+    run: () => runner.run(),
+    running: runner.running || earlierRunning,
+  };
 }
 
 export function useFollowedUp() {

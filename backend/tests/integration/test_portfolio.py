@@ -17,6 +17,7 @@ from app.core.clock import utcnow
 from app.modules.profile.document import draft_to_document
 from app.modules.public_profile import contact
 from app.modules.public_profile.contact import form_token
+from tests.background import done
 from tests.factories import sample_draft
 
 SHELL = (
@@ -261,8 +262,7 @@ async def test_ai_drafts(signed_in: httpx.AsyncClient, fake_ai: FakeAIClient) ->
     response = await signed_in.post(
         "/api/v1/public-profile/draft", json={"parts": ["story", "case_studies"]}
     )
-    assert response.status_code == 200, response.text
-    body = response.json()
+    body = done(response)
     assert body["hero_line"] == "I build AI that bank staff actually use."
     assert body["about"] == ["I build retrieval systems."]  # 90 isn't in the profile
     assert body["case_studies"]["proj1"]["outcome"] == "Starred 1,200 times."

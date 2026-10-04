@@ -9,6 +9,7 @@ import pytest
 from app.ai.fake import FakeAIClient
 from app.modules.profile.document import draft_to_document
 from app.modules.profile.schemas import CoachAnswer, SummaryAnswer
+from tests.background import done
 from tests.factories import sample_draft
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "cv"
@@ -187,8 +188,7 @@ async def test_bullet_coach(signed_in: httpx.AsyncClient, fake_ai: FakeAIClient)
             "company": "Selat Pay",
         },
     )
-    assert response.status_code == 200
-    body = response.json()
+    body = done(response)
     assert body["suggestion"].startswith("Built")
     assert body["questions"] == ["By how much did regressions drop?"]
     prompt = fake_ai.calls_for("profile.coach")[0].messages[1]["content"]
@@ -208,7 +208,7 @@ async def test_summary_needs_experience(
         lambda messages, schema: SummaryAnswer(summary="  AI engineer with six years.  "),
     )
     response = await signed_in.post(f"{PROFILE}/coach/summary")
-    assert response.json() == {"summary": "AI engineer with six years."}
+    assert done(response) == {"summary": "AI engineer with six years."}
 
 
 async def test_profile_requires_sign_in(client: httpx.AsyncClient) -> None:
