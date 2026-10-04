@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{{ name }}</title>
+<style>
+  @page { size: A4; margin: 16mm 17mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body { font-family: Arial, Helvetica, "Liberation Sans", sans-serif; font-size: 10.5pt; line-height: 1.42; color: #17191f; }
+  .page { max-width: 176mm; margin: 0 auto; }
+  @media screen { body { padding: 14mm 0; } }
+  h1 { font-size: 20pt; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+  .headline { font-size: 11.5pt; color: #3a4152; margin: 3pt 0 0; }
+  .contact { font-size: 9.5pt; color: #4a5162; margin: 6pt 0 0; overflow-wrap: anywhere; }
+  h2 { font-size: 10.5pt; text-transform: uppercase; letter-spacing: 0.06em; color: #14213d; border-bottom: 1.2pt solid #14213d; padding-bottom: 2pt; margin: 14pt 0 6pt; }
+  p { margin: 0; }
+  .item { margin: 0 0 8pt; break-inside: avoid; }
+  .row { display: flex; justify-content: space-between; gap: 10pt; align-items: baseline; }
+  .row .when { font-size: 9.5pt; color: #4a5162; white-space: nowrap; }
+  .where { font-size: 9.5pt; color: #4a5162; }
+  ul { margin: 3pt 0 0; padding-left: 13pt; }
+  li { margin: 0 0 2pt; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>{{ name }}</h1>
+  {% if headline %}<p class="headline">{{ headline }}</p>{% endif %}
+  {% if contact %}<p class="contact">{{ contact | join("  |  ") }}</p>{% endif %}
+
+  {% if summary %}
+  <h2>{{ labels.summary }}</h2>
+  <p>{{ summary }}</p>
+  {% endif %}
+
+  {% if roles %}
+  <h2>{{ labels.experience }}</h2>
+  {% for role in roles %}
+  <div class="item">
+    <div class="row"><p><strong>{{ role.title }}</strong>, {{ role.company }}</p><span class="when">{{ role.dates }}</span></div>
+    {% if role.location %}<p class="where">{{ role.location }}</p>{% endif %}
+    {% if role.bullets %}<ul>{% for bullet in role.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if projects %}
+  <h2>{{ labels.projects }}</h2>
+  {% for project in projects %}
+  <div class="item">
+    <div class="row"><p><strong>{{ project.name }}</strong>{% if project.role %}, {{ project.role }}{% endif %}</p></div>
+    {% if project.bullets %}<ul>{% for bullet in project.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if education %}
+  <h2>{{ labels.education }}</h2>
+  {% for item in education %}
+  <div class="item">
+    <div class="row"><p><strong>{{ item.title }}</strong>{% if item.institution %}, {{ item.institution }}{% endif %}</p><span class="when">{{ item.dates }}</span></div>
+    {% if item.grade %}<p class="where">{{ item.grade }}</p>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if skills %}
+  <h2>{{ labels.skills }}</h2>
+  <p>{{ skills | join(", ") }}</p>
+  {% endif %}
+
+  {% if certifications %}
+  <h2>{{ labels.certifications }}</h2>
+  {% for cert in certifications %}
+  <div class="row"><p>{{ cert.name }}{% if cert.issuer %}, {{ cert.issuer }}{% endif %}</p><span class="when">{{ cert.date }}</span></div>
+  {% endfor %}
+  {% endif %}
+
+  {% if languages %}
+  <h2>{{ labels.languages }}</h2>
+  <p>{{ languages | join(", ") }}</p>
+  {% endif %}
+</div>
+</body>
+</html>

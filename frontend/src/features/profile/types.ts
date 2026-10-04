@@ -8,8 +8,10 @@ import type { Schemas } from "@/lib/api/client";
 
 export type SkillCategory = "technical" | "tool" | "domain" | "soft";
 export type SkillLevel = "learning" | "working" | "strong" | "expert";
-export type EmploymentType = "full_time" | "part_time" | "contract" | "internship" | "freelance";
-export type LanguageLevel = "native" | "fluent" | "professional" | "conversational" | "basic";
+export type EmploymentType =
+  "full_time" | "part_time" | "contract" | "internship" | "freelance";
+export type LanguageLevel =
+  "native" | "fluent" | "professional" | "conversational" | "basic";
 
 export interface YearMonth {
   year: number;
@@ -101,10 +103,14 @@ export function newId(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
-const ym = (value: { year: number; month?: number | null } | null | undefined): YearMonth | null =>
+const ym = (
+  value: { year: number; month?: number | null } | null | undefined,
+): YearMonth | null =>
   value ? { year: value.year, month: value.month ?? null } : null;
 
-const bullets = (items: { id?: string; text: string }[] | undefined): Bullet[] =>
+const bullets = (
+  items: { id?: string; text: string }[] | undefined,
+): Bullet[] =>
   (items ?? []).map((b) => ({ id: b.id ?? newId(), text: b.text }));
 
 /** Fill every optional field so the editor always has a complete document. */
@@ -118,7 +124,11 @@ export function normalize(doc: ApiProfileDoc | undefined): ProfileDoc {
       phone: basics?.phone ?? null,
       location: basics?.location ?? null,
       summary: basics?.summary ?? null,
-      links: (basics?.links ?? []).map((l) => ({ id: l.id ?? newId(), label: l.label, url: l.url })),
+      links: (basics?.links ?? []).map((l) => ({
+        id: l.id ?? newId(),
+        label: l.label,
+        url: l.url,
+      })),
     },
     experiences: (doc?.experiences ?? []).map((e) => ({
       id: e.id ?? newId(),
@@ -176,7 +186,8 @@ export function normalize(doc: ApiProfileDoc | undefined): ProfileDoc {
  * half-filled items (a role without a company yet) stay out until complete.
  */
 export function toApi(doc: ProfileDoc): ApiProfileDoc {
-  const clean = (value: string | null) => (value && value.trim() ? value.trim() : null);
+  const clean = (value: string | null) =>
+    value && value.trim() ? value.trim() : null;
   const filled = (b: Bullet) => b.text.trim().length > 0;
   return {
     basics: {
@@ -187,11 +198,18 @@ export function toApi(doc: ProfileDoc): ApiProfileDoc {
       phone: clean(doc.basics.phone),
       location: clean(doc.basics.location),
       summary: clean(doc.basics.summary),
-      links: doc.basics.links.filter((l) => l.url.trim()).map((l) => ({ ...l, label: l.label.trim() || "Link" })),
+      links: doc.basics.links
+        .filter((l) => l.url.trim())
+        .map((l) => ({ ...l, label: l.label.trim() || "Link" })),
     },
     experiences: doc.experiences
       .filter((e) => e.title.trim() && e.company.trim())
-      .map((e) => ({ ...e, location: clean(e.location), summary: clean(e.summary), bullets: e.bullets.filter(filled) })),
+      .map((e) => ({
+        ...e,
+        location: clean(e.location),
+        summary: clean(e.summary),
+        bullets: e.bullets.filter(filled),
+      })),
     education: doc.education
       .filter((e) => e.institution.trim())
       .map((e) => ({
@@ -203,7 +221,13 @@ export function toApi(doc: ProfileDoc): ApiProfileDoc {
       })),
     projects: doc.projects
       .filter((p) => p.name.trim())
-      .map((p) => ({ ...p, role: clean(p.role), url: clean(p.url), summary: clean(p.summary), bullets: p.bullets.filter(filled) })),
+      .map((p) => ({
+        ...p,
+        role: clean(p.role),
+        url: clean(p.url),
+        summary: clean(p.summary),
+        bullets: p.bullets.filter(filled),
+      })),
     skills: doc.skills.filter((s) => s.name.trim()),
     certifications: doc.certifications
       .filter((c) => c.name.trim())
@@ -236,11 +260,28 @@ export const emptyEducation = (): Education => ({
   details: null,
 });
 
-export const emptyProject = (): Project => ({ id: newId(), name: "", role: null, url: null, summary: null, bullets: [] });
+export const emptyProject = (): Project => ({
+  id: newId(),
+  name: "",
+  role: null,
+  url: null,
+  summary: null,
+  bullets: [],
+});
 
-export const emptyCertification = (): Certification => ({ id: newId(), name: "", issuer: null, issued: null, url: null });
+export const emptyCertification = (): Certification => ({
+  id: newId(),
+  name: "",
+  issuer: null,
+  issued: null,
+  url: null,
+});
 
-export const emptyLanguage = (): Language => ({ id: newId(), name: "", proficiency: null });
+export const emptyLanguage = (): Language => ({
+  id: newId(),
+  name: "",
+  proficiency: null,
+});
 
 export const skillCategoryLabel: Record<SkillCategory, string> = {
   technical: "Technical",
@@ -272,14 +313,33 @@ export const languageLevelLabel: Record<LanguageLevel, string> = {
   basic: "Basic",
 };
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export function formatYearMonth(value: YearMonth | null): string {
   if (!value) return "";
-  return value.month ? `${MONTHS[value.month - 1]} ${value.year}` : String(value.year);
+  return value.month
+    ? `${MONTHS[value.month - 1]} ${value.year}`
+    : String(value.year);
 }
 
-export function formatRange(start: YearMonth | null, end: YearMonth | null, current: boolean): string {
+export function formatRange(
+  start: YearMonth | null,
+  end: YearMonth | null,
+  current: boolean,
+): string {
   const from = formatYearMonth(start);
   const to = current ? "Present" : formatYearMonth(end);
   if (from && to) return `${from} – ${to}`;

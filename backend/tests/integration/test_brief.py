@@ -158,6 +158,11 @@ async def test_run_builds_a_brief_end_to_end(
     )
     assert "Selat Pay" in emails[0]["html"]
 
+    note = (await signed_in.get("/api/v1/notifications")).json()["items"][0]
+    assert note["kind"] == "brief.ready"
+    assert note["link"] == "/"
+    assert note["body"] == "2 jobs measured against your profile. Selat Pay fits best."
+
     # A second brief never repeats jobs you've already been shown.
     await signed_in.post("/api/v1/briefs/run")
     again = (await signed_in.get("/api/v1/briefs/today")).json()["brief"]

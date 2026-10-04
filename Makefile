@@ -107,11 +107,12 @@ test-frontend: ## Frontend unit tests
 lint: ## Lint and type-check backend and frontend
 	@$(COMPOSE) build -q --build-arg INSTALL_DEV=true backend
 	@$(PY) sh -c "ruff check app tests && ruff format --check app tests && mypy app"
-	@$(NODE) "npm ci --no-audit --no-fund --silent && npm run lint && npm run typecheck"
+	@$(NODE) "npm ci --no-audit --no-fund --silent && npm run lint && npm run format:check && npm run typecheck"
 
-fmt: ## Format backend code
+fmt: ## Format backend and frontend code
 	@$(COMPOSE) build -q --build-arg INSTALL_DEV=true backend
 	@$(PY) sh -c "ruff check --fix app tests && ruff format app tests"
+	@$(NODE) "npm ci --no-audit --no-fund --silent && npm run format"
 
 gen-api: ## Regenerate the frontend's typed API client from the backend
 	@$(PY) python -m app.scripts.export_openapi > frontend/src/lib/api/openapi.json

@@ -26,7 +26,13 @@ interface BulletListProps {
 }
 
 /** Achievement lines ("facts"): the evidence every tailored resume is built from. */
-export function BulletList({ bullets, onChange, issues, context, addLabel = "Add an achievement" }: BulletListProps) {
+export function BulletList({
+  bullets,
+  onChange,
+  issues,
+  context,
+  addLabel = "Add an achievement",
+}: BulletListProps) {
   const [focusId, setFocusId] = useState<string | null>(null);
 
   const add = () => {
@@ -40,7 +46,8 @@ export function BulletList({ bullets, onChange, issues, context, addLabel = "Add
       <p className="type-label text-ink">Achievements</p>
       {bullets.length === 0 && (
         <p className="text-[0.875rem] text-ink-3">
-          One line per result. Start with what you did, then the outcome: "Cut checkout time by 30% by…".
+          One line per result. Start with what you did, then the outcome: "Cut
+          checkout time by 30% by…".
         </p>
       )}
       <ul className="flex flex-col gap-2">
@@ -59,10 +66,20 @@ export function BulletList({ bullets, onChange, issues, context, addLabel = "Add
                 issues={issues.get(bullet.id) ?? []}
                 context={context}
                 autoFocus={focusId === bullet.id}
-                onText={(text) => onChange(updateById(bullets, bullet.id, { text }))}
+                onText={(text) =>
+                  onChange(updateById(bullets, bullet.id, { text }))
+                }
                 onRemove={() => onChange(removeById(bullets, bullet.id))}
-                onMoveUp={index > 0 ? () => onChange(moveById(bullets, bullet.id, -1)) : undefined}
-                onMoveDown={index < bullets.length - 1 ? () => onChange(moveById(bullets, bullet.id, 1)) : undefined}
+                onMoveUp={
+                  index > 0
+                    ? () => onChange(moveById(bullets, bullet.id, -1))
+                    : undefined
+                }
+                onMoveDown={
+                  index < bullets.length - 1
+                    ? () => onChange(moveById(bullets, bullet.id, 1))
+                    : undefined
+                }
               />
             </motion.li>
           ))}
@@ -104,13 +121,20 @@ function BulletRow({
 
   const ask = () => {
     setOpen(true);
-    coach.mutate({ text: bullet.text, title: context.title, company: context.company });
+    coach.mutate({
+      text: bullet.text,
+      title: context.title,
+      company: context.company,
+    });
   };
 
   return (
     <div className="group rounded-[12px] border border-transparent bg-surface-2/60 p-2 transition-colors focus-within:border-line-strong focus-within:bg-surface hover:bg-surface-2">
       <div className="flex items-start gap-1.5">
-        <span aria-hidden className="mt-[1.05rem] ml-1.5 size-1.5 shrink-0 rounded-full bg-ink-3" />
+        <span
+          aria-hidden
+          className="mt-[1.05rem] ml-1.5 size-1.5 shrink-0 rounded-full bg-ink-3"
+        />
         <TextArea
           aria-label="Achievement"
           rows={1}
@@ -121,7 +145,11 @@ function BulletRow({
           className="min-h-0 border-transparent bg-transparent px-2 py-2 shadow-none hover:border-transparent focus:border-transparent focus:shadow-none"
         />
         <div className="flex shrink-0 items-center opacity-100 sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
-          <IconButton label="Improve with AI" onClick={ask} disabled={!canCoach || coach.isPending}>
+          <IconButton
+            label="Improve with AI"
+            onClick={ask}
+            disabled={!canCoach || coach.isPending}
+          >
             <Sparkles className="size-4" />
           </IconButton>
           {onMoveUp && (
@@ -134,7 +162,11 @@ function BulletRow({
               <ArrowDown className="size-4" />
             </IconButton>
           )}
-          <IconButton label="Remove achievement" tone="danger" onClick={onRemove}>
+          <IconButton
+            label="Remove achievement"
+            tone="danger"
+            onClick={onRemove}
+          >
             <Trash2 className="size-4" />
           </IconButton>
         </div>
@@ -143,12 +175,19 @@ function BulletRow({
       {issues.length > 0 && !open && (
         <div className="ml-6 mt-1 flex flex-wrap items-center gap-1.5 pb-1">
           {issues.map((issue) => (
-            <span key={issue} className="rounded-full bg-chalk-soft px-2 py-0.5 text-[0.75rem] font-medium text-chalk">
+            <span
+              key={issue}
+              className="rounded-full bg-chalk-soft px-2 py-0.5 text-[0.75rem] font-medium text-chalk"
+            >
               {ISSUE_TEXT[issue]}
             </span>
           ))}
           {canCoach && (
-            <button type="button" onClick={ask} className="text-[0.8125rem] font-semibold text-chalk underline-offset-2 hover:underline">
+            <button
+              type="button"
+              onClick={ask}
+              className="text-[0.8125rem] font-semibold text-chalk underline-offset-2 hover:underline"
+            >
               Improve it
             </button>
           )}
@@ -166,7 +205,8 @@ function BulletRow({
             <div className="ml-6 mr-1 mt-2 rounded-[10px] border border-chalk/30 bg-chalk-soft/50 p-4">
               {coach.isPending && (
                 <p className="flex items-center gap-2 text-[0.9375rem] text-ink-2">
-                  <Spinner className="size-4 text-chalk" /> Stitching a stronger line…
+                  <Spinner className="size-4 text-chalk" /> Stitching a stronger
+                  line…
                 </p>
               )}
               {coach.isError && (
@@ -177,8 +217,12 @@ function BulletRow({
               {coach.data && (
                 <>
                   <p className="type-label text-chalk">Suggestion</p>
-                  <p className="chalk-mark mt-1.5 text-[0.9375rem] leading-relaxed">{coach.data.suggestion}</p>
-                  <p className="mt-2 text-[0.875rem] text-ink-2">{coach.data.reason}</p>
+                  <p className="chalk-mark mt-1.5 text-[0.9375rem] leading-relaxed">
+                    {coach.data.suggestion}
+                  </p>
+                  <p className="mt-2 text-[0.875rem] text-ink-2">
+                    {coach.data.reason}
+                  </p>
                   {coach.data.questions.length > 0 && (
                     <ul className="mt-3 list-disc space-y-1 pl-5 text-[0.875rem] text-ink-2">
                       {coach.data.questions.map((question) => (
@@ -187,11 +231,18 @@ function BulletRow({
                     </ul>
                   )}
                   {coach.data.suggestion.includes("[") && (
-                    <p className="mt-3 text-[0.8125rem] text-ink-3">Replace the [brackets] with your real numbers.</p>
+                    <p className="mt-3 text-[0.8125rem] text-ink-3">
+                      Replace the [brackets] with your real numbers.
+                    </p>
                   )}
                 </>
               )}
-              <div className={cn("flex flex-wrap gap-2", (coach.data || coach.isError) && "mt-4")}>
+              <div
+                className={cn(
+                  "flex flex-wrap gap-2",
+                  (coach.data || coach.isError) && "mt-4",
+                )}
+              >
                 {coach.data && (
                   <Button
                     size="sm"

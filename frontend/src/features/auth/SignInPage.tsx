@@ -22,11 +22,16 @@ export function SignInPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? "/";
-  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { identifier: "", password: "" } });
+  const form = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { identifier: "", password: "" },
+  });
   const { errors } = form.formState;
 
   const onSubmit = form.handleSubmit((values) =>
-    signIn.mutate(values, { onSuccess: () => navigate(from, { replace: true }) }),
+    signIn.mutate(values, {
+      onSuccess: () => navigate(from, { replace: true }),
+    }),
   );
 
   const problem = signIn.error
@@ -42,7 +47,10 @@ export function SignInPage() {
       footer={
         <>
           New to Tailr?{" "}
-          <Link to="/sign-up" className="font-semibold text-ink underline decoration-tape decoration-2 underline-offset-4 hover:decoration-ink">
+          <Link
+            to="/sign-up"
+            className="font-semibold text-ink underline decoration-tape decoration-2 underline-offset-4 hover:decoration-ink"
+          >
             Create an account
           </Link>
         </>
@@ -64,7 +72,12 @@ export function SignInPage() {
           {...form.register("password")}
         />
         <motion.div layout>
-          <Button type="submit" size="lg" className="mt-1 w-full" loading={signIn.isPending}>
+          <Button
+            type="submit"
+            size="lg"
+            className="mt-1 w-full"
+            loading={signIn.isPending}
+          >
             {signIn.isPending ? "Signing in" : "Sign in"}
           </Button>
         </motion.div>

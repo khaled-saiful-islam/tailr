@@ -8,13 +8,18 @@ export type PreviewOut = Schemas["PreviewOut"];
 export type Suggestions = Schemas["SuggestionsOut"];
 export type RadarOptions = Schemas["RadarOptionsOut"];
 export type Seniority = NonNullable<RadarSettings["seniority"]>[number];
-export type EmploymentType = NonNullable<RadarSettings["employment_types"]>[number];
+export type EmploymentType = NonNullable<
+  RadarSettings["employment_types"]
+>[number];
 export type WorkMode = Schemas["WorkMode"];
 
 export const radarKey = ["radar"] as const;
 
 export function useRadar() {
-  return useQuery({ queryKey: radarKey, queryFn: () => unwrap(api.GET("/api/v1/radar")) });
+  return useQuery({
+    queryKey: radarKey,
+    queryFn: () => unwrap(api.GET("/api/v1/radar")),
+  });
 }
 
 export function useRadarOptions() {
@@ -28,7 +33,8 @@ export function useRadarOptions() {
 export function useSaveRadar() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (body: { settings: RadarSettings; version: number }) => unwrap(api.PUT("/api/v1/radar", { body })),
+    mutationFn: (body: { settings: RadarSettings; version: number }) =>
+      unwrap(api.PUT("/api/v1/radar", { body })),
     onSuccess: (radar) => {
       client.setQueryData(radarKey, radar);
       void client.invalidateQueries({ queryKey: meKey });
@@ -37,17 +43,22 @@ export function useSaveRadar() {
 }
 
 export function useSuggestRoles() {
-  return useMutation({ mutationFn: () => unwrap(api.POST("/api/v1/radar/suggest")) });
+  return useMutation({
+    mutationFn: () => unwrap(api.POST("/api/v1/radar/suggest")),
+  });
 }
 
 export function usePreviewRadar() {
   return useMutation({
-    mutationFn: (settings: RadarSettings) => unwrap(api.POST("/api/v1/radar/preview", { body: { settings } })),
+    mutationFn: (settings: RadarSettings) =>
+      unwrap(api.POST("/api/v1/radar/preview", { body: { settings } })),
   });
 }
 
 /** Settings with every list present, so the form never handles `undefined`. */
-export function completeSettings(settings: RadarSettings): Required<RadarSettings> {
+export function completeSettings(
+  settings: RadarSettings,
+): Required<RadarSettings> {
   return {
     roles: settings.roles ?? [],
     anywhere: settings.anywhere,

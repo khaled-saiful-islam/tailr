@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from app.modules.sources.base import JobCard, JobDetail, JobRef, SearchQuery, SourceError
 
-
 DEFAULT_AD = (
     "We are hiring an engineer to join our product team in Kuala Lumpur. You will design, build "
     "and ship features with the team, review code, and help us improve how we work. Tell us about "

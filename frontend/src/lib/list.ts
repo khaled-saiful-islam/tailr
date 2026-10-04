@@ -1,10 +1,17 @@
 /** Immutable list helpers for items with an `id`. Each returns a new array. */
 
-export function updateById<T extends { id: string }>(items: readonly T[], id: string, patch: Partial<T>): T[] {
+export function updateById<T extends { id: string }>(
+  items: readonly T[],
+  id: string,
+  patch: Partial<T>,
+): T[] {
   return items.map((item) => (item.id === id ? { ...item, ...patch } : item));
 }
 
-export function removeById<T extends { id: string }>(items: readonly T[], id: string): T[] {
+export function removeById<T extends { id: string }>(
+  items: readonly T[],
+  id: string,
+): T[] {
   return items.filter((item) => item.id !== id);
 }
 
@@ -16,7 +23,11 @@ export function move<T>(items: readonly T[], from: number, to: number): T[] {
   return next;
 }
 
-export function moveById<T extends { id: string }>(items: readonly T[], id: string, delta: -1 | 1): T[] {
+export function moveById<T extends { id: string }>(
+  items: readonly T[],
+  id: string,
+  delta: -1 | 1,
+): T[] {
   const index = items.findIndex((item) => item.id === id);
   return index < 0 ? [...items] : move(items, index, index + delta);
 }

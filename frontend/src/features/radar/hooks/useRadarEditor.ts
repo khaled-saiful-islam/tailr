@@ -46,9 +46,15 @@ export function useRadarEditor() {
 
   const editor = useVersionedAutosave<RadarOut, CompleteSettings>({
     data: query.data,
-    read: (radar) => ({ value: completeSettings(radar.settings), version: radar.version }),
+    read: (radar) => ({
+      value: completeSettings(radar.settings),
+      version: radar.version,
+    }),
     save: ({ value, version }, { onSuccess, onError }) =>
-      saveRadar({ settings: value, version }, { onSuccess: (radar) => onSuccess(radar.version), onError }),
+      saveRadar(
+        { settings: value, version },
+        { onSuccess: (radar) => onSuccess(radar.version), onError },
+      ),
     refetch: useCallback(async () => (await refetch()).data, [refetch]),
     autosave: exists,
   });
@@ -70,7 +76,13 @@ export function useRadarEditor() {
   }, [settings, runPreview]);
 
   useEffect(() => {
-    if (!settings || !key || key === lastKey.current || settings.roles.length === 0) return;
+    if (
+      !settings ||
+      !key ||
+      key === lastKey.current ||
+      settings.roles.length === 0
+    )
+      return;
     const first = lastKey.current === "";
     const timer = window.setTimeout(scan, first ? 0 : PREVIEW_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);

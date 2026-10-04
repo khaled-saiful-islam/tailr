@@ -8,7 +8,14 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const me = useMe();
   const location = useLocation();
   if (me.isPending) return <FullPageLoader />;
-  if (!me.data) return <Navigate to="/sign-in" replace state={{ from: location.pathname + location.search }} />;
+  if (!me.data)
+    return (
+      <Navigate
+        to="/sign-in"
+        replace
+        state={{ from: location.pathname + location.search }}
+      />
+    );
   return children;
 }
 

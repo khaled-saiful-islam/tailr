@@ -12,7 +12,8 @@ export const meKey = ["me"] as const;
 export function useMe() {
   return useQuery({
     queryKey: meKey,
-    queryFn: async (): Promise<User | null> => (await unwrap(api.GET("/api/v1/auth/session"))).user ?? null,
+    queryFn: async (): Promise<User | null> =>
+      (await unwrap(api.GET("/api/v1/auth/session"))).user ?? null,
     staleTime: 5 * 60_000,
     retry: false,
   });
@@ -21,7 +22,8 @@ export function useMe() {
 export function useSignIn() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (body: SignInInput) => unwrap(api.POST("/api/v1/auth/login", { body })),
+    mutationFn: (body: SignInInput) =>
+      unwrap(api.POST("/api/v1/auth/login", { body })),
     onSuccess: (user) => client.setQueryData(meKey, user),
   });
 }
@@ -29,7 +31,8 @@ export function useSignIn() {
 export function useSignUp() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (body: SignUpInput) => unwrap(api.POST("/api/v1/auth/register", { body })),
+    mutationFn: (body: SignUpInput) =>
+      unwrap(api.POST("/api/v1/auth/register", { body })),
     onSuccess: (user) => client.setQueryData(meKey, user),
   });
 }
@@ -48,7 +51,8 @@ export function useSignOut() {
 export function useUpdateMe() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (body: UpdateMeInput) => unwrap(api.PATCH("/api/v1/auth/me", { body })),
+    mutationFn: (body: UpdateMeInput) =>
+      unwrap(api.PATCH("/api/v1/auth/me", { body })),
     onSuccess: (user) => client.setQueryData(meKey, user),
   });
 }

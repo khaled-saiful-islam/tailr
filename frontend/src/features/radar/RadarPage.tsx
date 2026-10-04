@@ -20,7 +20,11 @@ import { useRadarEditor } from "./hooks/useRadarEditor";
 
 function formatNextBrief(iso: string | null | undefined): string | null {
   if (!iso) return null;
-  return new Intl.DateTimeFormat("en-MY", { weekday: "long", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("en-MY", {
+    weekday: "long",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 export function RadarPage() {
@@ -30,7 +34,8 @@ export function RadarPage() {
   const navigate = useNavigate();
   const { settings } = editor;
 
-  if (editor.error) return <p className="p-10 text-pin">{editor.error.message}</p>;
+  if (editor.error)
+    return <p className="p-10 text-pin">{editor.error.message}</p>;
   if (!settings) {
     return (
       <div className="grid min-h-[60vh] place-items-center">
@@ -39,7 +44,8 @@ export function RadarPage() {
     );
   }
 
-  const set = (patch: Partial<CompleteSettings>) => editor.update((current) => ({ ...current, ...patch }));
+  const set = (patch: Partial<CompleteSettings>) =>
+    editor.update((current) => ({ ...current, ...patch }));
   const start = () => {
     if (settings.roles.length === 0) {
       toast.error("Add at least one role first.");
@@ -63,11 +69,16 @@ export function RadarPage() {
         <div className="min-w-[min(100%,20rem)] flex-1">
           <h1 className="type-title">Job radar</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            What Tailr looks for every morning. The preview scans LinkedIn and JobStreet as you change things.
+            What Tailr looks for every morning. The preview scans LinkedIn and
+            JobStreet as you change things.
           </p>
         </div>
         {editor.exists && (
-          <SaveIndicator status={editor.status} onRetry={editor.retry} onReload={() => void editor.reload()} />
+          <SaveIndicator
+            status={editor.status}
+            onRetry={editor.retry}
+            onReload={() => void editor.reload()}
+          />
         )}
       </header>
 
@@ -80,14 +91,19 @@ export function RadarPage() {
           <div className="min-w-[min(100%,18rem)] flex-1">
             <p className="font-semibold">We've set this up from your profile</p>
             <p className="mt-1 text-[0.9375rem] text-ink-2">
-              Check the roles and places, then start your radar. You can change anything later.
+              Check the roles and places, then start your radar. You can change
+              anything later.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="ghost" asChild>
               <Link to="/profile">Back to profile</Link>
             </Button>
-            <Button variant="tape" onClick={start} loading={firstSave.isPending}>
+            <Button
+              variant="tape"
+              onClick={start}
+              loading={firstSave.isPending}
+            >
               Start my radar
             </Button>
           </div>
@@ -102,8 +118,16 @@ export function RadarPage() {
           <PaySection settings={settings} set={set} />
           <DealBreakersSection settings={settings} set={set} />
           <FreshnessSection settings={settings} set={set} />
-          <SourcesSection settings={settings} set={set} options={options.data} />
-          <BriefSection settings={settings} set={set} nextBrief={formatNextBrief(editor.radar?.next_brief_at)} />
+          <SourcesSection
+            settings={settings}
+            set={set}
+            options={options.data}
+          />
+          <BriefSection
+            settings={settings}
+            set={set}
+            nextBrief={formatNextBrief(editor.radar?.next_brief_at)}
+          />
         </div>
         <aside className="order-first xl:order-none">
           <div className="xl:sticky xl:top-6">

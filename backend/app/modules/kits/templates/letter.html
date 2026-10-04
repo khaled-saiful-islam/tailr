@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<title>{{ name }}: {{ job.title }}</title>
+<style>
+  @page { size: A4; margin: 22mm 22mm; }
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body { font-family: Georgia, "Times New Roman", serif; font-size: 11pt; line-height: 1.6; color: #17191f; }
+  .page { max-width: 166mm; margin: 0 auto; }
+  @media screen { body { padding: 18mm 0; } }
+  .from { font-family: Arial, Helvetica, sans-serif; }
+  .from strong { font-size: 14pt; display: block; color: #14213d; }
+  .from span { font-size: 9.5pt; color: #4a5162; }
+  .date { margin: 18pt 0 4pt; color: #4a5162; }
+  .to { margin: 0 0 18pt; }
+  p { margin: 0 0 11pt; }
+  .closing { margin-top: 18pt; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="from"><strong>{{ name }}</strong><span>{{ contact | join("  |  ") }}</span></div>
+  <p class="date">{{ date }}</p>
+  <p class="to">{{ job.company }}<br>{{ job.title }}</p>
+  <p>{{ greeting }}</p>
+  {% for paragraph in paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+  <p class="closing">{{ closing }}<br>{{ name }}</p>
+</div>
+</body>
+</html>

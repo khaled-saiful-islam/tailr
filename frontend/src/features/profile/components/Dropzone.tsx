@@ -24,7 +24,9 @@ export function Dropzone({ busy, onFile, onReject }: DropzoneProps) {
     const file = files?.[0];
     if (!file) return;
     if (file.size > MAX_MB * 1024 * 1024) {
-      onReject(`That file is larger than ${MAX_MB} MB. Try a smaller PDF or a photo.`);
+      onReject(
+        `That file is larger than ${MAX_MB} MB. Try a smaller PDF or a photo.`,
+      );
       return;
     }
     onFile(file);
@@ -48,7 +50,9 @@ export function Dropzone({ busy, onFile, onReject }: DropzoneProps) {
       transition={{ type: "spring", stiffness: 300, damping: 24 }}
       className={cn(
         "pattern-paper relative flex min-h-[19rem] flex-col items-center justify-center rounded-sheet border-2 border-dashed px-6 py-12 text-center transition-colors",
-        over ? "border-tape bg-[color-mix(in_oklab,var(--tape)_8%,var(--canvas))]" : "border-line-strong",
+        over
+          ? "border-tape bg-[color-mix(in_oklab,var(--tape)_8%,var(--canvas))]"
+          : "border-line-strong",
       )}
     >
       <motion.div
@@ -58,9 +62,19 @@ export function Dropzone({ busy, onFile, onReject }: DropzoneProps) {
           over ? "bg-tape text-tape-ink" : "bg-surface text-ink",
         )}
       >
-        {busy ? <Spinner className="size-7" label="Uploading" /> : <FileUp className="size-7" aria-hidden />}
+        {busy ? (
+          <Spinner className="size-7" label="Uploading" />
+        ) : (
+          <FileUp className="size-7" aria-hidden />
+        )}
       </motion.div>
-      <p className="type-heading mt-6">{busy ? "Uploading your CV" : over ? "Drop it here" : "Drop your CV here"}</p>
+      <p className="type-heading mt-6">
+        {busy
+          ? "Uploading your CV"
+          : over
+            ? "Drop it here"
+            : "Drop your CV here"}
+      </p>
       <p id={hintId} className="mt-2 max-w-[24rem] text-ink-2">
         PDF, Word or a clear photo of your CV, up to {MAX_MB} MB.
       </p>

@@ -22,7 +22,12 @@ export class ApiError extends Error {
   readonly code: string;
   readonly details: unknown;
 
-  constructor(status: number, code: string, message: string, details?: unknown) {
+  constructor(
+    status: number,
+    code: string,
+    message: string,
+    details?: unknown,
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -34,7 +39,9 @@ export class ApiError extends Error {
   fieldIssues(): Record<string, string> {
     if (!Array.isArray(this.details)) return {};
     return Object.fromEntries(
-      (this.details as FieldIssue[]).filter((d) => d.field).map((d) => [d.field, d.message]),
+      (this.details as FieldIssue[])
+        .filter((d) => d.field)
+        .map((d) => [d.field, d.message]),
     );
   }
 }
@@ -51,7 +58,11 @@ export async function unwrap<T>(
   try {
     result = await call;
   } catch {
-    throw new ApiError(0, "network_error", "Can't reach Tailr. Check your connection and try again.");
+    throw new ApiError(
+      0,
+      "network_error",
+      "Can't reach Tailr. Check your connection and try again.",
+    );
   }
   const { data, error, response } = result;
   if (response.ok) return data as T;
@@ -65,5 +76,7 @@ export async function unwrap<T>(
 }
 
 export function isApiError(error: unknown, code?: string): error is ApiError {
-  return error instanceof ApiError && (code === undefined || error.code === code);
+  return (
+    error instanceof ApiError && (code === undefined || error.code === code)
+  );
 }

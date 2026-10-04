@@ -42,7 +42,10 @@ export function TextField({
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = Array.from({ length: CURRENT_YEAR + 2 - 1960 }, (_, i) => CURRENT_YEAR + 1 - i);
+const YEARS = Array.from(
+  { length: CURRENT_YEAR + 2 - 1960 },
+  (_, i) => CURRENT_YEAR + 1 - i,
+);
 
 /** Month and year, either optional. A year alone is fine. */
 export function MonthField({
@@ -67,7 +70,11 @@ export function MonthField({
           value={value?.month ?? ""}
           disabled={disabled || !value}
           onChange={(event) =>
-            value && onChange({ ...value, month: event.target.value ? Number(event.target.value) : null })
+            value &&
+            onChange({
+              ...value,
+              month: event.target.value ? Number(event.target.value) : null,
+            })
           }
         >
           <option value="">Month</option>
@@ -83,7 +90,14 @@ export function MonthField({
           value={value?.year ?? ""}
           disabled={disabled}
           onChange={(event) =>
-            onChange(event.target.value ? { year: Number(event.target.value), month: value?.month ?? null } : null)
+            onChange(
+              event.target.value
+                ? {
+                    year: Number(event.target.value),
+                    month: value?.month ?? null,
+                  }
+                : null,
+            )
           }
         >
           <option value="">Year</option>
@@ -126,7 +140,12 @@ export function ItemCard({
   const [open, setOpen] = useState(defaultOpen);
   const bodyId = useId();
   return (
-    <div className={cn("rounded-panel border bg-surface transition-colors", open ? "border-line-strong" : "border-line")}>
+    <div
+      className={cn(
+        "rounded-panel border bg-surface transition-colors",
+        open ? "border-line-strong" : "border-line",
+      )}
+    >
       <div className="flex items-start gap-2 p-2 pl-4">
         <button
           type="button"
@@ -136,11 +155,16 @@ export function ItemCard({
           className="flex min-w-0 flex-1 items-start gap-3 rounded-[8px] py-2 text-left"
         >
           <ChevronDown
-            className={cn("mt-1 size-4 shrink-0 text-ink-3 transition-transform duration-200", open && "rotate-180")}
+            className={cn(
+              "mt-1 size-4 shrink-0 text-ink-3 transition-transform duration-200",
+              open && "rotate-180",
+            )}
             aria-hidden
           />
           <span className="min-w-0 flex-1">
-            <span className={cn("block font-semibold", !title && "text-ink-3")}>{title || "Untitled"}</span>
+            <span className={cn("block font-semibold", !title && "text-ink-3")}>
+              {title || "Untitled"}
+            </span>
             {(subtitle || meta) && (
               <span className="mt-0.5 flex flex-wrap gap-x-3 text-[0.875rem] text-ink-2">
                 {subtitle && <span>{subtitle}</span>}
@@ -175,7 +199,9 @@ export function ItemCard({
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-line px-4 pb-5 pt-5 sm:px-5">{children}</div>
+            <div className="border-t border-line px-4 pb-5 pt-5 sm:px-5">
+              {children}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -184,7 +210,13 @@ export function ItemCard({
 }
 
 /** A full-width "add another" button with a stitched outline. */
-export function AddButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+export function AddButton({
+  children,
+  onClick,
+}: {
+  children: ReactNode;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"

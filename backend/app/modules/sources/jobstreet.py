@@ -18,8 +18,9 @@ SEARCH_URL = "https://my.jobstreet.com/api/jobsearch/v5/search"
 GRAPHQL_URL = "https://my.jobstreet.com/graphql"
 JOB_PAGE = "https://my.jobstreet.com/job/{id}"
 DETAILS_QUERY = (
-    "query jobDetails($jobId: ID!) "
-    "{ jobDetails(id: $jobId) { job { id title content(platform: WEB) } } }"
+    "query jobDetails($jobId: ID!) { jobDetails(id: $jobId) { job { id title "
+    "advertiser { name } location { label } salary { label } workTypes { label } "
+    "content(platform: WEB) } } }"
 )
 _MODES = {
     "remote": WorkMode.REMOTE,
@@ -102,11 +103,19 @@ def parse_details(payload: dict[str, Any], external_id: str) -> JobDetail:
     content = job.get("content")
     if not content:
         raise SourceError("jobstreet", "job details had no description")
+    location = (job.get("location") or {}).get("label")
     return JobDetail(
         source="jobstreet",
         external_id=external_id,
         description_text=html_to_text(content),
         description_html=content,
+        title=_title(job.get("title")),
+        company=clean((job.get("advertiser") or {}).get("name")),
+        location=clean(location.removesuffix(", MY")) if location else None,
+        salary_text=clean((job.get("salary") or {}).get("label")),
+        employment_type=_TYPES.get(
+            str((job.get("workTypes") or {}).get("label", "")).strip().lower()
+        ),
     )
 
 

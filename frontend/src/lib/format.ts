@@ -9,10 +9,17 @@ export function greeting(now: Date): string {
 }
 
 export function longDate(date: Date, locale = "en-MY"): string {
-  return new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long" }).format(date);
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
 }
 
-export function relativeTime(iso: string | Date, now: Date = new Date()): string {
+export function relativeTime(
+  iso: string | Date,
+  now: Date = new Date(),
+): string {
   const then = typeof iso === "string" ? new Date(iso) : iso;
   const seconds = Math.round((then.getTime() - now.getTime()) / 1000);
   const table: [Intl.RelativeTimeFormatUnit, number][] = [
@@ -25,15 +32,18 @@ export function relativeTime(iso: string | Date, now: Date = new Date()): string
   ];
   const format = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   for (const [unit, size] of table) {
-    if (Math.abs(seconds) >= size) return format.format(Math.round(seconds / size), unit);
+    if (Math.abs(seconds) >= size)
+      return format.format(Math.round(seconds / size), unit);
   }
   return "just now";
 }
 
 export function ringgit(amount: number): string {
-  return new Intl.NumberFormat("en-MY", { style: "currency", currency: "MYR", maximumFractionDigits: 0 }).format(
-    amount,
-  );
+  return new Intl.NumberFormat("en-MY", {
+    style: "currency",
+    currency: "MYR",
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 export function initials(name: string): string {

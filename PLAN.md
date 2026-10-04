@@ -193,11 +193,12 @@ ruff + mypy (backend), eslint + tsc (frontend) · pytest with a **separate test 
 - [x] **M2 Job Radar** — preferences + AI-suggested roles/queries, live radar preview, Radar UI
 - [x] **M3 Sources & catalog** — ~~source contract, LinkedIn, JobStreet; cache, rate limit~~ (done in M2), job catalog + dedupe, details, enrichment, embeddings (paste-a-job moves to M5)
 - [x] **M4 Matching & Morning Brief** — Fit score, explanations, brief builder, scheduler dispatch, run-now, email digest, Today / Jobs / Job detail UI
-- [ ] **M5 Apply Kit** — tailoring pipeline, fact check, keywords, extras, renderer PDF, kit editor UI, Bahasa Malaysia option
-- [ ] **M6 Tracker & Momentum** — kanban, follow-up nudges, goals, streak, funnel, market pulse
-- [ ] **M7 Polish & hand-over** — demo seed (`make demo`), docs, README, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
+- [x] **M5 Apply Kit** — tailoring pipeline, fact check (ADR 0003), keywords, extras, renderer PDF, kit editor UI, Bahasa Malaysia option, paste-a-job (with SSRF-safe fetching), background builds with in-app, toast and browser notifications
+- [ ] **M6 Public profile** — a shareable page built from the profile: 3+ templates, photo and project images, custom link, privacy controls, contact email of the user's choice, link previews (Open Graph), mobile-first
+- [ ] **M7 Tracker & Momentum** — kanban, follow-up nudges, goals, streak, funnel, market pulse
+- [ ] **M8 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
 
-Each milestone: tests green → docs updated → local commit (no push until approved).
+Each milestone: tests green → docs updated → commit → push to GitHub. Every screen works on phones.
 
 ## 5. Risks
 

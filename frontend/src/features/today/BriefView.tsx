@@ -13,15 +13,21 @@ import { greeting, longDate } from "@/lib/format";
 
 function nextBriefLabel(iso: string | null | undefined): string | null {
   if (!iso) return null;
-  return new Intl.DateTimeFormat("en-MY", { weekday: "long", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("en-MY", {
+    weekday: "long",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 function summary(brief: Brief | null | undefined): string {
   if (!brief) return "Your radar is on. Your first brief is on its way.";
-  if (brief.status === "building") return "Tailr is measuring today's jobs against your profile.";
+  if (brief.status === "building")
+    return "Tailr is measuring today's jobs against your profile.";
   if (brief.status === "failed") return "Today's brief didn't finish.";
   const count = brief.matches.length;
-  if (brief.stats.below_bar && count) return `Nothing cleared your bar today. Here ${count === 1 ? "is the closest job" : `are the ${count} closest`}.`;
+  if (brief.stats.below_bar && count)
+    return `Nothing cleared your bar today. Here ${count === 1 ? "is the closest job" : `are the ${count} closest`}.`;
   if (count === 0) return "No new jobs fit you since your last brief.";
   const best = Math.max(...brief.matches.map((m) => m.score));
   return `${count} new ${count === 1 ? "job fits" : "jobs fit"} you. Your best fit is ${best}%.`;
@@ -57,18 +63,26 @@ export function BriefView() {
             {greeting(new Date())}
             {firstName ? `, ${firstName}.` : "."}
           </h1>
-          <p className="mt-4 max-w-[38rem] text-[1.125rem] text-ink-2">{today.isPending ? " " : summary(brief)}</p>
+          <p className="mt-4 max-w-[38rem] text-[1.125rem] text-ink-2">
+            {today.isPending ? " " : summary(brief)}
+          </p>
         </motion.div>
         <div className="flex flex-col items-start gap-2 sm:items-end">
           <Button
             variant="secondary"
-            icon={<RefreshCw className={building ? "size-4 animate-spin" : "size-4"} />}
+            icon={
+              <RefreshCw
+                className={building ? "size-4 animate-spin" : "size-4"}
+              />
+            }
             onClick={runNow}
             disabled={building || run.isPending}
           >
             {building ? "Measuring" : "Run my brief now"}
           </Button>
-          {next && <p className="text-[0.8125rem] text-ink-3">Next brief {next}</p>}
+          {next && (
+            <p className="text-[0.8125rem] text-ink-3">Next brief {next}</p>
+          )}
         </div>
       </header>
 
@@ -82,9 +96,15 @@ export function BriefView() {
         ) : !brief ? (
           <FirstBrief next={next} onRun={runNow} running={run.isPending} />
         ) : brief.status === "failed" ? (
-          <div role="alert" className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-pin/30 bg-pin-soft p-5">
+          <div
+            role="alert"
+            className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-pin/30 bg-pin-soft p-5"
+          >
             <p className="flex gap-2.5">
-              <CircleAlert className="mt-0.5 size-5 shrink-0 text-pin" aria-hidden />
+              <CircleAlert
+                className="mt-0.5 size-5 shrink-0 text-pin"
+                aria-hidden
+              />
               {brief.error ?? "Something went wrong."}
             </p>
             <Button onClick={runNow} loading={run.isPending}>
@@ -102,7 +122,10 @@ export function BriefView() {
                   <h2 id="more-heading" className="type-heading">
                     More that fit
                   </h2>
-                  <Link to="/jobs" className="text-[0.9375rem] font-semibold text-chalk hover:underline">
+                  <Link
+                    to="/jobs"
+                    className="text-[0.9375rem] font-semibold text-chalk hover:underline"
+                  >
                     All your jobs
                   </Link>
                 </div>
@@ -123,7 +146,15 @@ export function BriefView() {
   );
 }
 
-function FirstBrief({ next, onRun, running }: { next: string | null; onRun: () => void; running: boolean }) {
+function FirstBrief({
+  next,
+  onRun,
+  running,
+}: {
+  next: string | null;
+  onRun: () => void;
+  running: boolean;
+}) {
   return (
     <section className="flex flex-wrap items-center justify-between gap-6 rounded-sheet border border-line bg-surface p-6 sm:p-8">
       <div className="flex min-w-[min(100%,20rem)] flex-1 gap-4">
@@ -131,9 +162,12 @@ function FirstBrief({ next, onRun, running }: { next: string | null; onRun: () =
           <Sunrise className="size-6" aria-hidden />
         </span>
         <div>
-          <h2 className="type-heading">{next ? `Your first brief arrives ${next}` : "Your radar is on"}</h2>
+          <h2 className="type-heading">
+            {next ? `Your first brief arrives ${next}` : "Your radar is on"}
+          </h2>
           <p className="mt-1 text-ink-2">
-            Don't want to wait? Run it now: Tailr searches, reads every ad and measures each job against your profile.
+            Don't want to wait? Run it now: Tailr searches, reads every ad and
+            measures each job against your profile.
           </p>
         </div>
       </div>
@@ -149,8 +183,9 @@ function EmptyBrief() {
     <section className="rounded-sheet border border-dashed border-line-strong p-8 text-center">
       <h2 className="type-heading">You're all caught up</h2>
       <p className="mx-auto mt-2 max-w-[32rem] text-ink-2">
-        New jobs appear on LinkedIn and JobStreet through the day. To see more, widen your radar: add a role, a place, or
-        allow a week instead of three days.
+        New jobs appear on LinkedIn and JobStreet through the day. To see more,
+        widen your radar: add a role, a place, or allow a week instead of three
+        days.
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-3">
         <Button asChild variant="secondary">
@@ -173,14 +208,19 @@ function Catch({ brief }: { brief: Brief }) {
     { label: "fit your bar", value: brief.matches.length },
   ].filter((f) => typeof f.value === "number");
   return (
-    <section aria-labelledby="catch-heading" className="rounded-panel border border-line bg-surface p-5">
+    <section
+      aria-labelledby="catch-heading"
+      className="rounded-panel border border-line bg-surface p-5"
+    >
       <h2 id="catch-heading" className="type-label text-ink-2">
         Today's catch
       </h2>
       <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {figures.map((figure) => (
           <div key={figure.label}>
-            <dd className="type-figure text-[1.75rem] leading-none">{figure.value}</dd>
+            <dd className="type-figure text-[1.75rem] leading-none">
+              {figure.value}
+            </dd>
             <dt className="mt-1 text-[0.8125rem] text-ink-2">{figure.label}</dt>
           </div>
         ))}

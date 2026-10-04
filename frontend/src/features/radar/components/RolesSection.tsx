@@ -16,7 +16,9 @@ interface Props {
 export function RolesSection({ settings, set }: Props) {
   const suggest = useSuggestRoles();
   const known = new Set(settings.roles.map((r) => r.toLowerCase()));
-  const ideas = (suggest.data?.roles ?? []).filter((idea) => !known.has(idea.title.toLowerCase()));
+  const ideas = (suggest.data?.roles ?? []).filter(
+    (idea) => !known.has(idea.title.toLowerCase()),
+  );
   const full = settings.roles.length >= 6;
 
   return (
@@ -30,7 +32,11 @@ export function RolesSection({ settings, set }: Props) {
           variant="secondary"
           icon={<Sparkles className="size-4" />}
           loading={suggest.isPending}
-          onClick={() => suggest.mutate(undefined, { onError: (error) => toast.error(error.message) })}
+          onClick={() =>
+            suggest.mutate(undefined, {
+              onError: (error) => toast.error(error.message),
+            })
+          }
         >
           Suggest from my profile
         </Button>
@@ -55,17 +61,24 @@ export function RolesSection({ settings, set }: Props) {
             <p className="type-label text-chalk">Suggested from your profile</p>
             <ul className="mt-3 flex flex-col gap-2">
               {ideas.map((idea) => (
-                <li key={idea.title} className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+                <li
+                  key={idea.title}
+                  className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1"
+                >
                   <span className="min-w-[min(100%,14rem)] flex-1">
                     <span className="block font-semibold">{idea.title}</span>
-                    <span className="block text-[0.875rem] text-ink-2">{idea.reason}</span>
+                    <span className="block text-[0.875rem] text-ink-2">
+                      {idea.reason}
+                    </span>
                   </span>
                   <Button
                     size="sm"
                     variant="secondary"
                     icon={<Plus className="size-4" />}
                     disabled={full}
-                    onClick={() => set({ roles: [...settings.roles, idea.title] })}
+                    onClick={() =>
+                      set({ roles: [...settings.roles, idea.title] })
+                    }
                   >
                     Add
                   </Button>
@@ -75,7 +88,11 @@ export function RolesSection({ settings, set }: Props) {
             {suggest.data && suggest.data.seniority.length > 0 && (
               <p className="mt-4 text-[0.875rem] text-ink-2">
                 Your experience fits{" "}
-                {suggest.data.seniority.map((level: Seniority) => SENIORITY_LABEL[level].toLowerCase()).join(" and ")}{" "}
+                {suggest.data.seniority
+                  .map((level: Seniority) =>
+                    SENIORITY_LABEL[level].toLowerCase(),
+                  )
+                  .join(" and ")}{" "}
                 roles.{" "}
                 <button
                   type="button"

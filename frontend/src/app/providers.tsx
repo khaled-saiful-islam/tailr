@@ -1,4 +1,8 @@
-import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  MutationCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { MotionConfig } from "motion/react";
 import { useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -13,7 +17,12 @@ function makeQueryClient(): QueryClient {
         staleTime: 30_000,
         refetchOnWindowFocus: true,
         // Don't retry what will fail again (auth, validation, not found).
-        retry: (count, error) => !(error instanceof ApiError && error.status >= 400 && error.status < 500) && count < 2,
+        retry: (count, error) =>
+          !(
+            error instanceof ApiError &&
+            error.status >= 400 &&
+            error.status < 500
+          ) && count < 2,
       },
     },
     mutationCache: new MutationCache(),
@@ -28,7 +37,8 @@ function ThemedToaster() {
       position="bottom-right"
       toastOptions={{
         classNames: {
-          toast: "!rounded-[12px] !border-line !bg-surface !text-ink !font-sans !shadow-sheet",
+          toast:
+            "!rounded-[12px] !border-line !bg-surface !text-ink !font-sans !shadow-sheet",
           description: "!text-ink-2",
         },
       }}

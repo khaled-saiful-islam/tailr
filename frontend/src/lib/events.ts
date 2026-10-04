@@ -55,7 +55,10 @@ export function useLiveConnection(): void {
 }
 
 /** Run `handler` whenever the server announces an event of `type`. */
-export function useLiveEvent<T = Record<string, unknown>>(type: string, handler: (event: LiveEvent<T>) => void): void {
+export function useLiveEvent<T = Record<string, unknown>>(
+  type: string,
+  handler: (event: LiveEvent<T>) => void,
+): void {
   const latest = useRef(handler);
   useEffect(() => {
     latest.current = handler;

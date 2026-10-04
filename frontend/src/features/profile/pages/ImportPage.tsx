@@ -33,16 +33,23 @@ export function ImportPage() {
 
   return (
     <div className="mx-auto w-full max-w-[60rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-12">
-      <motion.header initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.header
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
         <h1 className="type-title">Build your profile</h1>
         <p className="mt-3 max-w-[38rem] text-[1.0625rem] text-ink-2">
-          Start with your CV. Tailr reads it and fills in every section, and you check everything before
-          it's saved.
+          Start with your CV. Tailr reads it and fills in every section, and you
+          check everything before it's saved.
         </p>
       </motion.header>
 
       <div className="mt-10">
-        <Dropzone busy={upload.isPending} onFile={onFile} onReject={(message) => toast.error(message)} />
+        <Dropzone
+          busy={upload.isPending}
+          onFile={onFile}
+          onReject={(message) => toast.error(message)}
+        />
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -52,20 +59,30 @@ export function ImportPage() {
           aria-expanded={pasting}
           className="flex items-start gap-4 rounded-panel border border-line bg-surface p-5 text-left transition-colors hover:border-line-strong"
         >
-          <ClipboardType className="mt-0.5 size-5 shrink-0 text-ink-2" aria-hidden />
+          <ClipboardType
+            className="mt-0.5 size-5 shrink-0 text-ink-2"
+            aria-hidden
+          />
           <span>
             <span className="block font-semibold">Paste your CV as text</span>
-            <span className="mt-1 block text-[0.9375rem] text-ink-2">Useful when your file won't open, or for a quick start.</span>
+            <span className="mt-1 block text-[0.9375rem] text-ink-2">
+              Useful when your file won't open, or for a quick start.
+            </span>
           </span>
         </button>
         <Link
           to="/profile"
           className="flex items-start gap-4 rounded-panel border border-line bg-surface p-5 transition-colors hover:border-line-strong"
         >
-          <PencilLine className="mt-0.5 size-5 shrink-0 text-ink-2" aria-hidden />
+          <PencilLine
+            className="mt-0.5 size-5 shrink-0 text-ink-2"
+            aria-hidden
+          />
           <span>
             <span className="block font-semibold">Start from scratch</span>
-            <span className="mt-1 block text-[0.9375rem] text-ink-2">Fill in your profile section by section.</span>
+            <span className="mt-1 block text-[0.9375rem] text-ink-2">
+              Fill in your profile section by section.
+            </span>
           </span>
         </Link>
       </div>
@@ -97,7 +114,11 @@ export function ImportPage() {
                     ? `Paste at least ${MIN_TEXT} characters.`
                     : `${text.trim().length.toLocaleString()} characters`}
                 </p>
-                <Button disabled={text.trim().length < MIN_TEXT} loading={paste.isPending} onClick={onPaste}>
+                <Button
+                  disabled={text.trim().length < MIN_TEXT}
+                  loading={paste.isPending}
+                  onClick={onPaste}
+                >
                   Read this text
                 </Button>
               </div>
@@ -107,8 +128,8 @@ export function ImportPage() {
       </AnimatePresence>
 
       <p className="mt-8 text-[0.9375rem] text-ink-2">
-        <span className="font-semibold text-ink">From LinkedIn?</span> Open your profile, choose More, then Save to
-        PDF, and upload that file here.
+        <span className="font-semibold text-ink">From LinkedIn?</span> Open your
+        profile, choose More, then Save to PDF, and upload that file here.
       </p>
     </div>
   );

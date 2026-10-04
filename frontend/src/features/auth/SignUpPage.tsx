@@ -12,7 +12,11 @@ import { FormAlert } from "./FormAlert";
 import { PasswordMeter } from "./PasswordMeter";
 
 const schema = z.object({
-  name: z.string().trim().min(1, "Tell us your name.").max(120, "Keep it under 120 characters."),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Tell us your name.")
+    .max(120, "Keep it under 120 characters."),
   email: z.string().trim().email("Enter a valid email address."),
   password: z.string().min(8, "Use at least 8 characters.").max(200),
 });
@@ -33,10 +37,13 @@ export function SignUpPage() {
   useEffect(() => {
     const error = signUp.error;
     if (isApiError(error, "email_taken")) {
-      form.setError("email", { message: "An account with this email already exists. Sign in instead." });
+      form.setError("email", {
+        message: "An account with this email already exists. Sign in instead.",
+      });
     } else if (isApiError(error, "validation_error")) {
       for (const [field, message] of Object.entries(error.fieldIssues())) {
-        if (field === "name" || field === "email" || field === "password") form.setError(field, { message });
+        if (field === "name" || field === "email" || field === "password")
+          form.setError(field, { message });
       }
     }
   }, [signUp.error, form]);
@@ -49,7 +56,9 @@ export function SignUpPage() {
   );
 
   const general =
-    signUp.error && !isApiError(signUp.error, "email_taken") && !isApiError(signUp.error, "validation_error")
+    signUp.error &&
+    !isApiError(signUp.error, "email_taken") &&
+    !isApiError(signUp.error, "validation_error")
       ? signUp.error.message
       : null;
 
@@ -60,7 +69,10 @@ export function SignUpPage() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/sign-in" className="font-semibold text-ink underline decoration-tape decoration-2 underline-offset-4 hover:decoration-ink">
+          <Link
+            to="/sign-in"
+            className="font-semibold text-ink underline decoration-tape decoration-2 underline-offset-4 hover:decoration-ink"
+          >
             Sign in
           </Link>
         </>
@@ -68,7 +80,13 @@ export function SignUpPage() {
     >
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
         {general && <FormAlert>{general}</FormAlert>}
-        <Field label="Full name" autoComplete="name" autoFocus error={errors.name?.message} {...form.register("name")} />
+        <Field
+          label="Full name"
+          autoComplete="name"
+          autoFocus
+          error={errors.name?.message}
+          {...form.register("name")}
+        />
         <Field
           label="Email"
           type="email"
@@ -86,7 +104,12 @@ export function SignUpPage() {
           />
           <PasswordMeter password={password} />
         </div>
-        <Button type="submit" size="lg" className="mt-1 w-full" loading={signUp.isPending}>
+        <Button
+          type="submit"
+          size="lg"
+          className="mt-1 w-full"
+          loading={signUp.isPending}
+        >
           {signUp.isPending ? "Creating your account" : "Create account"}
         </Button>
       </form>

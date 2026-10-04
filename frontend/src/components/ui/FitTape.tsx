@@ -1,4 +1,10 @@
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "motion/react";
 import { useEffect, useId } from "react";
 import { cn } from "@/lib/cn";
 import { fitLabel, fitLevel, type FitLevel } from "./fit";
@@ -58,20 +64,35 @@ export function FitTape({
       progress.set(clamped);
       return;
     }
-    const controls = animate(progress, clamped, { duration: 1.1, ease: [0.22, 1, 0.36, 1] });
+    const controls = animate(progress, clamped, {
+      duration: 1.1,
+      ease: [0.22, 1, 0.36, 1],
+    });
     return () => controls.stop();
   }, [animated, reduce, clamped, progress]);
 
   return (
     <div
-      className={cn("inline-flex items-center gap-3", size === "lg" && "flex w-full flex-col items-start gap-2", className)}
+      className={cn(
+        "inline-flex items-center gap-3",
+        size === "lg" && "flex w-full flex-col items-start gap-2",
+        className,
+      )}
       role="img"
       aria-label={`${text}: ${clamped} ${measure}`}
     >
       {size === "lg" && (
         <div className="flex items-baseline gap-3">
-          <motion.span className={cn("type-figure leading-none text-ink", figure)}>{shown}</motion.span>
-          <span className={cn("type-label whitespace-nowrap", levelText[level])}>{text}</span>
+          <motion.span
+            className={cn("type-figure leading-none text-ink", figure)}
+          >
+            {shown}
+          </motion.span>
+          <span
+            className={cn("type-label whitespace-nowrap", levelText[level])}
+          >
+            {text}
+          </span>
         </div>
       )}
       <svg
@@ -80,7 +101,10 @@ export function FitTape({
         height={size === "lg" ? undefined : height + 8}
         viewBox={`0 -4 ${width} ${height + 8}`}
         preserveAspectRatio="xMinYMid meet"
-        className={cn("shrink-0 overflow-visible", size === "lg" && "h-auto max-w-[280px]")}
+        className={cn(
+          "shrink-0 overflow-visible",
+          size === "lg" && "h-auto max-w-[280px]",
+        )}
       >
         <defs>
           <clipPath id={clipId}>
@@ -88,24 +112,53 @@ export function FitTape({
           </clipPath>
         </defs>
         {/* The track beyond the score, with faint ticks. */}
-        <rect x="0" y="0" width={width} height={height} rx="2" className="fill-surface-3" />
+        <rect
+          x="0"
+          y="0"
+          width={width}
+          height={height}
+          rx="2"
+          className="fill-surface-3"
+        />
         <Ticks width={width} height={height} className="stroke-ink" faint />
         {/* The measured part: bright tape with dark ticks, clipped at the pin. */}
         <g clipPath={`url(#${clipId})`}>
-          <rect x="0" y="0" width={width} height={height} rx="2" className="fill-tape" />
+          <rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            rx="2"
+            className="fill-tape"
+          />
           <Ticks width={width} height={height} className="stroke-tape-ink" />
         </g>
         {/* The pin at the score. */}
         <motion.g style={{ x: markerX }}>
-          <line x1="0" x2="0" y1={-4} y2={height + 4} stroke="var(--ink)" strokeWidth="2" />
+          <line
+            x1="0"
+            x2="0"
+            y1={-4}
+            y2={height + 4}
+            stroke="var(--ink)"
+            strokeWidth="2"
+          />
           <circle cx="0" cy={-4} r="3" className="fill-ink" />
         </motion.g>
       </svg>
       {size !== "lg" && (
         <span className="flex items-baseline gap-2">
-          <motion.span className={cn("type-figure leading-none text-ink", figure)}>{shown}</motion.span>
+          <motion.span
+            className={cn("type-figure leading-none text-ink", figure)}
+          >
+            {shown}
+          </motion.span>
           {showLabel && (
-            <span className={cn("type-label whitespace-nowrap", levelText[level])}>{text}</span>
+            <span
+              className={cn("type-label whitespace-nowrap", levelText[level])}
+            >
+              {text}
+            </span>
           )}
         </span>
       )}
@@ -115,15 +168,39 @@ export function FitTape({
 
 const TICKS = Array.from({ length: 51 }, (_, i) => i * 2);
 
-function Ticks({ width, height, className, faint = false }: { width: number; height: number; className: string; faint?: boolean }) {
+function Ticks({
+  width,
+  height,
+  className,
+  faint = false,
+}: {
+  width: number;
+  height: number;
+  className: string;
+  faint?: boolean;
+}) {
   return (
     <g className={className}>
       {TICKS.map((t) => {
         const x = (t / 100) * width;
         const major = t % 10 === 0;
-        const h = major ? height * 0.55 : t % 10 === 5 ? height * 0.4 : height * 0.25;
+        const h = major
+          ? height * 0.55
+          : t % 10 === 5
+            ? height * 0.4
+            : height * 0.25;
         const opacity = faint ? (major ? 0.35 : 0.18) : major ? 0.8 : 0.5;
-        return <line key={t} x1={x} x2={x} y1={0} y2={h} strokeOpacity={opacity} strokeWidth={major ? 1.1 : 0.8} />;
+        return (
+          <line
+            key={t}
+            x1={x}
+            x2={x}
+            y1={0}
+            y2={h}
+            strokeOpacity={opacity}
+            strokeWidth={major ? 1.1 : 0.8}
+          />
+        );
       })}
     </g>
   );

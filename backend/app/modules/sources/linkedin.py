@@ -92,6 +92,9 @@ def parse_details(html: str, external_id: str) -> JobDetail:
         employment_type=criteria.get("employment type"),
         industries=criteria.get("industries"),
         applicants=_text(tree.css_first(".num-applicants__caption")),
+        title=_text(tree.css_first(".top-card-layout__title, .topcard__title")),
+        company=_text(tree.css_first(".topcard__org-name-link, .topcard__flavor a")),
+        location=_text(tree.css_first(".topcard__flavor--bullet")),
     )
 
 

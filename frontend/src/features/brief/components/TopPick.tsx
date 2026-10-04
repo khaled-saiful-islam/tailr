@@ -18,23 +18,41 @@ export function TopPick({ match }: { match: Match }) {
       className="relative overflow-hidden rounded-sheet border border-line bg-surface shadow-sheet"
       aria-labelledby={`top-${match.id}`}
     >
-      <div aria-hidden className="h-1.5 bg-[repeating-linear-gradient(90deg,var(--tape)_0_14px,var(--tape-deep)_14px_15px)]" />
+      <div
+        aria-hidden
+        className="h-1.5 bg-[repeating-linear-gradient(90deg,var(--tape)_0_14px,var(--tape-deep)_14px_15px)]"
+      />
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_17rem]">
         <div className="min-w-0">
           <p className="type-label text-ink-2">Top pick</p>
           <h2 id={`top-${match.id}`} className="type-title mt-2">
-            <Link to={`/jobs/${match.id}`} className="hover:underline hover:decoration-tape hover:decoration-2 hover:underline-offset-4">
+            <Link
+              to={`/jobs/${match.id}`}
+              className="hover:underline hover:decoration-tape hover:decoration-2 hover:underline-offset-4"
+            >
               {match.job.title}
             </Link>
           </h2>
-          <p className="mt-1 text-[1.0625rem] font-medium">{match.job.company}</p>
+          <p className="mt-1 text-[1.0625rem] font-medium">
+            {match.job.company}
+          </p>
           <MatchMeta match={match} className="mt-1" />
-          {review.headline && <p className="chalk-mark mt-5 text-[1.0625rem] leading-relaxed">{review.headline}</p>}
+          {review.headline && (
+            <p className="chalk-mark mt-5 text-[1.0625rem] leading-relaxed">
+              {review.headline}
+            </p>
+          )}
           {review.why.length > 0 && (
             <ul className="mt-4 flex flex-col gap-2">
               {review.why.map((reason) => (
-                <li key={reason} className="flex gap-2.5 text-[0.9375rem] text-ink-2">
-                  <Check className="mt-0.5 size-4 shrink-0 text-fit-strong" aria-hidden />
+                <li
+                  key={reason}
+                  className="flex gap-2.5 text-[0.9375rem] text-ink-2"
+                >
+                  <Check
+                    className="mt-0.5 size-4 shrink-0 text-fit-strong"
+                    aria-hidden
+                  />
                   {reason}
                 </li>
               ))}
@@ -43,10 +61,17 @@ export function TopPick({ match }: { match: Match }) {
           {review.gaps.length > 0 && (
             <ul className="mt-3 flex flex-col gap-2">
               {review.gaps.slice(0, 2).map((gap) => (
-                <li key={gap.text} className="flex gap-2.5 text-[0.9375rem] text-ink-2">
-                  <CircleDashed className="mt-0.5 size-4 shrink-0 text-fit-stretch" aria-hidden />
+                <li
+                  key={gap.text}
+                  className="flex gap-2.5 text-[0.9375rem] text-ink-2"
+                >
+                  <CircleDashed
+                    className="mt-0.5 size-4 shrink-0 text-fit-stretch"
+                    aria-hidden
+                  />
                   <span>
-                    <span className="text-ink">{sentence(gap.text)}.</span> {gap.tip}
+                    <span className="text-ink">{sentence(gap.text)}.</span>{" "}
+                    {gap.tip}
                   </span>
                 </li>
               ))}
@@ -61,7 +86,9 @@ export function TopPick({ match }: { match: Match }) {
         </div>
         <div className="flex flex-col justify-start gap-3 lg:border-l lg:border-line lg:pl-6">
           <FitTape score={match.score} size="lg" />
-          <p className="text-[0.875rem] text-ink-3">Measured against your profile and radar.</p>
+          <p className="text-[0.875rem] text-ink-3">
+            Measured against your profile and radar.
+          </p>
         </div>
       </div>
     </motion.article>

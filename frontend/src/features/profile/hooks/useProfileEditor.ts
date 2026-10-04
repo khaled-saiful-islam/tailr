@@ -1,5 +1,8 @@
 import { useCallback } from "react";
-import { useVersionedAutosave, type SaveStatus } from "@/lib/useVersionedAutosave";
+import {
+  useVersionedAutosave,
+  type SaveStatus,
+} from "@/lib/useVersionedAutosave";
 import { useProfile, useSaveProfile } from "../api";
 import { normalize, toApi, type ProfileDoc, type ProfileOut } from "../types";
 
@@ -13,9 +16,15 @@ export function useProfileEditor() {
 
   const editor = useVersionedAutosave<ProfileOut, ProfileDoc>({
     data: query.data,
-    read: (profile) => ({ value: normalize(profile.document), version: profile.version }),
+    read: (profile) => ({
+      value: normalize(profile.document),
+      version: profile.version,
+    }),
     save: ({ value, version }, { onSuccess, onError }) =>
-      mutate({ document: toApi(value), version }, { onSuccess: (profile) => onSuccess(profile.version), onError }),
+      mutate(
+        { document: toApi(value), version },
+        { onSuccess: (profile) => onSuccess(profile.version), onError },
+      ),
     refetch: useCallback(async () => (await refetch()).data, [refetch]),
   });
 

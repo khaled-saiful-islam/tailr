@@ -1,5 +1,11 @@
 import { Eye, EyeOff } from "lucide-react";
-import { forwardRef, useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
+import {
+  forwardRef,
+  useId,
+  useState,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/cn";
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -34,7 +40,9 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
           ref={ref}
           id={inputId}
           aria-invalid={error ? true : undefined}
-          aria-describedby={[hintId, errorId].filter(Boolean).join(" ") || undefined}
+          aria-describedby={
+            [hintId, errorId].filter(Boolean).join(" ") || undefined
+          }
           className={cn(
             "h-11 w-full rounded-control border bg-surface px-3.5 text-[0.9375rem] text-ink",
             "placeholder:text-ink-3 transition-[border-color,box-shadow] duration-150",
@@ -44,7 +52,11 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
           )}
           {...props}
         />
-        {trailing ? <div className="absolute inset-y-0 right-1 flex items-center">{trailing}</div> : null}
+        {trailing ? (
+          <div className="absolute inset-y-0 right-1 flex items-center">
+            {trailing}
+          </div>
+        ) : null}
       </div>
       {error ? (
         <p id={errorId} className="text-[0.8125rem] font-medium text-pin">
@@ -61,27 +73,30 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
 
 type PasswordFieldProps = Omit<FieldProps, "type" | "trailing">;
 
-export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(function PasswordField(
-  props,
-  ref,
-) {
-  const [visible, setVisible] = useState(false);
-  return (
-    <Field
-      ref={ref}
-      type={visible ? "text" : "password"}
-      trailing={
-        <button
-          type="button"
-          onClick={() => setVisible((v) => !v)}
-          className="grid size-9 place-items-center rounded-[8px] text-ink-3 hover:bg-surface-2 hover:text-ink"
-          aria-label={visible ? "Hide password" : "Show password"}
-          aria-pressed={visible}
-        >
-          {visible ? <EyeOff className="size-[18px]" /> : <Eye className="size-[18px]" />}
-        </button>
-      }
-      {...props}
-    />
-  );
-});
+export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
+  function PasswordField(props, ref) {
+    const [visible, setVisible] = useState(false);
+    return (
+      <Field
+        ref={ref}
+        type={visible ? "text" : "password"}
+        trailing={
+          <button
+            type="button"
+            onClick={() => setVisible((v) => !v)}
+            className="grid size-9 place-items-center rounded-[8px] text-ink-3 hover:bg-surface-2 hover:text-ink"
+            aria-label={visible ? "Hide password" : "Show password"}
+            aria-pressed={visible}
+          >
+            {visible ? (
+              <EyeOff className="size-[18px]" />
+            ) : (
+              <Eye className="size-[18px]" />
+            )}
+          </button>
+        }
+        {...props}
+      />
+    );
+  },
+);

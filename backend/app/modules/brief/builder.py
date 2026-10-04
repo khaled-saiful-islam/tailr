@@ -32,6 +32,7 @@ from app.modules.matching.fit import FitParts, QuickFit, quick_fit, refine
 from app.modules.matching.profile_vector import profile_vector
 from app.modules.matching.review import FitReview, review_fit
 from app.modules.matching.signals import profile_signals
+from app.modules.notifications.service import notify
 from app.modules.profile.document import ProfileDocument
 from app.modules.profile.service import ProfileService, profile_as_text
 from app.modules.radar.filters import apply_filters, duplicate_key, reason_to_drop
@@ -300,6 +301,13 @@ async def run_brief(brief_id: uuid.UUID) -> None:
                 brief.finished_at = utcnow()
                 brief.stats = {**(brief.stats or {}), "matches": saved, "below_bar": below_bar}
         await publish(user_id, "brief.ready", {"id": str(brief_id), "matches": saved})
+        await notify(
+            user_id,
+            kind="brief.ready",
+            title="Your brief is ready",
+            body=brief_summary(saved, keep[0][0].company if saved and keep else None),
+            link="/",
+        )
         log.info("brief_ready", brief=str(brief_id), matches=saved)
         from app.modules.brief.mailer import email_brief
 
@@ -319,6 +327,22 @@ async def run_brief(brief_id: uuid.UUID) -> None:
                 brief.error = message
                 brief.finished_at = utcnow()
         await publish(user_id, "brief.ready", {"id": str(brief_id), "failed": True})
+        await notify(
+            user_id,
+            kind="brief.failed",
+            title="Your brief didn't finish",
+            body=f"{message} You can run it again from Today.",
+            link="/",
+        )
+
+
+def brief_summary(new_matches: int, top_company: str | None) -> str:
+    """One line for the notification: how many jobs, and who fits best."""
+    if new_matches == 0:
+        return "No new jobs fit this time. Tailr looks again tomorrow morning."
+    jobs = "1 job" if new_matches == 1 else f"{new_matches} jobs"
+    best = f" {top_company} fits best." if top_company else ""
+    return f"{jobs} measured against your profile.{best}"
 
 
 def place_label(location: str | None) -> str | None:

@@ -11,11 +11,12 @@ Read `PLAN.md` (scope, decisions, build order) and `docs/architecture.md` first.
 - **After a model change:** `make migration m="…"`, review it, then `make up` (the backend
   migrates on start). Then `make gen-api` if the API changed.
 - **Frontend:** feature folders, TanStack Query for server data, only design tokens for colour,
-  text wraps (never truncate), check 1440/1024/768/390 in light and dark.
+  text wraps (never truncate), check 1440/1024/768/390 in light and dark. Every screen must
+  work on phones. Format with Prettier (`make fmt`); `src/lib/api/schema.d.ts` is generated.
 - **AI:** ILMU models only, behind `app/ai`. Generated resume content must trace to profile facts.
 - **Docs:** every feature gets `docs/features/NN-name.md`; update README's status table and
   PLAN.md checkboxes when a milestone lands.
-- **Git:** conventional commits; commit locally; do not push unless the owner asks.
+- **Git:** conventional commits; after each finished milestone, commit and push to `origin main`.
 
 ## Default admin
 

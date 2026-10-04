@@ -10,7 +10,11 @@ interface SaveIndicatorProps {
 }
 
 /** Quiet confirmation that typing is being saved; loud only when it isn't. */
-export function SaveIndicator({ status, onRetry, onReload }: SaveIndicatorProps) {
+export function SaveIndicator({
+  status,
+  onRetry,
+  onReload,
+}: SaveIndicatorProps) {
   // Idle: keep the live region (so later changes are announced) but take no space.
   if (status === "idle") return <div aria-live="polite" className="sr-only" />;
   return (
@@ -46,7 +50,11 @@ export function SaveIndicator({ status, onRetry, onReload }: SaveIndicatorProps)
             <>
               <CircleAlert className="size-4 text-pin" aria-hidden />
               <span className="text-ink">Couldn't save.</span>
-              <button type="button" onClick={onRetry} className="font-semibold text-chalk hover:underline">
+              <button
+                type="button"
+                onClick={onRetry}
+                className="font-semibold text-chalk hover:underline"
+              >
                 Try again
               </button>
             </>
@@ -55,7 +63,11 @@ export function SaveIndicator({ status, onRetry, onReload }: SaveIndicatorProps)
             <>
               <CircleAlert className="size-4 text-pin" aria-hidden />
               <span className="text-ink">Changed in another tab.</span>
-              <button type="button" onClick={onReload} className="font-semibold text-chalk hover:underline">
+              <button
+                type="button"
+                onClick={onReload}
+                className="font-semibold text-chalk hover:underline"
+              >
                 Load latest
               </button>
             </>

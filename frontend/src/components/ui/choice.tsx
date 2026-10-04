@@ -30,7 +30,11 @@ export function ToggleChips<T extends string | number>({
 }) {
   const toggle = (option: T) => {
     if (single) return onChange([option]);
-    onChange(value.includes(option) ? value.filter((v) => v !== option) : [...value, option]);
+    onChange(
+      value.includes(option)
+        ? value.filter((v) => v !== option)
+        : [...value, option],
+    );
   };
   return (
     <div role="group" aria-label={label} className="flex flex-wrap gap-2">
@@ -198,6 +202,74 @@ export function Slider({
           className="block size-6 rounded-full border-2 border-ink bg-surface shadow-sheet transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-chalk"
         />
       </RadixSlider.Root>
+    </div>
+  );
+}
+
+/** One of a few options, side by side. Arrow keys move between them. */
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  label,
+  size = "md",
+}: {
+  options: Option<T>[];
+  value: T;
+  onChange: (value: T) => void;
+  label: string;
+  size?: "sm" | "md";
+}) {
+  const move = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (!step) return;
+    event.preventDefault();
+    const next = options[(index + step + options.length) % options.length];
+    if (!next) return;
+    onChange(next.value);
+    const radios =
+      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+        "[role=radio]",
+      );
+    radios?.[options.indexOf(next)]?.focus();
+  };
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="inline-flex flex-wrap gap-1 rounded-control bg-surface-2 p-1"
+    >
+      {options.map((option, index) => {
+        const on = option.value === value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            tabIndex={on ? 0 : -1}
+            title={option.hint}
+            onClick={() => onChange(option.value)}
+            onKeyDown={(event) => move(event, index)}
+            className={cn(
+              "rounded-[7px] font-medium transition-[background-color,color,box-shadow] duration-150",
+              size === "sm"
+                ? "h-7 px-2.5 text-[0.8125rem]"
+                : "h-8 px-3.5 text-[0.875rem]",
+              on
+                ? "bg-surface text-ink shadow-[0_1px_2px_rgb(20_33_61/0.12)]"
+                : "text-ink-2 hover:text-ink",
+            )}
+          >
+            {option.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

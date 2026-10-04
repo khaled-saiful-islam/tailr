@@ -6,16 +6,43 @@ import { NotFound } from "./NotFound";
 import { Page } from "./Page";
 
 // Each page is its own chunk, so signing in doesn't download the whole app.
-const SignInPage = lazy(() => import("@/features/auth/SignInPage").then((m) => ({ default: m.SignInPage })));
-const SignUpPage = lazy(() => import("@/features/auth/SignUpPage").then((m) => ({ default: m.SignUpPage })));
-const TodayPage = lazy(() => import("@/features/today/TodayPage").then((m) => ({ default: m.TodayPage })));
-const ProfilePage = lazy(() => import("@/features/profile/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
-const ImportPage = lazy(() => import("@/features/profile/pages/ImportPage").then((m) => ({ default: m.ImportPage })));
-const JobsPage = lazy(() => import("@/features/brief/JobsPage").then((m) => ({ default: m.JobsPage })));
-const JobDetailPage = lazy(() => import("@/features/brief/JobDetailPage").then((m) => ({ default: m.JobDetailPage })));
-const RadarPage = lazy(() => import("@/features/radar/RadarPage").then((m) => ({ default: m.RadarPage })));
+const SignInPage = lazy(() =>
+  import("@/features/auth/SignInPage").then((m) => ({ default: m.SignInPage })),
+);
+const SignUpPage = lazy(() =>
+  import("@/features/auth/SignUpPage").then((m) => ({ default: m.SignUpPage })),
+);
+const TodayPage = lazy(() =>
+  import("@/features/today/TodayPage").then((m) => ({ default: m.TodayPage })),
+);
+const ProfilePage = lazy(() =>
+  import("@/features/profile/pages/ProfilePage").then((m) => ({
+    default: m.ProfilePage,
+  })),
+);
+const ImportPage = lazy(() =>
+  import("@/features/profile/pages/ImportPage").then((m) => ({
+    default: m.ImportPage,
+  })),
+);
+const JobsPage = lazy(() =>
+  import("@/features/brief/JobsPage").then((m) => ({ default: m.JobsPage })),
+);
+const JobDetailPage = lazy(() =>
+  import("@/features/brief/JobDetailPage").then((m) => ({
+    default: m.JobDetailPage,
+  })),
+);
+const KitPage = lazy(() =>
+  import("@/features/kits/KitPage").then((m) => ({ default: m.KitPage })),
+);
+const RadarPage = lazy(() =>
+  import("@/features/radar/RadarPage").then((m) => ({ default: m.RadarPage })),
+);
 const ImportProgressPage = lazy(() =>
-  import("@/features/profile/pages/ImportProgressPage").then((m) => ({ default: m.ImportProgressPage })),
+  import("@/features/profile/pages/ImportProgressPage").then((m) => ({
+    default: m.ImportProgressPage,
+  })),
 );
 
 export const router = createBrowserRouter([
@@ -91,6 +118,14 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <JobDetailPage />
+          </Page>
+        ),
+      },
+      {
+        path: "kits/:kitId",
+        element: (
+          <Page>
+            <KitPage />
           </Page>
         ),
       },

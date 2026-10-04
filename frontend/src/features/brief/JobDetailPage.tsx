@@ -1,10 +1,11 @@
-import { ArrowLeft, Check, CircleDashed, Info, Scissors } from "lucide-react";
+import { ArrowLeft, Check, CircleDashed, Info } from "lucide-react";
 import { motion } from "motion/react";
 import { Link, useParams } from "react-router";
 import { Button } from "@/components/ui/Button";
 import { FitTape } from "@/components/ui/FitTape";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
+import { TailorAction } from "@/features/kits/components/TailorAction";
 import { useMatch, type MatchDetail } from "./api";
 import { PART_LABEL, PART_ORDER, sentence } from "./format";
 import { MatchActions, MatchMeta } from "./components/MatchParts";
@@ -34,16 +35,25 @@ export function JobDetailPage() {
 
   return (
     <div className="mx-auto w-full max-w-[80rem] px-5 py-8 sm:px-8 lg:px-12 lg:py-10">
-      <Link to="/jobs" className="inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-ink-2 hover:text-ink">
+      <Link
+        to="/jobs"
+        className="inline-flex items-center gap-1.5 text-[0.9375rem] font-medium text-ink-2 hover:text-ink"
+      >
         <ArrowLeft className="size-4" aria-hidden /> Jobs
       </Link>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <article className="min-w-0">
           <h1 className="type-title">{match.job.title}</h1>
-          <p className="mt-2 text-[1.125rem] font-medium">{match.job.company}</p>
+          <p className="mt-2 text-[1.125rem] font-medium">
+            {match.job.company}
+          </p>
           <MatchMeta match={match} className="mt-1" />
-          {match.job.applicants && <p className="mt-1 text-[0.875rem] text-ink-3">{match.job.applicants}</p>}
+          {match.job.applicants && (
+            <p className="mt-1 text-[0.875rem] text-ink-3">
+              {match.job.applicants}
+            </p>
+          )}
           <div className="mt-5">
             <MatchActions match={match} />
           </div>
@@ -79,7 +89,9 @@ function Insights({ detail }: { detail: MatchDetail }) {
       <h2 id="summary-heading" className="type-heading">
         In short
       </h2>
-      <p className="mt-3 max-w-[46rem] text-[1.0625rem] leading-relaxed">{insights.summary}</p>
+      <p className="mt-3 max-w-[46rem] text-[1.0625rem] leading-relaxed">
+        {insights.summary}
+      </p>
       <dl className="mt-5 flex flex-wrap gap-x-8 gap-y-3 text-[0.9375rem]">
         {insights.min_years !== null && (
           <div>
@@ -111,7 +123,8 @@ function Insights({ detail }: { detail: MatchDetail }) {
           <h3 className="type-label mt-6 text-ink-2">
             What they ask for{" "}
             <span className="font-normal text-ink-3">
-              ({detail.requirements.filter((r) => r.have).length} of {detail.requirements.length} in your profile)
+              ({detail.requirements.filter((r) => r.have).length} of{" "}
+              {detail.requirements.length} in your profile)
             </span>
           </h3>
           <ul className="mt-3 flex flex-wrap gap-2">
@@ -126,9 +139,15 @@ function Insights({ detail }: { detail: MatchDetail }) {
                 )}
               >
                 {requirement.have ? (
-                  <Check className="size-3.5 text-fit-strong" aria-label="In your profile" />
+                  <Check
+                    className="size-3.5 text-fit-strong"
+                    aria-label="In your profile"
+                  />
                 ) : (
-                  <CircleDashed className="size-3.5 text-fit-stretch" aria-label="Not in your profile" />
+                  <CircleDashed
+                    className="size-3.5 text-fit-stretch"
+                    aria-label="Not in your profile"
+                  />
                 )}
                 {requirement.skill}
               </li>
@@ -152,30 +171,45 @@ function Insights({ detail }: { detail: MatchDetail }) {
 function FitPanel({ detail }: { detail: MatchDetail }) {
   const review = detail.review;
   return (
-    <section aria-labelledby="fit-heading" className="rounded-sheet border border-line bg-surface p-5 shadow-sheet sm:p-6">
+    <section
+      aria-labelledby="fit-heading"
+      className="rounded-sheet border border-line bg-surface p-5 shadow-sheet sm:p-6"
+    >
       <h2 id="fit-heading" className="type-label text-ink-2">
         Your fit
       </h2>
       <FitTape score={detail.score} size="lg" className="mt-3" />
-      {review.headline && <p className="chalk-mark mt-5 leading-relaxed">{review.headline}</p>}
+      {review.headline && (
+        <p className="chalk-mark mt-5 leading-relaxed">{review.headline}</p>
+      )}
+
+      <div className="mt-6 border-y border-line py-5">
+        <TailorAction matchId={detail.id} />
+      </div>
 
       <dl className="mt-6 flex flex-col gap-3">
-        {PART_ORDER.filter((part) => detail.parts[part] !== undefined).map((part, index) => (
-          <div key={part}>
-            <div className="flex items-baseline justify-between text-[0.875rem]">
-              <dt className="text-ink-2">{PART_LABEL[part]}</dt>
-              <dd className="type-figure">{detail.parts[part]}</dd>
+        {PART_ORDER.filter((part) => detail.parts[part] !== undefined).map(
+          (part, index) => (
+            <div key={part}>
+              <div className="flex items-baseline justify-between text-[0.875rem]">
+                <dt className="text-ink-2">{PART_LABEL[part]}</dt>
+                <dd className="type-figure">{detail.parts[part]}</dd>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
+                <motion.div
+                  className="h-full rounded-full bg-ink"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${detail.parts[part]}%` }}
+                  transition={{
+                    delay: 0.15 + index * 0.06,
+                    duration: 0.6,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                />
+              </div>
             </div>
-            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
-              <motion.div
-                className="h-full rounded-full bg-ink"
-                initial={{ width: 0 }}
-                animate={{ width: `${detail.parts[part]}%` }}
-                transition={{ delay: 0.15 + index * 0.06, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </div>
-          </div>
-        ))}
+          ),
+        )}
       </dl>
 
       {review.why.length > 0 && (
@@ -183,8 +217,14 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
           <h3 className="type-label mt-6">Why you fit</h3>
           <ul className="mt-2 flex flex-col gap-2">
             {review.why.map((reason) => (
-              <li key={reason} className="flex gap-2.5 text-[0.9375rem] text-ink-2">
-                <Check className="mt-0.5 size-4 shrink-0 text-fit-strong" aria-hidden />
+              <li
+                key={reason}
+                className="flex gap-2.5 text-[0.9375rem] text-ink-2"
+              >
+                <Check
+                  className="mt-0.5 size-4 shrink-0 text-fit-strong"
+                  aria-hidden
+                />
                 {reason}
               </li>
             ))}
@@ -197,7 +237,10 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
           <ul className="mt-2 flex flex-col gap-3">
             {review.gaps.map((gap) => (
               <li key={gap.text} className="flex gap-2.5 text-[0.9375rem]">
-                <CircleDashed className="mt-0.5 size-4 shrink-0 text-fit-stretch" aria-hidden />
+                <CircleDashed
+                  className="mt-0.5 size-4 shrink-0 text-fit-stretch"
+                  aria-hidden
+                />
                 <span>
                   <span className="font-medium">{sentence(gap.text)}</span>
                   <span className="block text-ink-2">{gap.tip}</span>
@@ -207,15 +250,6 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
           </ul>
         </>
       )}
-
-      <div className="mt-7 border-t border-line pt-5">
-        <Button className="w-full" variant="tape" icon={<Scissors className="size-4" />} disabled>
-          Tailor my application
-        </Button>
-        <p className="mt-2 text-center text-[0.8125rem] text-ink-3">
-          Tailored resumes and cover letters arrive in the next build of Tailr.
-        </p>
-      </div>
     </section>
   );
 }

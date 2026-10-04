@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isApiError } from "@/lib/api/client";
 
-export type SaveStatus = "idle" | "pending" | "saving" | "saved" | "error" | "conflict";
+export type SaveStatus =
+  "idle" | "pending" | "saving" | "saved" | "error" | "conflict";
 
 interface Loaded<T> {
   value: T;
@@ -16,7 +17,10 @@ interface Options<TServer, T> {
   /** Persist; must call back with the server's new version. */
   save: (
     body: Loaded<T>,
-    callbacks: { onSuccess: (version: number) => void; onError: (error: unknown) => void },
+    callbacks: {
+      onSuccess: (version: number) => void;
+      onError: (error: unknown) => void;
+    },
   ) => void;
   /** Fetch the server's current answer again (used after a conflict). */
   refetch: () => Promise<TServer | undefined>;
@@ -85,7 +89,9 @@ export function useVersionedAutosave<TServer, T>({
         onError: (error) => {
           inFlight.current = false;
           dirty.current = true;
-          setStatus(isApiError(error, "version_conflict") ? "conflict" : "error");
+          setStatus(
+            isApiError(error, "version_conflict") ? "conflict" : "error",
+          );
         },
       },
     );
@@ -97,14 +103,21 @@ export function useVersionedAutosave<TServer, T>({
 
   useEffect(() => {
     // After an error, wait for the next edit or an explicit retry instead of looping.
-    if (!autosave || !dirty.current || status === "conflict" || status === "error") return;
+    if (
+      !autosave ||
+      !dirty.current ||
+      status === "conflict" ||
+      status === "error"
+    )
+      return;
     const timer = window.setTimeout(flush, debounceMs);
     return () => window.clearTimeout(timer);
   }, [value, flush, status, autosave, debounceMs]);
 
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
-      if (autosave && (dirty.current || inFlight.current)) event.preventDefault();
+      if (autosave && (dirty.current || inFlight.current))
+        event.preventDefault();
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);

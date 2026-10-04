@@ -47,7 +47,8 @@ export function useUploadCv() {
 
 export function usePasteCv() {
   return useMutation({
-    mutationFn: (text: string) => unwrap(api.POST("/api/v1/profile/imports/text", { body: { text } })),
+    mutationFn: (text: string) =>
+      unwrap(api.POST("/api/v1/profile/imports/text", { body: { text } })),
   });
 }
 
@@ -55,11 +56,17 @@ export function usePasteCv() {
 export function useImport(id: string) {
   const client = useQueryClient();
   useLiveEvent<{ id: string }>("profile.import", (event) => {
-    if (event.data.id === id) void client.invalidateQueries({ queryKey: importKey(id) });
+    if (event.data.id === id)
+      void client.invalidateQueries({ queryKey: importKey(id) });
   });
   return useQuery({
     queryKey: importKey(id),
-    queryFn: () => unwrap(api.GET("/api/v1/profile/imports/{import_id}", { params: { path: { import_id: id } } })),
+    queryFn: () =>
+      unwrap(
+        api.GET("/api/v1/profile/imports/{import_id}", {
+          params: { path: { import_id: id } },
+        }),
+      ),
     refetchInterval: (query) => {
       const status = (query.state.data as ImportOut | undefined)?.status;
       return status && FINAL_STATUSES.has(status) ? false : 2500;
@@ -86,8 +93,11 @@ export function useApplyImport() {
 
 export function useCoachBullet() {
   return useMutation({
-    mutationFn: (body: { text: string; title?: string | null; company?: string | null }) =>
-      unwrap(api.POST("/api/v1/profile/coach/bullet", { body })),
+    mutationFn: (body: {
+      text: string;
+      title?: string | null;
+      company?: string | null;
+    }) => unwrap(api.POST("/api/v1/profile/coach/bullet", { body })),
   });
 }
 

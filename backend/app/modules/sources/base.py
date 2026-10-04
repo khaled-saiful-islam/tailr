@@ -70,6 +70,11 @@ class JobDetail(BaseModel):
     external_id: str
     description_text: str
     description_html: str | None = None
+    # Present when the detail page states them (used when a job is pasted by link).
+    title: str | None = None
+    company: str | None = None
+    location: str | None = None
+    salary_text: str | None = None
     seniority: str | None = None
     employment_type: str | None = None
     industries: str | None = None

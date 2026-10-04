@@ -1,4 +1,10 @@
-import { BriefcaseBusiness, Radar, Sunrise, UserRound, type LucideIcon } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Radar,
+  Sunrise,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface NavItem {
   to: string;

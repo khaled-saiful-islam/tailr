@@ -34,7 +34,8 @@
   --fit-stretch: #a76a07;
   --fit-low: #66718a;
   --overlay: rgb(20 33 61 / 0.42);
-  --shadow-sheet: 0 1px 0 rgb(20 33 61 / 0.04), 0 18px 48px -18px rgb(20 33 61 / 0.28);
+  --shadow-sheet:
+    0 1px 0 rgb(20 33 61 / 0.04), 0 18px 48px -18px rgb(20 33 61 / 0.28);
   --grid-dot: rgb(20 33 61 / 0.09);
   color-scheme: light;
 }
@@ -70,7 +71,9 @@
 }
 
 @theme inline {
-  --font-sans: "Mona Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans:
+    "Mona Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
 
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
@@ -146,7 +149,11 @@
 @utility pattern-paper {
   background-color: var(--canvas);
   background-image:
-    radial-gradient(circle at 1.5px 1.5px, var(--grid-dot) 1.5px, transparent 2px),
+    radial-gradient(
+      circle at 1.5px 1.5px,
+      var(--grid-dot) 1.5px,
+      transparent 2px
+    ),
     radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 1.5px);
   background-size:
     96px 96px,
@@ -247,5 +254,25 @@
   100% {
     transform: scale(2.4);
     opacity: 0;
+  }
+}
+
+/* Dialogs: the overlay fades, the sheet rises into place. */
+@keyframes tailr-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes tailr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+}
+
+/* Apply kit: a running stitch while the application is being tailored. */
+@keyframes tailr-stitch {
+  to {
+    stroke-dashoffset: -24;
   }
 }

@@ -40,7 +40,9 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
         </span>
         {!compact && (
           <span className="min-w-0 flex-1">
-            <span className="block text-[0.875rem] font-semibold leading-tight">{user.name}</span>
+            <span className="block text-[0.875rem] font-semibold leading-tight">
+              {user.name}
+            </span>
             <span className="block text-[0.8125rem] leading-tight text-ink-3 [overflow-wrap:anywhere]">
               {user.username ?? user.email}
             </span>
@@ -56,13 +58,18 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
         >
           <div className="px-2.5 pb-2 pt-1.5">
             <p className="text-[0.875rem] font-semibold">{user.name}</p>
-            <p className="text-[0.8125rem] text-ink-3 [overflow-wrap:anywhere]">{user.email}</p>
+            <p className="text-[0.8125rem] text-ink-3 [overflow-wrap:anywhere]">
+              {user.email}
+            </p>
           </div>
           <DropdownMenu.Separator className="my-1 h-px bg-line" />
           <DropdownMenu.Label className="px-2.5 pb-1 pt-2 text-[0.75rem] font-semibold text-ink-3">
             Appearance
           </DropdownMenu.Label>
-          <DropdownMenu.RadioGroup value={choice} onValueChange={(value) => setChoice(value as ThemeChoice)}>
+          <DropdownMenu.RadioGroup
+            value={choice}
+            onValueChange={(value) => setChoice(value as ThemeChoice)}
+          >
             {themes.map((theme) => (
               <DropdownMenu.RadioItem
                 key={theme.value}

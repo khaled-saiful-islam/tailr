@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { ThemeContext, type ThemeChoice } from "./theme-context";
 
 const STORAGE_KEY = "tailr.theme";
@@ -23,12 +29,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (event: MediaQueryListEvent) => setSystemDark(event.matches);
+    const onChange = (event: MediaQueryListEvent) =>
+      setSystemDark(event.matches);
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
 
-  const resolved: "light" | "dark" = choice === "system" ? (systemDark ? "dark" : "light") : choice;
+  const resolved: "light" | "dark" =
+    choice === "system" ? (systemDark ? "dark" : "light") : choice;
 
   useEffect(() => {
     document.documentElement.dataset.theme = resolved;
@@ -43,6 +51,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const value = useMemo(() => ({ choice, resolved, setChoice }), [choice, resolved, setChoice]);
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  const value = useMemo(
+    () => ({ choice, resolved, setChoice }),
+    [choice, resolved, setChoice],
+  );
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }

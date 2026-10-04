@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { ResumePreview } from "../components/ResumePreview";
 import { SaveIndicator } from "../components/SaveIndicator";
-import { BasicsSection, SummarySection } from "../components/sections/BasicsSection";
-import { ExperienceSection, ProjectsSection } from "../components/sections/ExperienceSection";
+import {
+  BasicsSection,
+  SummarySection,
+} from "../components/sections/BasicsSection";
+import {
+  ExperienceSection,
+  ProjectsSection,
+} from "../components/sections/ExperienceSection";
 import {
   CertificationsSection,
   EducationSection,
@@ -20,14 +26,22 @@ import { useProfileEditor } from "../hooks/useProfileEditor";
 import { scrollToSection } from "../strength";
 import type { BulletIssue, ProfileDoc } from "../types";
 
-const SECTIONS: { id: string; label: string; count?: (doc: ProfileDoc) => number }[] = [
+const SECTIONS: {
+  id: string;
+  label: string;
+  count?: (doc: ProfileDoc) => number;
+}[] = [
   { id: "basics", label: "About you" },
   { id: "summary", label: "Summary" },
   { id: "experience", label: "Experience", count: (d) => d.experiences.length },
   { id: "projects", label: "Projects", count: (d) => d.projects.length },
   { id: "education", label: "Education", count: (d) => d.education.length },
   { id: "skills", label: "Skills", count: (d) => d.skills.length },
-  { id: "certifications", label: "Certifications", count: (d) => d.certifications.length },
+  {
+    id: "certifications",
+    label: "Certifications",
+    count: (d) => d.certifications.length,
+  },
   { id: "languages", label: "Languages", count: (d) => d.languages.length },
 ];
 
@@ -36,7 +50,10 @@ export function ProfilePage() {
   const { doc, strength } = editor;
 
   const issues = useMemo(
-    () => new Map<string, BulletIssue[]>((strength?.bullet_issues ?? []).map((i) => [i.bullet_id, i.issues])),
+    () =>
+      new Map<string, BulletIssue[]>(
+        (strength?.bullet_issues ?? []).map((i) => [i.bullet_id, i.issues]),
+      ),
     [strength],
   );
 
@@ -60,12 +77,21 @@ export function ProfilePage() {
         <div className="min-w-[min(100%,20rem)] flex-1">
           <h1 className="type-title">Your profile</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            Everything Tailr knows about your career. Every tailored resume is built from it. Changes save as you type.
+            Everything Tailr knows about your career. Every tailored resume is
+            built from it. Changes save as you type.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <SaveIndicator status={editor.status} onRetry={editor.retry} onReload={() => void editor.reload()} />
-          <Button variant="secondary" icon={<FileUp className="size-4" />} asChild>
+          <SaveIndicator
+            status={editor.status}
+            onRetry={editor.retry}
+            onReload={() => void editor.reload()}
+          />
+          <Button
+            variant="secondary"
+            icon={<FileUp className="size-4" />}
+            asChild
+          >
             <Link to="/profile/import">Import a CV</Link>
           </Button>
           <PreviewDialog doc={doc} />
@@ -80,7 +106,9 @@ export function ProfilePage() {
         >
           <div className="min-w-[min(100%,18rem)] flex-1">
             <p className="font-semibold">The fastest start: import your CV</p>
-            <p className="mt-1 text-[0.9375rem] text-ink-2">Tailr fills in every section for you. You can still edit anything.</p>
+            <p className="mt-1 text-[0.9375rem] text-ink-2">
+              Tailr fills in every section for you. You can still edit anything.
+            </p>
           </div>
           <Button variant="tape" asChild>
             <Link to="/profile/import">Import a CV</Link>
@@ -101,7 +129,11 @@ export function ProfilePage() {
                     className="flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left text-[0.9375rem] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
                   >
                     {section.label}
-                    {section.count && <span className="text-[0.8125rem] text-ink-3">{section.count(doc)}</span>}
+                    {section.count && (
+                      <span className="text-[0.8125rem] text-ink-3">
+                        {section.count(doc)}
+                      </span>
+                    )}
                   </button>
                 </li>
               ))}
@@ -135,7 +167,11 @@ function PreviewDialog({ doc }: { doc: ProfileDoc }) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button variant="secondary" icon={<Eye className="size-4" />} className="2xl:hidden">
+        <Button
+          variant="secondary"
+          icon={<Eye className="size-4" />}
+          className="2xl:hidden"
+        >
           Preview
         </Button>
       </Dialog.Trigger>
@@ -144,11 +180,16 @@ function PreviewDialog({ doc }: { doc: ProfileDoc }) {
         <Dialog.Content className="pattern-paper fixed inset-y-0 right-0 z-50 flex w-full max-w-[44rem] flex-col border-l border-line shadow-sheet focus:outline-none">
           <div className="flex items-center justify-between border-b border-line bg-surface px-5 py-3">
             <Dialog.Title className="type-heading">Resume preview</Dialog.Title>
-            <Dialog.Close className="grid size-9 place-items-center rounded-[9px] text-ink-3 hover:bg-surface-2 hover:text-ink" aria-label="Close preview">
+            <Dialog.Close
+              className="grid size-9 place-items-center rounded-[9px] text-ink-3 hover:bg-surface-2 hover:text-ink"
+              aria-label="Close preview"
+            >
               <X className="size-5" />
             </Dialog.Close>
           </div>
-          <Dialog.Description className="sr-only">How your profile looks as a one-column resume.</Dialog.Description>
+          <Dialog.Description className="sr-only">
+            How your profile looks as a one-column resume.
+          </Dialog.Description>
           <div className="flex-1 overflow-y-auto p-5 sm:p-8">
             <ResumePreview doc={doc} />
           </div>

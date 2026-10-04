@@ -3,7 +3,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { ChipInput, Slider, ToggleChips } from "@/components/ui/choice";
 import { Panel, Select, Switch } from "@/components/ui/controls";
 import { FitTape } from "@/components/ui/FitTape";
-import type { CompleteSettings, EmploymentType, RadarOptions, Seniority, WorkMode } from "../api";
+import type {
+  CompleteSettings,
+  EmploymentType,
+  RadarOptions,
+  Seniority,
+  WorkMode,
+} from "../api";
 import {
   BRIEF_TIMES,
   DAY_LABEL,
@@ -20,11 +26,22 @@ interface Props {
 }
 
 const entries = <K extends string>(labels: Record<K, string>) =>
-  (Object.entries(labels) as [K, string][]).map(([value, label]) => ({ value, label }));
+  (Object.entries(labels) as [K, string][]).map(([value, label]) => ({
+    value,
+    label,
+  }));
 
-export function WhereSection({ settings, set, options }: Props & { options: RadarOptions | undefined }) {
+export function WhereSection({
+  settings,
+  set,
+  options,
+}: Props & { options: RadarOptions | undefined }) {
   return (
-    <Panel id="where" title="Where" description="Tailr searches across Malaysia and keeps jobs in your chosen places.">
+    <Panel
+      id="where"
+      title="Where"
+      description="Tailr searches across Malaysia and keeps jobs in your chosen places."
+    >
       <Switch
         label="Anywhere in Malaysia"
         checked={settings.anywhere}
@@ -40,11 +57,15 @@ export function WhereSection({ settings, set, options }: Props & { options: Rada
           >
             <p className="type-label mt-5">Places</p>
             <p className="mb-3 text-[0.8125rem] text-ink-3">
-              A state includes its cities: Selangor covers Petaling Jaya, Cyberjaya, Shah Alam and more.
+              A state includes its cities: Selangor covers Petaling Jaya,
+              Cyberjaya, Shah Alam and more.
             </p>
             <ToggleChips
               label="Places"
-              options={(options?.places ?? []).map((p) => ({ value: p.key, label: p.label }))}
+              options={(options?.places ?? []).map((p) => ({
+                value: p.key,
+                label: p.label,
+              }))}
               value={settings.places}
               onChange={(places) => set({ places })}
             />
@@ -59,7 +80,9 @@ export function WhereSection({ settings, set, options }: Props & { options: Rada
         onChange={(work_modes) => work_modes.length && set({ work_modes })}
       />
       {!settings.anywhere && settings.work_modes.includes("remote") && (
-        <p className="mt-3 text-[0.8125rem] text-ink-3">Remote jobs anywhere in Malaysia are always included.</p>
+        <p className="mt-3 text-[0.8125rem] text-ink-3">
+          Remote jobs anywhere in Malaysia are always included.
+        </p>
       )}
     </Panel>
   );
@@ -76,14 +99,18 @@ export function LevelSection({ settings, set }: Props) {
         onChange={(seniority) => set({ seniority })}
       />
       <p className="mt-2 text-[0.8125rem] text-ink-3">
-        {settings.seniority.length === 0 ? "Any level. Pick some to narrow it down." : "Titles without a level still count as mid-level."}
+        {settings.seniority.length === 0
+          ? "Any level. Pick some to narrow it down."
+          : "Titles without a level still count as mid-level."}
       </p>
       <p className="type-label mb-3 mt-6">Job type</p>
       <ToggleChips<EmploymentType>
         label="Job type"
         options={entries(EMPLOYMENT_LABEL)}
         value={settings.employment_types}
-        onChange={(employment_types) => employment_types.length && set({ employment_types })}
+        onChange={(employment_types) =>
+          employment_types.length && set({ employment_types })
+        }
       />
     </Panel>
   );
@@ -91,7 +118,11 @@ export function LevelSection({ settings, set }: Props) {
 
 export function PaySection({ settings, set }: Props) {
   return (
-    <Panel id="pay" title="Pay" description="Monthly salary in ringgit. Many Malaysian listings don't show pay at all.">
+    <Panel
+      id="pay"
+      title="Pay"
+      description="Monthly salary in ringgit. Many Malaysian listings don't show pay at all."
+    >
       <Slider
         label="Lowest monthly salary"
         value={settings.salary_min ?? 0}
@@ -154,7 +185,9 @@ export function FreshnessSection({ settings, set }: Props) {
           { value: 7, label: "Last week" },
         ]}
         value={[settings.freshness_days]}
-        onChange={([days]) => days && set({ freshness_days: days as 1 | 3 | 7 })}
+        onChange={([days]) =>
+          days && set({ freshness_days: days as 1 | 3 | 7 })
+        }
       />
       <div className="mt-7">
         <Slider
@@ -167,21 +200,37 @@ export function FreshnessSection({ settings, set }: Props) {
           format={(value) => `${value}%`}
         />
         <div className="mt-3">
-          <FitTape score={settings.min_fit} size="sm" animated={false} showLabel />
+          <FitTape
+            score={settings.min_fit}
+            size="sm"
+            animated={false}
+            showLabel
+          />
         </div>
       </div>
     </Panel>
   );
 }
 
-export function SourcesSection({ settings, set, options }: Props & { options: RadarOptions | undefined }) {
+export function SourcesSection({
+  settings,
+  set,
+  options,
+}: Props & { options: RadarOptions | undefined }) {
   const toggle = (key: string, on: boolean) =>
-    set({ sources: on ? [...settings.sources, key] : settings.sources.filter((s) => s !== key) });
+    set({
+      sources: on
+        ? [...settings.sources, key]
+        : settings.sources.filter((s) => s !== key),
+    });
   return (
     <Panel id="sources" title="Job sites">
       <ul className="flex flex-col gap-4">
         {(options?.sources ?? []).map((source) => (
-          <li key={source.key} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <li
+            key={source.key}
+            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1"
+          >
             {source.available ? (
               <Switch
                 label={source.label}
@@ -196,7 +245,9 @@ export function SourcesSection({ settings, set, options }: Props & { options: Ra
                 {source.label}
               </span>
             )}
-            {source.note && <span className="text-[0.8125rem] text-ink-3">{source.note}</span>}
+            {source.note && (
+              <span className="text-[0.8125rem] text-ink-3">{source.note}</span>
+            )}
           </li>
         ))}
       </ul>
@@ -204,19 +255,33 @@ export function SourcesSection({ settings, set, options }: Props & { options: Ra
   );
 }
 
-export function BriefSection({ settings, set, nextBrief }: Props & { nextBrief: string | null }) {
+export function BriefSection({
+  settings,
+  set,
+  nextBrief,
+}: Props & { nextBrief: string | null }) {
   return (
     <Panel
       id="brief"
       title="Morning brief"
-      description={nextBrief ? `Your next brief: ${nextBrief}.` : settings.paused ? "Your radar is paused." : undefined}
+      description={
+        nextBrief
+          ? `Your next brief: ${nextBrief}.`
+          : settings.paused
+            ? "Your radar is paused."
+            : undefined
+      }
     >
       <div className="grid gap-6 sm:grid-cols-[12rem_minmax(0,1fr)]">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="brief-time" className="type-label">
             Time
           </label>
-          <Select id="brief-time" value={settings.brief_time} onChange={(e) => set({ brief_time: e.target.value })}>
+          <Select
+            id="brief-time"
+            value={settings.brief_time}
+            onChange={(e) => set({ brief_time: e.target.value })}
+          >
             {BRIEF_TIMES.map((time) => (
               <option key={time} value={time}>
                 {formatClock(time)}
@@ -230,13 +295,23 @@ export function BriefSection({ settings, set, nextBrief }: Props & { nextBrief: 
             label="Days"
             options={DAY_LABEL.map((label, value) => ({ value, label }))}
             value={settings.brief_days}
-            onChange={(brief_days) => brief_days.length && set({ brief_days: [...brief_days].sort() })}
+            onChange={(brief_days) =>
+              brief_days.length && set({ brief_days: [...brief_days].sort() })
+            }
           />
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-4">
-        <Switch label="Email me the brief too" checked={settings.email_brief} onCheckedChange={(email_brief) => set({ email_brief })} />
-        <Switch label="Pause my radar" checked={settings.paused} onCheckedChange={(paused) => set({ paused })} />
+        <Switch
+          label="Email me the brief too"
+          checked={settings.email_brief}
+          onCheckedChange={(email_brief) => set({ email_brief })}
+        />
+        <Switch
+          label="Pause my radar"
+          checked={settings.paused}
+          onCheckedChange={(paused) => set({ paused })}
+        />
       </div>
     </Panel>
   );

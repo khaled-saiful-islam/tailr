@@ -58,6 +58,8 @@ How the backend harness works (`backend/tests/conftest.py`):
 
 **TypeScript**: strict mode, no `any`, Zod for form validation, TanStack Query for server
 data, components never use raw colours (only tokens such as `bg-surface`, `text-ink-2`).
+Prettier formats `src` (`make fmt`; `make lint` checks it). The generated API types are
+excluded.
 
 **UI rules**:
 

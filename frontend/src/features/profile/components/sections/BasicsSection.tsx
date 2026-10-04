@@ -12,20 +12,42 @@ import type { SectionProps } from "./types";
 
 export function BasicsSection({ doc, update }: SectionProps) {
   const basics = doc.basics;
-  const set = (patch: Partial<typeof basics>) => update((d) => ({ ...d, basics: { ...d.basics, ...patch } }));
+  const set = (patch: Partial<typeof basics>) =>
+    update((d) => ({ ...d, basics: { ...d.basics, ...patch } }));
 
   return (
-    <Panel id="basics" title="About you" description="How employers will see and reach you.">
+    <Panel
+      id="basics"
+      title="About you"
+      description="How employers will see and reach you."
+    >
       <div className="grid gap-5 sm:grid-cols-2">
-        <TextField label="Full name" value={basics.full_name} onChange={(v) => set({ full_name: v })} autoComplete="name" />
+        <TextField
+          label="Full name"
+          value={basics.full_name}
+          onChange={(v) => set({ full_name: v })}
+          autoComplete="name"
+        />
         <TextField
           label="Headline"
           value={basics.headline}
           onChange={(v) => set({ headline: v })}
           placeholder="AI Engineer building search and chat products"
         />
-        <TextField label="Email" type="email" value={basics.email} onChange={(v) => set({ email: v })} autoComplete="email" />
-        <TextField label="Phone" type="tel" value={basics.phone} onChange={(v) => set({ phone: v })} autoComplete="tel" />
+        <TextField
+          label="Email"
+          type="email"
+          value={basics.email}
+          onChange={(v) => set({ email: v })}
+          autoComplete="email"
+        />
+        <TextField
+          label="Phone"
+          type="tel"
+          value={basics.phone}
+          onChange={(v) => set({ phone: v })}
+          autoComplete="tel"
+        />
         <TextField
           label="Location"
           value={basics.location}
@@ -50,16 +72,35 @@ export function BasicsSection({ doc, update }: SectionProps) {
               <Field
                 label="Label"
                 value={link.label}
-                onChange={(e) => set({ links: updateById(basics.links, link.id, { label: e.target.value }) })}
+                onChange={(e) =>
+                  set({
+                    links: updateById(basics.links, link.id, {
+                      label: e.target.value,
+                    }),
+                  })
+                }
                 placeholder="LinkedIn"
               />
               <Field
                 label="Address"
                 value={link.url}
-                onChange={(e) => set({ links: updateById(basics.links, link.id, { url: e.target.value }) })}
+                onChange={(e) =>
+                  set({
+                    links: updateById(basics.links, link.id, {
+                      url: e.target.value,
+                    }),
+                  })
+                }
                 placeholder="linkedin.com/in/you"
               />
-              <IconButton label="Remove link" tone="danger" className="mb-1" onClick={() => set({ links: removeById(basics.links, link.id) })}>
+              <IconButton
+                label="Remove link"
+                tone="danger"
+                className="mb-1"
+                onClick={() =>
+                  set({ links: removeById(basics.links, link.id) })
+                }
+              >
                 <Trash2 className="size-4" />
               </IconButton>
             </li>
@@ -67,7 +108,11 @@ export function BasicsSection({ doc, update }: SectionProps) {
         </ul>
         <button
           type="button"
-          onClick={() => set({ links: [...basics.links, { id: newId(), label: "", url: "" }] })}
+          onClick={() =>
+            set({
+              links: [...basics.links, { id: newId(), label: "", url: "" }],
+            })
+          }
           className="mt-2 rounded-[8px] px-2 py-1.5 text-[0.9375rem] font-semibold text-chalk hover:bg-chalk-soft"
         >
           + Add a link
@@ -81,7 +126,8 @@ export function SummarySection({ doc, update }: SectionProps) {
   const writer = useWriteSummary();
   const summary = doc.basics.summary ?? "";
   const words = summary.trim() ? summary.trim().split(/\s+/).length : 0;
-  const setSummary = (value: string) => update((d) => ({ ...d, basics: { ...d.basics, summary: value } }));
+  const setSummary = (value: string) =>
+    update((d) => ({ ...d, basics: { ...d.basics, summary: value } }));
 
   return (
     <Panel
@@ -107,7 +153,13 @@ export function SummarySection({ doc, update }: SectionProps) {
         placeholder="AI engineer with six years of experience building…"
         className="min-h-28"
       />
-      <p className={words > 0 && (words < 20 || words > 140) ? "mt-2 text-[0.8125rem] text-fit-stretch" : "mt-2 text-[0.8125rem] text-ink-3"}>
+      <p
+        className={
+          words > 0 && (words < 20 || words > 140)
+            ? "mt-2 text-[0.8125rem] text-fit-stretch"
+            : "mt-2 text-[0.8125rem] text-ink-3"
+        }
+      >
         {words} {words === 1 ? "word" : "words"}. Aim for 40 to 80.
       </p>
       {writer.isError && (
@@ -124,7 +176,9 @@ export function SummarySection({ doc, update }: SectionProps) {
             className="mt-4 rounded-[12px] border border-chalk/30 bg-chalk-soft/50 p-4"
           >
             <p className="type-label text-chalk">Written from your profile</p>
-            <p className="chalk-mark mt-2 leading-relaxed">{writer.data.summary}</p>
+            <p className="chalk-mark mt-2 leading-relaxed">
+              {writer.data.summary}
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button
                 size="sm"
@@ -135,7 +189,11 @@ export function SummarySection({ doc, update }: SectionProps) {
               >
                 Use this
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => writer.mutate()}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => writer.mutate()}
+              >
                 Write another
               </Button>
               <Button size="sm" variant="ghost" onClick={() => writer.reset()}>

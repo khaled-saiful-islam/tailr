@@ -1,6 +1,9 @@
 import type { Match } from "./api";
 
-const SOURCE_LABEL: Record<string, string> = { linkedin: "LinkedIn", jobstreet: "JobStreet" };
+const SOURCE_LABEL: Record<string, string> = {
+  linkedin: "LinkedIn",
+  jobstreet: "JobStreet",
+};
 
 export function sourceLabel(source: string): string {
   return SOURCE_LABEL[source] ?? source;
@@ -10,7 +13,11 @@ export function sourceLabel(source: string): string {
 export function placeLabel(location: string | null | undefined): string | null {
   if (!location) return null;
   const first = location.split(",")[0] ?? "";
-  return first.replace(/^(WP\.|Federal Territory of|Wilayah Persekutuan)\s*/i, "").trim() || null;
+  return (
+    first
+      .replace(/^(WP\.|Federal Territory of|Wilayah Persekutuan)\s*/i, "")
+      .trim() || null
+  );
 }
 
 /** "No Rust experience." → "No Rust experience" (so we can add our own punctuation). */
@@ -27,7 +34,11 @@ export function payLabel(job: Match["job"]): string | null {
   return job.salary_text ?? null;
 }
 
-export const WORK_MODE: Record<string, string> = { onsite: "On-site", hybrid: "Hybrid", remote: "Remote" };
+export const WORK_MODE: Record<string, string> = {
+  onsite: "On-site",
+  hybrid: "Hybrid",
+  remote: "Remote",
+};
 
 export const PART_LABEL: Record<string, string> = {
   skills: "Skills",
@@ -38,4 +49,11 @@ export const PART_LABEL: Record<string, string> = {
   similarity: "Overall similarity",
 };
 
-export const PART_ORDER = ["skills", "role", "experience", "location", "pay", "similarity"] as const;
+export const PART_ORDER = [
+  "skills",
+  "role",
+  "experience",
+  "location",
+  "pay",
+  "similarity",
+] as const;
