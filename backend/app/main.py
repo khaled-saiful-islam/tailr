@@ -12,6 +12,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app import models as _models  # noqa: F401 - register every table before any query
 from app.api.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.db import dispose_engine, init_engine

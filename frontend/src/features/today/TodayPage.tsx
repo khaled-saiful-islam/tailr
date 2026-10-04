@@ -1,5 +1,8 @@
 import { Check, FileUser, Radar, Sunrise } from "lucide-react";
 import { motion } from "motion/react";
+import type { ReactNode } from "react";
+import { Link } from "react-router";
+import { Button } from "@/components/ui/Button";
 import { FitTape } from "@/components/ui/FitTape";
 import { useMe } from "@/features/auth/api";
 import { cn } from "@/lib/cn";
@@ -10,6 +13,8 @@ interface SetupStep {
   body: string;
   icon: typeof FileUser;
   status: "done" | "next" | "later";
+  action?: ReactNode;
+  note?: string;
 }
 
 const SAMPLE_BRIEF = [
@@ -26,19 +31,39 @@ export function TodayPage() {
   const { data: user } = useMe();
   const firstName = user?.name.split(" ")[0] ?? "";
 
+  const step = user?.onboarding_step ?? "import";
+  const profileDone = step === "radar" || step === "done";
+
   const steps: SetupStep[] = [
     { title: "Create your account", body: "You're in. Welcome to Tailr.", icon: Check, status: "done" },
     {
       title: "Build your profile",
-      body: "Upload your CV or start fresh. Tailr turns it into a profile it reuses for every application.",
+      body: profileDone
+        ? "Your profile is saved. Keep it fresh: every tailored resume is built from it."
+        : "Upload your CV or start fresh. Tailr turns it into a profile it reuses for every application.",
       icon: FileUser,
-      status: "next",
+      status: profileDone ? "done" : "next",
+      action: profileDone ? (
+        <Button variant="secondary" size="sm" asChild>
+          <Link to="/profile">Open your profile</Link>
+        </Button>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link to="/profile/import">{step === "review" ? "Finish importing your CV" : "Import your CV"}</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/profile">Start from scratch</Link>
+          </Button>
+        </div>
+      ),
     },
     {
       title: "Set your job radar",
       body: "Roles, places, salary and deal-breakers, plus the time you want your brief.",
       icon: Radar,
-      status: "later",
+      status: profileDone ? "next" : "later",
+      note: profileDone ? "The job radar arrives in the next build of Tailr." : undefined,
     },
     {
       title: "Read your first brief",
@@ -71,9 +96,9 @@ export function TodayPage() {
             Your setup
           </h2>
           <ol className="relative mt-6">
-            {steps.map((step, index) => (
+            {steps.map((item, index) => (
               <motion.li
-                key={step.title}
+                key={item.title}
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.15 + index * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -84,42 +109,39 @@ export function TodayPage() {
                     aria-hidden
                     className={cn(
                       "absolute left-[1.1875rem] top-11 h-[calc(100%-2.75rem)] w-px",
-                      step.status === "done" ? "bg-ink" : "bg-[linear-gradient(var(--line-strong)_55%,transparent_0)] bg-[length:1px_8px]",
+                      item.status === "done" ? "bg-ink" : "bg-[linear-gradient(var(--line-strong)_55%,transparent_0)] bg-[length:1px_8px]",
                     )}
                   />
                 )}
                 <span
                   className={cn(
                     "relative grid size-10 shrink-0 place-items-center rounded-full border",
-                    step.status === "done" && "border-ink bg-ink text-canvas",
-                    step.status === "next" && "border-tape bg-tape text-tape-ink",
-                    step.status === "later" && "border-line-strong bg-surface text-ink-3",
+                    item.status === "done" && "border-ink bg-ink text-canvas",
+                    item.status === "next" && "border-tape bg-tape text-tape-ink",
+                    item.status === "later" && "border-line-strong bg-surface text-ink-3",
                   )}
                 >
-                  <step.icon className="size-[18px]" aria-hidden />
+                  <item.icon className="size-[18px]" aria-hidden />
                 </span>
                 <div
                   className={cn(
                     "min-w-0 flex-1 rounded-panel pt-1.5",
-                    step.status === "next" && "-mt-1 border border-line bg-surface p-5 shadow-sheet",
+                    item.status === "next" && "-mt-1 border border-line bg-surface p-5 shadow-sheet",
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <h3 className={cn("text-[1.0625rem] font-semibold", step.status === "later" && "text-ink-2")}>
-                      {step.title}
+                    <h3 className={cn("text-[1.0625rem] font-semibold", item.status === "later" && "text-ink-2")}>
+                      {item.title}
                     </h3>
-                    {step.status === "next" && (
+                    {item.status === "next" && (
                       <span className="rounded-full bg-chalk-soft px-2.5 py-0.5 text-[0.75rem] font-semibold text-chalk">
                         Next
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 max-w-[34rem] text-ink-2">{step.body}</p>
-                  {step.status === "next" && (
-                    <p className="mt-4 text-[0.875rem] text-ink-3">
-                      The profile builder arrives in the next build of Tailr.
-                    </p>
-                  )}
+                  <p className="mt-1 max-w-[34rem] text-ink-2">{item.body}</p>
+                  {item.note && <p className="mt-4 text-[0.875rem] text-ink-3">{item.note}</p>}
+                  {item.action && <div className="mt-4">{item.action}</div>}
                 </div>
               </motion.li>
             ))}

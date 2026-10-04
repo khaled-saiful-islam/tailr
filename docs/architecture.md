@@ -69,6 +69,26 @@ app/
 - A default admin (`admin` / `admin`, role `admin`) is created on first start. Production
   refuses to boot while that password is unchanged.
 
+### AI layer (`app/ai`)
+
+- `AIClient` protocol with `complete`, `structured`, `embed`, `rerank`. Production uses
+  `IlmuClient` (OpenAI-compatible HTTP); tests use `FakeAIClient` (per-purpose handlers,
+  recorded calls).
+- `structured()` sends a **strict JSON schema** generated from a Pydantic model
+  (`ai/schema.py` inlines `$ref`s and marks every property required and nullable where
+  optional), validates the answer, and does one repair round if it doesn't fit.
+- Retries with exponential backoff on timeouts, 429 and 5xx; a semaphore limits concurrency.
+- Every call is metered in `ai_runs` (purpose, model, tokens, latency, status). A per-user
+  daily token budget (`AI_DAILY_BUDGET_TOKENS`) protects cost.
+- Models: `ilmu-v3.1` (writing, extraction), `ilmu-mini-v3.3` (cheap tasks),
+  `ilmu-vision-v1.3` (scans), `bge-m3` (embeddings, 1024-d), `bge-reranker`.
+
+### File storage (`app/storage`)
+
+`Storage` protocol; `LocalStorage` writes under `STORAGE_DIR` (a Docker volume) with keys
+like `cv/2026/10/<uuid>.pdf` and refuses paths outside its root. Swap in object storage
+later without touching features.
+
 ### Background work
 
 taskiq with a Redis Streams broker and `SmartRetryMiddleware` (exponential backoff with

@@ -142,21 +142,15 @@
   letter-spacing: -0.02em;
 }
 
-/* Pattern paper: a faint dot grid with a cross every fourth dot, like drafting paper. */
+/* Pattern paper: a faint dot grid with a stronger dot every fourth, like drafting paper. */
 @utility pattern-paper {
   background-color: var(--canvas);
   background-image:
-    radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 1.5px),
-    linear-gradient(var(--grid-dot), var(--grid-dot)),
-    linear-gradient(90deg, var(--grid-dot), var(--grid-dot));
+    radial-gradient(circle at 1.5px 1.5px, var(--grid-dot) 1.5px, transparent 2px),
+    radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 1.5px);
   background-size:
-    24px 24px,
-    9px 1px,
-    1px 9px;
-  background-position:
-    0 0,
-    92px 96px,
-    96px 92px;
+    96px 96px,
+    24px 24px;
 }
 
 /* Basting stitch: the dashed thread line used for selection and AI-in-progress. */

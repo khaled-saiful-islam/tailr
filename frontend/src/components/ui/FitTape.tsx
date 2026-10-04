@@ -16,6 +16,10 @@ interface FitTapeProps {
   /** Animate the tape measuring out to the score when it mounts or changes. */
   animated?: boolean;
   showLabel?: boolean;
+  /** Replace the fit band wording, e.g. for profile strength. */
+  label?: string;
+  /** What the number measures, for screen readers. Defaults to a match score. */
+  measure?: string;
   className?: string;
 }
 
@@ -29,11 +33,20 @@ const geometry = {
  * The Fit tape: a strip of measuring tape with a pin at the match score.
  * Tailr shows every match this way, so a glance reads like a tailor's measure.
  */
-export function FitTape({ score, size = "md", animated = true, showLabel = false, className }: FitTapeProps) {
+export function FitTape({
+  score,
+  size = "md",
+  animated = true,
+  showLabel = false,
+  label,
+  measure = "percent match",
+  className,
+}: FitTapeProps) {
   const clamped = Math.max(0, Math.min(100, Math.round(score)));
   const reduce = useReducedMotion();
   const { width, height, figure } = geometry[size];
   const level = fitLevel(clamped);
+  const text = label ?? fitLabel[level];
   const clipId = useId();
 
   const progress = useMotionValue(animated && !reduce ? 0 : clamped);
@@ -51,17 +64,24 @@ export function FitTape({ score, size = "md", animated = true, showLabel = false
 
   return (
     <div
-      className={cn("inline-flex items-center gap-3", size === "lg" && "flex-col items-start gap-2", className)}
+      className={cn("inline-flex items-center gap-3", size === "lg" && "flex w-full flex-col items-start gap-2", className)}
       role="img"
-      aria-label={`${fitLabel[level]}: ${clamped} percent match`}
+      aria-label={`${text}: ${clamped} ${measure}`}
     >
       {size === "lg" && (
         <div className="flex items-baseline gap-3">
           <motion.span className={cn("type-figure leading-none text-ink", figure)}>{shown}</motion.span>
-          <span className={cn("type-label whitespace-nowrap", levelText[level])}>{fitLabel[level]}</span>
+          <span className={cn("type-label whitespace-nowrap", levelText[level])}>{text}</span>
         </div>
       )}
-      <svg width={width} height={height + 8} viewBox={`0 -4 ${width} ${height + 8}`} className="shrink-0 overflow-visible">
+      <svg
+        // The large tape fills its container (up to its natural width); small ones keep a fixed size.
+        width={size === "lg" ? "100%" : width}
+        height={size === "lg" ? undefined : height + 8}
+        viewBox={`0 -4 ${width} ${height + 8}`}
+        preserveAspectRatio="xMinYMid meet"
+        className={cn("shrink-0 overflow-visible", size === "lg" && "h-auto max-w-[280px]")}
+      >
         <defs>
           <clipPath id={clipId}>
             <motion.rect x="0" y="0" height={height} rx="2" width={markerX} />
@@ -85,7 +105,7 @@ export function FitTape({ score, size = "md", animated = true, showLabel = false
         <span className="flex items-baseline gap-2">
           <motion.span className={cn("type-figure leading-none text-ink", figure)}>{shown}</motion.span>
           {showLabel && (
-            <span className={cn("type-label whitespace-nowrap", levelText[level])}>{fitLabel[level]}</span>
+            <span className={cn("type-label whitespace-nowrap", levelText[level])}>{text}</span>
           )}
         </span>
       )}

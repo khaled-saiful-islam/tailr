@@ -44,6 +44,8 @@ scheduler = TaskiqScheduler(broker, sources=[LabelScheduleSource(broker)])
 
 @broker.on_event(TaskiqEvents.WORKER_STARTUP)
 async def _on_worker_startup(_: Any) -> None:
+    from app import models as _models  # noqa: F401 - every table registered first
+
     settings = get_settings()
     configure_logging(settings)
     init_engine(settings.database_url)

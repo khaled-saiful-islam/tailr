@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { NavLink, Outlet } from "react-router";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/cn";
+import { useLiveConnection } from "@/lib/events";
 import { navItems } from "../nav";
 import { AccountMenu } from "./AccountMenu";
 
@@ -10,6 +11,7 @@ import { AccountMenu } from "./AccountMenu";
  * Pages render into the outlet and own their headers.
  */
 export function AppShell() {
+  useLiveConnection();
   // A tab bar with a single tab is noise; it appears once there is a choice to make.
   const showTabBar = navItems.length > 1;
   return (

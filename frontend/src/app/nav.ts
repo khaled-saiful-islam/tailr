@@ -1,4 +1,4 @@
-import { Sunrise, type LucideIcon } from "lucide-react";
+import { Sunrise, UserRound, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -7,4 +7,7 @@ export interface NavItem {
 }
 
 /** Main navigation. Each feature adds its entry here when it ships. */
-export const navItems: NavItem[] = [{ to: "/", label: "Today", icon: Sunrise }];
+export const navItems: NavItem[] = [
+  { to: "/", label: "Today", icon: Sunrise },
+  { to: "/profile", label: "Profile", icon: UserRound },
+];

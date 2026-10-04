@@ -11,7 +11,8 @@ from __future__ import annotations
 
 import asyncio
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
+from pathlib import Path
 
 os.environ["APP_ENV"] = "test"
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://tailr:tailr@localhost:8402/tailr_test")
@@ -29,9 +30,12 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.ai.client import set_ai
+from app.ai.fake import FakeAIClient
 from app.core.config import get_settings
 from app.core.db import set_session_factory
 from app.core.redis import close_redis, get_redis
+from app.storage.files import LocalStorage, set_storage
 
 
 @pytest.fixture(scope="session")
@@ -93,3 +97,20 @@ async def signed_in(client: httpx.AsyncClient) -> httpx.AsyncClient:
     )
     assert response.status_code == 201, response.text
     return client
+
+
+@pytest.fixture(autouse=True)
+def fake_ai() -> Iterator[FakeAIClient]:
+    """Every test gets a fresh fake AI; register answers with `fake_ai.on(...)`."""
+    fake = FakeAIClient()
+    set_ai(fake)
+    yield fake
+    set_ai(None)
+
+
+@pytest.fixture(autouse=True)
+def storage(tmp_path: Path) -> Iterator[LocalStorage]:
+    local = LocalStorage(tmp_path / "files")
+    set_storage(local)
+    yield local
+    set_storage(None)

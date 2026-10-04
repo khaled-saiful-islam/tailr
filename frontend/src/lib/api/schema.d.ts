@@ -144,16 +144,254 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Profile */
+        get: operations["get_profile_api_v1_profile_get"];
+        /** Save Profile */
+        put: operations["save_profile_api_v1_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Cv */
+        post: operations["upload_cv_api_v1_profile_imports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports/text": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Paste Cv */
+        post: operations["paste_cv_api_v1_profile_imports_text_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports/{import_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Import */
+        get: operations["get_import_api_v1_profile_imports__import_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports/{import_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply Import */
+        post: operations["apply_import_api_v1_profile_imports__import_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/coach/bullet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Coach Bullet */
+        post: operations["coach_bullet_api_v1_profile_coach_bullet_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/coach/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Write Summary */
+        post: operations["write_summary_api_v1_profile_coach_summary_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ApplyImportRequest */
+        ApplyImportRequest: {
+            /**
+             * Mode
+             * @default replace
+             * @enum {string}
+             */
+            mode: "replace" | "merge";
+        };
+        /** Basics */
+        Basics: {
+            /** Full Name */
+            full_name?: string | null;
+            /** Headline */
+            headline?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Location */
+            location?: string | null;
+            /** Summary */
+            summary?: string | null;
+            /** Links */
+            links?: components["schemas"]["Link"][];
+        };
+        /** Body_upload_cv_api_v1_profile_imports_post */
+        Body_upload_cv_api_v1_profile_imports_post: {
+            /** File */
+            file: string;
+        };
+        /** Bullet */
+        Bullet: {
+            /** Text */
+            text: string;
+            /** Id */
+            id?: string;
+        };
+        /** BulletIssueOut */
+        BulletIssueOut: {
+            /** Bullet Id */
+            bullet_id: string;
+            /** Issues */
+            issues: ("placeholder" | "weak_opener" | "no_metric" | "too_short" | "too_long")[];
+        };
+        /** Certification */
+        Certification: {
+            /** Name */
+            name: string;
+            /** Issuer */
+            issuer?: string | null;
+            issued?: components["schemas"]["YearMonth"] | null;
+            /** Url */
+            url?: string | null;
+            /** Id */
+            id?: string;
+        };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
             /** Current Password */
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** CoachBulletOut */
+        CoachBulletOut: {
+            /** Suggestion */
+            suggestion: string;
+            /** Reason */
+            reason: string;
+            /** Questions */
+            questions: string[];
+        };
+        /** CoachBulletRequest */
+        CoachBulletRequest: {
+            /** Text */
+            text: string;
+            /** Title */
+            title?: string | null;
+            /** Company */
+            company?: string | null;
+        };
+        /** Education */
+        Education: {
+            /** Institution */
+            institution: string;
+            /** Qualification */
+            qualification?: string | null;
+            /** Field */
+            field?: string | null;
+            /** Start Year */
+            start_year?: number | null;
+            /** End Year */
+            end_year?: number | null;
+            /** Grade */
+            grade?: string | null;
+            /** Details */
+            details?: string | null;
+            /** Id */
+            id?: string;
+        };
+        /** Experience */
+        Experience: {
+            /** Title */
+            title: string;
+            /** Company */
+            company: string;
+            /** Location */
+            location?: string | null;
+            /** Employment Type */
+            employment_type?: ("full_time" | "part_time" | "contract" | "internship" | "freelance") | null;
+            start?: components["schemas"]["YearMonth"] | null;
+            end?: components["schemas"]["YearMonth"] | null;
+            /**
+             * Current
+             * @default false
+             */
+            current: boolean;
+            /** Summary */
+            summary?: string | null;
+            /** Bullets */
+            bullets?: components["schemas"]["Bullet"][];
+            /** Id */
+            id?: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -168,6 +406,71 @@ export interface components {
             database: boolean;
             /** Redis */
             redis: boolean;
+        };
+        /** ImportOut */
+        ImportOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["ImportStatus"];
+            /** Filename */
+            filename: string;
+            /** File Kind */
+            file_kind: string;
+            /** Error */
+            error: string | null;
+            /** Used Vision */
+            used_vision: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            draft?: components["schemas"]["ProfileDocument"] | null;
+            stats?: components["schemas"]["ImportStats"] | null;
+        };
+        /** ImportStats */
+        ImportStats: {
+            /** Experiences */
+            experiences: number;
+            /** Achievements */
+            achievements: number;
+            /** Skills */
+            skills: number;
+            /** Education */
+            education: number;
+            /** Projects */
+            projects: number;
+        };
+        /**
+         * ImportStatus
+         * @enum {string}
+         */
+        ImportStatus: "queued" | "reading" | "understanding" | "ready" | "applied" | "failed";
+        /** Language */
+        Language: {
+            /** Name */
+            name: string;
+            /** Proficiency */
+            proficiency?: ("native" | "fluent" | "professional" | "conversational" | "basic") | null;
+            /** Id */
+            id?: string;
+        };
+        /** Link */
+        Link: {
+            /** Label */
+            label: string;
+            /** Url */
+            url: string;
+            /** Id */
+            id?: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -193,6 +496,57 @@ export interface components {
          * @enum {string}
          */
         OnboardingStep: "import" | "review" | "radar" | "done";
+        /** ProfileDocument */
+        ProfileDocument: {
+            basics?: components["schemas"]["Basics"];
+            /** Experiences */
+            experiences?: components["schemas"]["Experience"][];
+            /** Education */
+            education?: components["schemas"]["Education"][];
+            /** Projects */
+            projects?: components["schemas"]["Project"][];
+            /** Skills */
+            skills?: components["schemas"]["Skill"][];
+            /** Certifications */
+            certifications?: components["schemas"]["Certification"][];
+            /** Languages */
+            languages?: components["schemas"]["Language"][];
+        };
+        /** ProfileOut */
+        ProfileOut: {
+            /** Exists */
+            exists: boolean;
+            document: components["schemas"]["ProfileDocument"];
+            /** Version */
+            version: number;
+            strength: components["schemas"]["StrengthOut"];
+            /** Updated At */
+            updated_at: string | null;
+        };
+        /** ProfileUpdate */
+        ProfileUpdate: {
+            document: components["schemas"]["ProfileDocument"];
+            /**
+             * Version
+             * @description The version you edited; 0 creates the profile.
+             */
+            version: number;
+        };
+        /** Project */
+        Project: {
+            /** Name */
+            name: string;
+            /** Role */
+            role?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Summary */
+            summary?: string | null;
+            /** Bullets */
+            bullets?: components["schemas"]["Bullet"][];
+            /** Id */
+            id?: string;
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /** Name */
@@ -218,6 +572,52 @@ export interface components {
          */
         SessionOut: {
             user: components["schemas"]["UserOut"] | null;
+        };
+        /** Skill */
+        Skill: {
+            /** Name */
+            name: string;
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "technical" | "tool" | "domain" | "soft";
+            /** Level */
+            level?: ("learning" | "working" | "strong" | "expert") | null;
+            /** Id */
+            id?: string;
+        };
+        /** StrengthCheckOut */
+        StrengthCheckOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Weight */
+            weight: number;
+            /** Done */
+            done: boolean;
+            /** Hint */
+            hint: string;
+        };
+        /** StrengthOut */
+        StrengthOut: {
+            /** Score */
+            score: number;
+            /** Checks */
+            checks: components["schemas"]["StrengthCheckOut"][];
+            /** Bullet Issues */
+            bullet_issues: components["schemas"]["BulletIssueOut"][];
+        };
+        /** SummaryOut */
+        SummaryOut: {
+            /** Summary */
+            summary: string;
+        };
+        /** TextImportRequest */
+        TextImportRequest: {
+            /** Text */
+            text: string;
         };
         /**
          * Theme
@@ -275,6 +675,13 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** YearMonth */
+        YearMonth: {
+            /** Year */
+            year: number;
+            /** Month */
+            month?: number | null;
         };
     };
     responses: never;
@@ -511,6 +918,244 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_profile_api_v1_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    save_profile_api_v1_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_cv_api_v1_profile_imports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_cv_api_v1_profile_imports_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    paste_cv_api_v1_profile_imports_text_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TextImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_import_api_v1_profile_imports__import_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_import_api_v1_profile_imports__import_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    coach_bullet_api_v1_profile_coach_bullet_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CoachBulletRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachBulletOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    write_summary_api_v1_profile_coach_summary_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SummaryOut"];
                 };
             };
         };

@@ -159,7 +159,7 @@ make lint    # ruff + mypy (backend), eslint + tsc (frontend)
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
-| [docs/features/](docs/features) | One page per feature |
+| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md) |
 | [docs/adr/](docs/adr) | Architecture decision records |
 
 ## Status and roadmap
@@ -169,8 +169,8 @@ Tailr is built in milestones; each one is usable on its own.
 | Milestone | Status |
 |---|---|
 | M0 Foundation: stack, accounts, sign in / sign up, design system | ✅ Done |
-| M1 Profile Builder | Next |
-| M2 Job Radar | Planned |
+| M1 Profile Builder: CV import (PDF, Word, scans), live review, autosaving builder, strength score, Bullet Coach | ✅ Done |
+| M2 Job Radar | Next |
 | M3 Job sources and catalog | Planned |
 | M4 Matching and Morning Brief | Planned |
 | M5 Apply Kit | Planned |
