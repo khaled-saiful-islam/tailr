@@ -36,6 +36,14 @@ const JobDetailPage = lazy(() =>
 const KitPage = lazy(() =>
   import("@/features/kits/KitPage").then((m) => ({ default: m.KitPage })),
 );
+const PublicPageEditor = lazy(() =>
+  import("@/features/public-page/PublicPageEditor").then((m) => ({
+    default: m.PublicPageEditor,
+  })),
+);
+const CvStudio = lazy(() =>
+  import("@/features/cv/CvStudio").then((m) => ({ default: m.CvStudio })),
+);
 const RadarPage = lazy(() =>
   import("@/features/radar/RadarPage").then((m) => ({ default: m.RadarPage })),
 );
@@ -126,6 +134,22 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <KitPage />
+          </Page>
+        ),
+      },
+      {
+        path: "profile/cv",
+        element: (
+          <Page>
+            <CvStudio />
+          </Page>
+        ),
+      },
+      {
+        path: "profile/portfolio",
+        element: (
+          <Page>
+            <PublicPageEditor />
           </Page>
         ),
       },

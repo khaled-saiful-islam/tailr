@@ -1,0 +1,32 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+/* Before the page script runs (or without JavaScript): a plain, readable version. */
+#root > main {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+  font:
+    1rem/1.6 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  color: #16181d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

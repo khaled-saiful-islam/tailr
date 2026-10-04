@@ -1,0 +1,205 @@
+"""The HTML for /p/<slug>: the built public-page shell with the profile filled in.
+
+Link previews (WhatsApp, LinkedIn, X, Slack) don't run JavaScript, so the title,
+Open Graph tags and structured data are written into the HTML here. The page data
+travels as JSON in the same response, so the page renders without another request,
+and a plain-HTML version sits in #root for anything that doesn't run scripts.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import time
+from html import escape
+from typing import Any
+
+import httpx
+
+from app.core.config import get_settings
+from app.core.logging import get_logger
+from app.modules.public_profile.schemas import PublicPage
+
+log = get_logger(__name__)
+
+SHELL_TTL_SECONDS = 60
+_FALLBACK_SHELL = (
+    '<!doctype html><html lang="en"><head><meta charset="UTF-8" />'
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
+    '<title>Tailr</title></head><body><div id="root"></div></body></html>'
+)
+_cache: tuple[float, str] | None = None
+
+
+async def load_shell() -> str:
+    """The built shell, cached for a minute; a bare fallback if the web container is down."""
+    global _cache
+    if _cache and time.monotonic() - _cache[0] < SHELL_TTL_SECONDS:
+        return _cache[1]
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            response = await client.get(get_settings().web_shell_url)
+            response.raise_for_status()
+            shell = response.text
+    except httpx.HTTPError:
+        log.warning("public_shell_unavailable")
+        return _cache[1] if _cache else _FALLBACK_SHELL
+    _cache = (time.monotonic(), shell)
+    return shell
+
+
+def script_json(data: Any) -> str:
+    """JSON that is safe inside a <script> element."""
+    return (
+        json.dumps(data, ensure_ascii=False, default=str)
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+
+
+def _absolute(url: str | None) -> str | None:
+    if not url:
+        return None
+    return url if url.startswith("http") else f"{get_settings().public_web_url.rstrip('/')}{url}"
+
+
+def title_for(page: PublicPage) -> str:
+    return f"{page.name}, {page.headline}" if page.headline else page.name
+
+
+def description_for(page: PublicPage) -> str:
+    text = page.summary or page.headline or f"{page.name}'s profile on Tailr."
+    text = re.sub(r"\s+", " ", text).strip()
+    return text if len(text) <= 200 else text[:197].rsplit(" ", 1)[0] + "..."
+
+
+def json_ld(page: PublicPage) -> dict[str, Any]:
+    current = next((e for e in page.experiences if e.current), None)
+    person: dict[str, Any] = {
+        "@type": "Person",
+        "name": page.name,
+        "url": page.url,
+        "jobTitle": page.headline,
+        "image": _absolute(page.photo_url),
+        "sameAs": [link.url for link in page.links],
+        "worksFor": {"@type": "Organization", "name": current.company} if current else None,
+        "alumniOf": [
+            {"@type": "EducationalOrganization", "name": e.institution} for e in page.education
+        ],
+        "knowsAbout": [name for group in page.skills for name in group.names][:20],
+        "knowsLanguage": [language.name for language in page.languages],
+        "address": {"@type": "PostalAddress", "addressLocality": page.location}
+        if page.location
+        else None,
+    }
+    return {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "dateModified": page.updated_at.isoformat(),
+        "mainEntity": {key: value for key, value in person.items() if value},
+    }
+
+
+def meta_tags(
+    *,
+    title: str,
+    description: str,
+    url: str,
+    og_image: str,
+    index: bool,
+    og_type: str = "profile",
+    structured: dict[str, Any] | None = None,
+) -> str:
+    """Head tags for link previews and search engines."""
+    title_, description_, url_, image = (escape(v) for v in (title, description, url, og_image))
+    tags = [
+        f'<meta name="description" content="{description_}" />',
+        f'<link rel="canonical" href="{url_}" />',
+        f'<meta name="robots" content="{"index, follow" if index else "noindex, nofollow"}" />',
+        f'<meta property="og:type" content="{og_type}" />',
+        f'<meta property="og:title" content="{title_}" />',
+        f'<meta property="og:description" content="{description_}" />',
+        f'<meta property="og:url" content="{url_}" />',
+        f'<meta property="og:image" content="{image}" />',
+        '<meta property="og:image:width" content="1200" />',
+        '<meta property="og:image:height" content="630" />',
+        '<meta property="og:site_name" content="Tailr" />',
+        '<meta name="twitter:card" content="summary_large_image" />',
+        f'<meta name="twitter:title" content="{title_}" />',
+        f'<meta name="twitter:description" content="{description_}" />',
+        f'<meta name="twitter:image" content="{image}" />',
+    ]
+    if structured:
+        tags.append(f'<script type="application/ld+json">{script_json(structured)}</script>')
+    return "\n    ".join(tags)
+
+
+def _head(page: PublicPage, *, og_image: str, index: bool) -> str:
+    return meta_tags(
+        title=title_for(page),
+        description=description_for(page),
+        url=page.url,
+        og_image=og_image,
+        index=index,
+        structured=json_ld(page),
+    )
+
+
+def _fallback_body(page: PublicPage) -> str:
+    """Plain HTML for crawlers and browsers without JavaScript; React replaces it."""
+    parts = [f"<h1>{escape(page.name)}</h1>"]
+    if page.headline:
+        parts.append(f"<p>{escape(page.headline)}</p>")
+    if page.summary:
+        parts.append(f"<p>{escape(page.summary)}</p>")
+    for role in page.experiences:
+        parts.append(f"<h2>{escape(role.title)}, {escape(role.company)}</h2>")
+        parts += [f"<p>{escape(bullet)}</p>" for bullet in role.bullets]
+    for project in page.projects:
+        parts.append(f"<h2>{escape(project.name)}</h2>")
+        if project.summary:
+            parts.append(f"<p>{escape(project.summary)}</p>")
+    return f"<main>{''.join(parts)}</main>"
+
+
+def render_shell(shell: str, *, title: str, head: str, body: str, data: Any) -> str:
+    """Fill the built shell: title, head tags, fallback HTML in #root, and the page data."""
+    html = re.sub(
+        r"<title>.*?</title>", f"<title>{escape(title)}</title>", shell, count=1, flags=re.S
+    )
+    html = html.replace("</head>", f"    {head}\n  </head>", 1)
+    return html.replace(
+        '<div id="root"></div>',
+        f'<div id="root">{body}</div>\n    '
+        f'<script id="page-data" type="application/json">{script_json(data)}</script>',
+        1,
+    )
+
+
+NOT_AVAILABLE_BODY = "<main><h1>This page isn't available.</h1></main>"
+
+
+def render_not_available(shell: str) -> str:
+    return render_shell(
+        shell,
+        title="Page not available | Tailr",
+        head='<meta name="robots" content="noindex, nofollow" />',
+        body=NOT_AVAILABLE_BODY,
+        data=None,
+    )
+
+
+def render_page(shell: str, page: PublicPage | None, *, og_image: str, index: bool) -> str:
+    """A portfolio page: the shell with its head tags, fallback HTML and data."""
+    if page is None:
+        return render_not_available(shell)
+    return render_shell(
+        shell,
+        title=f"{title_for(page)} | Tailr",
+        head=_head(page, og_image=og_image, index=index),
+        body=_fallback_body(page),
+        data={"kind": "portfolio", **page.model_dump(mode="json")},
+    )

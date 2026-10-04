@@ -1,4 +1,5 @@
 import { Eye, FileUp, X } from "lucide-react";
+import { ProfileTabs } from "@/features/profile/components/ProfileTabs";
 import { motion } from "motion/react";
 import { Dialog } from "radix-ui";
 import { useMemo } from "react";
@@ -73,7 +74,8 @@ export function ProfilePage() {
 
   return (
     <div className="mx-auto w-full max-w-[100rem] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+      <ProfileTabs />
+      <header className="mt-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
         <div className="min-w-[min(100%,20rem)] flex-1">
           <h1 className="type-title">Your profile</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">

@@ -1,0 +1,175 @@
+/*
+ * Public page templates: one palette and type pairing per template, light and dark.
+ * Imported by the public page and by the app (for the live preview).
+ * Templates use only these tokens: bg-pg, text-pg-ink, font-pg-display, ...
+ */
+@import "@fontsource-variable/archivo/standard.css";
+@import "@fontsource-variable/martian-mono/standard.css";
+@import "@fontsource-variable/newsreader/standard.css";
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource-variable/syne";
+@import "@fontsource-variable/instrument-sans/standard.css";
+@import "@fontsource-variable/unbounded";
+@import "@fontsource-variable/figtree";
+
+[data-template] {
+  background: var(--pg);
+  color: var(--pg-ink);
+  font-family: var(--pg-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-wrap: anywhere;
+}
+
+/* Blueprint: a technical spec sheet. Cyanotype and marker yellow. */
+[data-template="blueprint"] {
+  --pg: #f4f7fb;
+  --pg-2: #ffffff;
+  --pg-ink: #0b1e3a;
+  --pg-ink-2: #36507a;
+  --pg-ink-3: #55708f;
+  --pg-line: #c9d6e8;
+  --pg-accent: #1f5bff;
+  --pg-accent-2: #ffd23f;
+  --pg-accent-3: #0b1e3a;
+  --pg-accent-ink: #ffffff;
+  --pg-grid: rgb(31 91 255 / 0.07);
+  --pg-display: "Archivo Variable", "Arial Narrow", sans-serif;
+  --pg-body: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-mono: "Martian Mono Variable", ui-monospace, monospace;
+}
+[data-template="blueprint"][data-mode="dark"] {
+  --pg: #0b1e3a;
+  --pg-2: #10284b;
+  --pg-ink: #e8eef7;
+  --pg-ink-2: #b6c6de;
+  --pg-ink-3: #8aa1c4;
+  --pg-line: #23406b;
+  --pg-accent: #7fb2ff;
+  --pg-accent-2: #ffd23f;
+  --pg-accent-3: #ffd23f;
+  --pg-accent-ink: #0b1e3a;
+  --pg-grid: rgb(127 178 255 / 0.08);
+}
+
+/* Broadsheet: the front page of a quality paper. Ink, newsprint and jade. */
+[data-template="broadsheet"] {
+  --pg: #f7f7f5;
+  --pg-2: #ffffff;
+  --pg-ink: #16181d;
+  --pg-ink-2: #3a3f48;
+  --pg-ink-3: #5b6270;
+  --pg-line: #d9dce1;
+  --pg-accent: #00756a;
+  --pg-accent-2: #16181d;
+  --pg-accent-3: #00756a;
+  --pg-accent-ink: #ffffff;
+  --pg-grid: transparent;
+  --pg-display: "Newsreader Variable", Georgia, "Times New Roman", serif;
+  --pg-body: "Newsreader Variable", Georgia, serif;
+  --pg-mono: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+}
+[data-template="broadsheet"][data-mode="dark"] {
+  --pg: #121417;
+  --pg-2: #1a1d21;
+  --pg-ink: #e9eaec;
+  --pg-ink-2: #c3c6cc;
+  --pg-ink-3: #9097a3;
+  --pg-line: #2c3036;
+  --pg-accent: #3cc6a8;
+  --pg-accent-2: #e9eaec;
+  --pg-accent-3: #3cc6a8;
+  --pg-accent-ink: #0e1513;
+}
+
+/* Salon: a gallery wall. The work leads; text is the museum label. */
+[data-template="salon"] {
+  --pg: #ffffff;
+  --pg-2: #f4f4f6;
+  --pg-ink: #0e0e10;
+  --pg-ink-2: #3f3f46;
+  --pg-ink-3: #66666e;
+  --pg-line: #e6e6ea;
+  --pg-accent: #5b2eff;
+  --pg-accent-2: #0e0e10;
+  --pg-accent-3: #5b2eff;
+  --pg-accent-ink: #ffffff;
+  --pg-grid: transparent;
+  --pg-display: "Syne Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-body: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-mono: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+}
+[data-template="salon"][data-mode="dark"] {
+  --pg: #0f0f11;
+  --pg-2: #18181b;
+  --pg-ink: #ededf0;
+  --pg-ink-2: #c4c4cc;
+  --pg-ink-3: #9a9aa3;
+  --pg-line: #26262b;
+  --pg-accent: #9b82ff;
+  --pg-accent-2: #ededf0;
+  --pg-accent-3: #9b82ff;
+  --pg-accent-ink: #0f0f11;
+}
+
+/* Poster: bold and Swiss. Hibiscus, sun and sky. */
+[data-template="poster"] {
+  --pg: #fafafa;
+  --pg-2: #ffffff;
+  --pg-ink: #111827;
+  --pg-ink-2: #374151;
+  --pg-ink-3: #5f6673;
+  --pg-line: #e5e7eb;
+  --pg-accent: #d7263d;
+  --pg-accent-2: #ffbe0b;
+  --pg-accent-3: #3a86ff;
+  --pg-accent-ink: #ffffff;
+  --pg-grid: transparent;
+  --pg-display: "Unbounded Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-body: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-mono: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+}
+[data-template="poster"][data-mode="dark"] {
+  --pg: #101014;
+  --pg-2: #1a1a20;
+  --pg-ink: #f3f4f6;
+  --pg-ink-2: #d1d5db;
+  --pg-ink-3: #9ca3af;
+  --pg-line: #2a2a33;
+  --pg-accent: #ff4d6d;
+  --pg-accent-2: #ffbe0b;
+  --pg-accent-3: #5b9bff;
+  --pg-accent-ink: #101014;
+}
+
+@theme inline {
+  --color-pg: var(--pg);
+  --color-pg-2: var(--pg-2);
+  --color-pg-ink: var(--pg-ink);
+  --color-pg-ink-2: var(--pg-ink-2);
+  --color-pg-ink-3: var(--pg-ink-3);
+  --color-pg-line: var(--pg-line);
+  --color-pg-accent: var(--pg-accent);
+  --color-pg-accent-2: var(--pg-accent-2);
+  --color-pg-accent-3: var(--pg-accent-3);
+  --color-pg-accent-ink: var(--pg-accent-ink);
+  --color-pg-grid: var(--pg-grid);
+  --font-pg-display: var(--pg-display);
+  --font-pg-body: var(--pg-body);
+  --font-pg-mono: var(--pg-mono);
+}
+
+@keyframes pg-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+@utility animate-pg-pulse {
+  animation: pg-pulse 2.4s ease-in-out infinite;
+}

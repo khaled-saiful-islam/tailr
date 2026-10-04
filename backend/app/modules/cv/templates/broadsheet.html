@@ -1,0 +1,111 @@
+{% extends "_base.html" %}
+{#
+  Broadsheet: a newspaper front page. Your name as the masthead, a dateline, a lead
+  paragraph with a drop cap, roles set as articles in two columns with a rule between.
+  For business, communications and anyone with a story to tell.
+#}
+{% block page %}margin: 13mm 15mm 13mm;{% endblock %}
+{% block screen %}padding: 13mm 15mm 13mm;{% endblock %}
+{% block style %}
+body { font-family: "Newsreader", Georgia, serif; }
+.ui { font-family: "Schibsted Grotesk", Arial, sans-serif; }
+.thick { height: 2.8pt; background: var(--ink); }
+h1 { text-align: center; font-size: 40pt; font-weight: 600; letter-spacing: -0.02em; line-height: 1; padding: 3.5mm 0 3mm; }
+.dateline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 0.7pt solid var(--ink); border-bottom: 0.7pt solid var(--ink); }
+.dateline p { padding: 1.6mm 2mm; text-align: center; font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 8.2pt; }
+.dateline p + p { border-left: 0.5pt solid var(--line); }
+.dateline .mid { font-weight: 700; }
+.lead { display: grid; grid-template-columns: minmax(0, 1fr) {% if photo %}34mm{% else %}0{% endif %}; gap: {% if photo %}7mm{% else %}0{% endif %}; margin-top: calc(5mm * var(--g)); }
+.deck { font-size: 15pt; font-style: normal; font-weight: 500; line-height: 1.25; }
+.summary { margin-top: 3mm; columns: 2; column-gap: 7mm; column-rule: 0.5pt solid var(--line); font-size: 10.4pt; line-height: 1.55; }
+.summary::first-letter { float: left; font-size: 33pt; line-height: 0.8; padding: 1mm 1.6mm 0 0; color: var(--accent); font-weight: 600; }
+.photo { width: 34mm; height: 42mm; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+.links { margin-top: 2.6mm; font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 8.2pt; color: var(--ink-2); }
+.links span + span::before { content: "|"; color: var(--line); margin: 0 2mm; }
+h2 { display: flex; justify-content: space-between; align-items: baseline; border-top: 1.8pt solid var(--ink); padding-top: 1.6mm; margin: calc(6.5mm * var(--g)) 0 calc(3mm * var(--g)); font-size: 16pt; font-weight: 600; }
+h2 small { font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 8pt; font-weight: 500; color: var(--ink-3); }
+.articles { columns: 2; column-gap: 8mm; column-rule: 0.5pt solid var(--line); }
+.article { margin-bottom: calc(4.4mm * var(--g)); }
+.article p.line { break-inside: avoid; }
+.kicker { font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 7.8pt; font-weight: 700; color: var(--accent); }
+.article h3 { font-size: 13pt; font-weight: 600; line-height: 1.15; margin-top: 0.6mm; }
+.byline { font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 8.2pt; color: var(--ink-3); margin-top: 0.6mm; }
+.article p.line { margin-top: 1.4mm; font-size: 10pt; line-height: 1.5; }
+.notices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.notices > div { padding: 0 4mm; }
+.notices > div:first-child { padding-left: 0; }
+.notices > div + div { border-left: 0.5pt solid var(--line); }
+.notices h3 { font-family: "Schibsted Grotesk", Arial, sans-serif; font-size: 8.2pt; font-weight: 700; margin-bottom: 1.6mm; }
+.notices li { margin-bottom: 1.8mm; font-size: 9.6pt; line-height: 1.4; }
+.small { font-family: "Schibsted Grotesk", Arial, sans-serif; color: var(--ink-3); font-size: 7.8pt; }
+{% endblock %}
+
+{% block body %}
+<div class="thick"></div>
+<h1>{{ name }}</h1>
+<div class="dateline">
+  <p>{% for item in contact if item.kind == "location" %}{{ item.text }}{% else %}&nbsp;{% endfor %}</p>
+  <p class="mid">{{ headline or "" }}</p>
+  <p>{% for item in contact if item.kind == "email" %}<a href="{{ item.href }}">{{ item.text }}</a>{% else %}{% for item in contact if item.kind == "phone" %}{{ item.text }}{% endfor %}{% endfor %}</p>
+</div>
+
+<div class="lead">
+  <div>
+    {% if show.summary and summary %}<p class="summary">{{ summary }}</p>{% endif %}
+    {% set extra = contact | rejectattr("kind", "equalto", "location") | rejectattr("kind", "equalto", "email") | list %}
+    {% if extra %}<p class="links">{% for item in extra %}<span>{% if item.href %}<a href="{{ item.href }}">{{ item.text }}</a>{% else %}{{ item.text }}{% endif %}</span>{% endfor %}</p>{% endif %}
+  </div>
+  {% if photo %}<img class="photo" src="{{ photo }}" alt="" />{% endif %}
+</div>
+
+{% if show.experience and roles %}
+<h2>{{ labels.experience }}<small>{{ roles | length }}</small></h2>
+<div class="articles">
+  {% for role in roles %}
+  <article class="article">
+    <div class="keep">
+      <p class="kicker">{{ role.dates }}</p>
+      <h3>{{ role.title }}</h3>
+      <p class="byline">{{ role.company }}{% if role.location %}, {{ role.location }}{% endif %}</p>
+    </div>
+    {% for bullet in role.bullets %}<p class="line">{{ bullet }}</p>{% endfor %}
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if show.projects and projects %}
+<h2>{{ labels.projects }}</h2>
+<div class="articles">
+  {% for project in projects %}
+  <article class="article">
+    <div class="keep">
+      {% if project.role %}<p class="kicker">{{ project.role }}</p>{% endif %}
+      <h3>{{ project.name }}</h3>
+      {% if project.url %}<p class="byline">{{ project.url }}</p>{% endif %}
+    </div>
+    {% for bullet in project.bullets %}<p class="line">{{ bullet }}</p>{% endfor %}
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if (show.skills and skill_groups) or (show.education and education) or (show.certifications and certifications) or (show.languages and languages) %}
+<h2>{{ labels.skills }}, {{ labels.education | lower }}</h2>
+<div class="notices keep">
+  <div>
+    {% if show.skills %}{% for group in skill_groups %}<h3>{{ group.label }}</h3><ul><li>{{ group.names | join(", ") }}</li></ul>{% endfor %}{% endif %}
+  </div>
+  <div>
+    {% if show.education and education %}<h3>{{ labels.education }}</h3>
+    <ul>{% for item in education %}<li><strong>{{ item.title }}</strong>{% if item.institution %}, {{ item.institution }}{% endif %}<br /><span class="small">{{ item.dates }}{% if item.grade %}, {{ item.grade }}{% endif %}</span></li>{% endfor %}</ul>{% endif %}
+  </div>
+  <div>
+    {% if show.certifications and certifications %}<h3>{{ labels.certifications }}</h3>
+    <ul>{% for cert in certifications %}<li>{{ cert.name }}{% if cert.issuer or cert.date %}<br /><span class="small">{{ [cert.issuer, cert.date] | select | join(", ") }}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}
+    {% if show.languages and languages %}<h3>{{ labels.languages }}</h3>
+    <ul><li>{% for language in languages %}{{ language.name }}{% if language.level %} <span class="small">{{ language.level }}</span>{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</li></ul>{% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

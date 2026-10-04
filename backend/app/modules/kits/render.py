@@ -102,7 +102,7 @@ def resume_context(
                 {
                     "name": project.name,
                     "role": project.role,
-                    "bullets": [b.text for b in tailored.bullets],
+                    "bullets": [b.text for b in tailored_project.bullets],
                 }
             )
     basics = document.basics
@@ -155,11 +155,11 @@ def letter_html(document: ProfileDocument, letter: CoverLetter, job: JobInfo, la
     )
 
 
-async def to_pdf(html: str) -> bytes:
+async def to_pdf(html: str, paper: str = "A4") -> bytes:
     try:
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.post(
-                f"{get_settings().renderer_url}/pdf", json={"html": html, "format": "A4"}
+                f"{get_settings().renderer_url}/pdf", json={"html": html, "format": paper}
             )
             response.raise_for_status()
     except httpx.HTTPError as error:

@@ -1,0 +1,124 @@
+{% extends "_base.html" %}
+{#
+  Ledger: Swiss and exact. A wide expanded name, a heavy rule, and every section on a
+  grid with its label in a narrow mono column. One column of reading order, so it's
+  the friendliest for application tracking systems.
+#}
+{% block page %}margin: 15mm 16mm 14mm;{% endblock %}
+{% block screen %}padding: 15mm 16mm 14mm;{% endblock %}
+{% block style %}
+body { font-family: "Archivo", Arial, sans-serif; }
+.mono { font-family: "Martian Mono", ui-monospace, monospace; }
+header { display: flex; justify-content: space-between; gap: 8mm; align-items: flex-end; }
+h1 { font-size: 31pt; font-weight: 800; font-stretch: 118%; line-height: 0.96; letter-spacing: -0.025em; }
+.headline { margin-top: 2.6mm; font-family: "Martian Mono", ui-monospace, monospace; font-size: 8.6pt; font-weight: 500; color: var(--accent); }
+.photo { width: 24mm; height: 24mm; object-fit: cover; }
+.contact { margin-top: 4mm; display: flex; flex-wrap: wrap; gap: 1mm 0; font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.6pt; color: var(--ink-2); }
+.contact span:not(:last-child)::after { content: "/"; color: var(--line); margin: 0 2.4mm; }
+.rule { height: 2.6pt; background: var(--ink); margin-top: 4.5mm; }
+.sec { display: grid; grid-template-columns: 31mm 1fr; column-gap: 6mm; border-top: 0.6pt solid var(--line); padding-top: calc(3.4mm * var(--g)); margin-top: calc(3.4mm * var(--g)); }
+.sec:first-of-type { border-top: 0; }
+.label { font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.6pt; font-weight: 600; color: var(--accent); padding-top: 0.6mm; }
+.summary { font-size: 10.4pt; line-height: 1.5; }
+.entry { margin-bottom: calc(4mm * var(--g)); }
+.entry:last-child { margin-bottom: 0; }
+.entry-head { display: flex; justify-content: space-between; gap: 5mm; align-items: baseline; }
+.title { font-size: 10.8pt; font-weight: 700; font-stretch: 108%; }
+.when { font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.4pt; color: var(--ink-3); white-space: nowrap; }
+.org { color: var(--ink-2); margin-top: 0.4mm; }
+.bullets { margin-top: 1.6mm; }
+.bullets li { position: relative; padding-left: 4.6mm; margin-bottom: calc(1.1mm * var(--g)); line-height: 1.45; break-inside: avoid; }
+.bullets li::before { content: "\2013"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.6mm 8mm; }
+.item b { font-weight: 700; }
+.item p { color: var(--ink-2); }
+.skills p { margin-bottom: 1.4mm; line-height: 1.45; }
+.skills b { font-family: "Martian Mono", ui-monospace, monospace; font-size: 7.4pt; font-weight: 600; color: var(--ink-3); margin-right: 2mm; }
+{% endblock %}
+
+{% block body %}
+<header>
+  <div>
+    <h1>{{ name }}</h1>
+    {% if headline %}<p class="headline">{{ headline }}</p>{% endif %}
+    {% if contact %}
+    <p class="contact">{% for item in contact %}<span>{% if item.href %}<a href="{{ item.href }}">{{ item.text }}</a>{% else %}{{ item.text }}{% endif %}</span>{% endfor %}</p>
+    {% endif %}
+  </div>
+  {% if photo %}<img class="photo" src="{{ photo }}" alt="" />{% endif %}
+</header>
+<div class="rule"></div>
+
+{% if show.summary and summary %}
+<section class="sec"><h2 class="label">{{ labels.summary }}</h2><p class="summary">{{ summary }}</p></section>
+{% endif %}
+
+{% if show.experience and roles %}
+<section class="sec">
+  <h2 class="label">{{ labels.experience }}</h2>
+  <div>
+    {% for role in roles %}
+    <article class="entry">
+      <div class="keep">
+        <div class="entry-head"><span class="title">{{ role.title }}</span><span class="when">{{ role.dates }}</span></div>
+        <p class="org">{{ role.company }}{% if role.location %}, {{ role.location }}{% endif %}</p>
+      </div>
+      {% if role.bullets %}<ul class="bullets">{% for bullet in role.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if show.projects and projects %}
+<section class="sec">
+  <h2 class="label">{{ labels.projects }}</h2>
+  <div>
+    {% for project in projects %}
+    <article class="entry">
+      <div class="keep">
+        <div class="entry-head"><span class="title">{{ project.name }}</span>{% if project.url %}<span class="when">{{ project.url }}</span>{% endif %}</div>
+        {% if project.role %}<p class="org">{{ project.role }}</p>{% endif %}
+      </div>
+      {% if project.bullets %}<ul class="bullets">{% for bullet in project.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if show.skills and skill_groups %}
+<section class="sec keep">
+  <h2 class="label">{{ labels.skills }}</h2>
+  <div class="skills">{% for group in skill_groups %}<p><b>{{ group.label }}</b>{{ group.names | join(", ") }}</p>{% endfor %}</div>
+</section>
+{% endif %}
+
+{% if show.education and education %}
+<section class="sec keep">
+  <h2 class="label">{{ labels.education }}</h2>
+  <div>
+    {% for item in education %}
+    <div class="entry">
+      <div class="entry-head"><span class="title">{{ item.title }}</span><span class="when">{{ item.dates }}</span></div>
+      <p class="org">{{ [item.institution, item.grade] | select | join(", ") }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if (show.certifications and certifications) or (show.languages and languages) %}
+<section class="sec keep">
+  <h2 class="label">{% if show.certifications and certifications %}{{ labels.certifications }}{% else %}{{ labels.languages }}{% endif %}</h2>
+  <div class="grid2">
+    {% if show.certifications %}{% for cert in certifications %}
+    <div class="item"><b>{{ cert.name }}</b><p>{{ [cert.issuer, cert.date] | select | join(", ") }}</p></div>
+    {% endfor %}{% endif %}
+    {% if show.languages and languages %}
+    <div class="item"><b>{{ labels.languages }}</b><p>{% for language in languages %}{{ language.name }}{% if language.level %} ({{ language.level }}){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}</p></div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

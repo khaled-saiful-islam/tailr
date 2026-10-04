@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{ name }}</title>
+<style>
+{{ font_faces | safe }}
+@page { size: {{ paper }}; {% block page %}margin: 15mm 16mm;{% endblock %} }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+:root {
+  --accent: {{ accent }};
+  --accent-soft: {{ accent_soft }};
+  --accent-mid: {{ accent_mid }};
+  --ink: #171b24;
+  --ink-2: #454c5b;
+  --ink-3: #697080;
+  --line: #dadde4;
+  --fs: {{ fs }}pt;
+  --g: {{ "0.82" if density == "compact" else "1" }};
+}
+body { font-size: var(--fs); line-height: 1.42; color: var(--ink); background: #fff; overflow-wrap: anywhere; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+h1, h2, h3 { break-after: avoid; font-weight: inherit; }
+.keep { break-inside: avoid; }
+.icon { width: 1.05em; height: 1.05em; flex-shrink: 0; vertical-align: -0.15em; }
+/* On screen: a sheet of paper, with faint guides where pages roughly end. */
+@media screen {
+  html { background: #e8eaee; }
+  body {
+    width: {{ page_width }};
+    min-height: {{ page_height }};
+    margin: 0 auto;
+    position: relative;
+    {% block screen %}padding: 15mm 16mm;{% endblock %}
+  }
+  body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc({{ page_height }} - 1px), rgb(23 27 36 / 0.16) calc({{ page_height }} - 1px) {{ page_height }});
+  }
+}
+{% block style %}{% endblock %}
+</style>
+</head>
+<body>
+{% block body %}{% endblock %}
+</body>
+</html>

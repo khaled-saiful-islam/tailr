@@ -12,7 +12,25 @@ export default defineConfig({
   server: {
     port: Number(process.env.DEV_PORT ?? 8403),
     strictPort: true,
-    proxy: { "/api": { target: apiTarget, changeOrigin: false } },
+    // The backend container fetches public.html from here to serve /p/<slug> in development.
+    allowedHosts: ["host.docker.internal"],
+    proxy: {
+      "/api": { target: apiTarget, changeOrigin: false },
+      // Public pages are served by the backend (it writes their link-preview tags):
+      // /cv/<slug> (online CV) and /p/<slug>/... (portfolio site).
+      "^/cv/[^/]+/?$": { target: apiTarget, changeOrigin: false },
+      "^/p/[^/]+(/.*)?$": { target: apiTarget, changeOrigin: false },
+    },
   },
-  build: { sourcemap: "hidden", target: "es2022" },
+  build: {
+    sourcemap: "hidden",
+    target: "es2022",
+    // Two pages: the app, and the light public profile page (/p/<slug>).
+    rollupOptions: {
+      input: {
+        app: fileURLToPath(new URL("./index.html", import.meta.url)),
+        public: fileURLToPath(new URL("./public.html", import.meta.url)),
+      },
+    },
+  },
 });

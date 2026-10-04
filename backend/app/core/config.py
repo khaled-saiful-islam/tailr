@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     secret_key: str = _DEV_SECRET
     public_web_url: str = "http://localhost:8400"
+    # The built public-page shell (frontend/public.html). Public profile pages are this
+    # file with the profile's link-preview tags and data filled in.
+    web_shell_url: str = "http://frontend/public.html"
     cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:8400", "http://localhost:8403"]
     )

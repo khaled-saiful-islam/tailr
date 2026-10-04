@@ -194,9 +194,10 @@ ruff + mypy (backend), eslint + tsc (frontend) · pytest with a **separate test 
 - [x] **M3 Sources & catalog** — ~~source contract, LinkedIn, JobStreet; cache, rate limit~~ (done in M2), job catalog + dedupe, details, enrichment, embeddings (paste-a-job moves to M5)
 - [x] **M4 Matching & Morning Brief** — Fit score, explanations, brief builder, scheduler dispatch, run-now, email digest, Today / Jobs / Job detail UI
 - [x] **M5 Apply Kit** — tailoring pipeline, fact check (ADR 0003), keywords, extras, renderer PDF, kit editor UI, Bahasa Malaysia option, paste-a-job (with SSRF-safe fetching), background builds with in-app, toast and browser notifications
-- [ ] **M6 Public profile** — a shareable page built from the profile: 3+ templates, photo and project images, custom link, privacy controls, contact email of the user's choice, link previews (Open Graph), mobile-first
-- [ ] **M7 Tracker & Momentum** — kanban, follow-up nudges, goals, streak, funnel, market pulse
-- [ ] **M8 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
+- [x] **M6 CV Studio** — 5 print-quality CV designs (Meridian, Ledger, Atelier, Monogram, Broadsheet), AI edits (polish, one page, summary, translate, free text) through the truth lock with undo, PDF, share page `/cv/<slug>` with link preview; plus the portfolio foundation (publishing, 4 web designs, pictures, truth-checked highlights, Open Graph, visits)
+- [ ] **M7 Portfolio site** — about, expertise, achievements, project case-study pages, career timeline, testimonials, contact form to the owner's inbox, one-page or multi-page, AI drafting under the truth rules (research notes in docs/features/07-portfolio.md)
+- [ ] **M8 Tracker & Momentum** — kanban, follow-up nudges, goals, streak, funnel, market pulse
+- [ ] **M9 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
 
 Each milestone: tests green → docs updated → commit → push to GitHub. Every screen works on phones.
 

@@ -15,6 +15,7 @@ export interface PdfOptions {
 
 export interface ShotOptions {
   width?: number;
+  height?: number;
 }
 
 const MAX_CONCURRENT = Number(process.env.RENDER_CONCURRENCY ?? 4);
@@ -44,9 +45,14 @@ function release(): void {
   waiting.shift()?.();
 }
 
-async function withPage<T>(html: string, width: number, work: (page: import("playwright").Page) => Promise<T>): Promise<T> {
+async function withPage<T>(
+  html: string,
+  width: number,
+  work: (page: import("playwright").Page) => Promise<T>,
+  height = 1200,
+): Promise<T> {
   await acquire();
-  const context = await (await getBrowser()).newContext({ viewport: { width, height: 1200 }, javaScriptEnabled: false });
+  const context = await (await getBrowser()).newContext({ viewport: { width, height }, javaScriptEnabled: false });
   try {
     const page = await context.newPage();
     page.setDefaultTimeout(TIMEOUT_MS);
@@ -73,7 +79,12 @@ export async function renderPdf(html: string, options: PdfOptions = {}): Promise
 }
 
 export async function renderPng(html: string, options: ShotOptions = {}): Promise<Buffer> {
-  return withPage(html, options.width ?? 900, (page) => page.screenshot({ type: "png", fullPage: false }));
+  return withPage(
+    html,
+    options.width ?? 900,
+    (page) => page.screenshot({ type: "png", fullPage: false }),
+    options.height ?? 1200,
+  );
 }
 
 export async function closeBrowser(): Promise<void> {

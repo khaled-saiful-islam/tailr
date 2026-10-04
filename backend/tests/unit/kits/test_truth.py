@@ -205,6 +205,33 @@ def test_resume_html_is_ats_friendly(document: ProfileDocument) -> None:
     assert f"Mac 2023 {DASH} Kini" in malay
 
 
+def test_project_lines_come_from_the_project(document: ProfileDocument) -> None:
+    from app.modules.kits.render import resume_context
+    from app.modules.profile.document import Bullet, Project
+
+    current, _, facts, _ = _ids(document)
+    project = Project(name="Open-source RAG kit", bullets=[Bullet(text="Starred 1,200 times.")])
+    with_project = document.model_copy(update={"projects": [project]})
+    resume = TailoredResume(
+        headline="x",
+        summary="y",
+        roles=[
+            TailoredRole(
+                experience_id=current,
+                bullets=[TailoredBullet(text="Role line.", fact_ids=[facts[0]])],
+            )
+        ],
+        projects=[
+            TailoredProject(
+                project_id=project.id,
+                bullets=[TailoredBullet(text="Starred 1,200 times.", fact_ids=[])],
+            )
+        ],
+    )
+    context = resume_context(with_project, resume, "en")
+    assert context["projects"][0]["bullets"] == ["Starred 1,200 times."]
+
+
 @pytest.mark.parametrize(
     ("url", "expected"),
     [

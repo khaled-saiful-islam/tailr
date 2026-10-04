@@ -621,6 +621,378 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Image
+         * @description Upload a JPG, PNG, WebP or GIF; it comes back as a cleaned, resized WebP.
+         */
+        post: operations["upload_image_api_v1_images_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Image */
+        delete: operations["delete_image_api_v1_images__image_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Settings
+         * @description Your page settings and views. Created (switched off) on first visit.
+         */
+        get: operations["get_settings__api_v1_public_profile_get"];
+        /** Update Settings */
+        put: operations["update_settings_api_v1_public_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/slug-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check Slug */
+        get: operations["check_slug_api_v1_public_profile_slug_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview
+         * @description Your page as visitors would see it, published or not.
+         */
+        get: operations["preview_api_v1_public_profile_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/highlights/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suggest
+         * @description Up to four numbers worth leading with, each checked against your profile.
+         */
+        post: operations["suggest_api_v1_public_profile_highlights_suggest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public-profile/qr.svg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Qr Code
+         * @description A QR code for your portfolio or your shared CV (visits from it count as "QR").
+         */
+        get: operations["qr_code_api_v1_public_profile_qr_svg_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/profiles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Page */
+        get: operations["public_page_api_v1_public_profiles__slug__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/profiles/{slug}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reveal Contact
+         * @description The contact email, on request: it's never in the page itself, so scrapers miss it.
+         */
+        post: operations["reveal_contact_api_v1_public_profiles__slug__contact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/profiles/{slug}/og.jpg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Og Image */
+        get: operations["og_image_api_v1_public_profiles__slug__og_jpg_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/profiles/{slug}/cv.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Cv */
+        get: operations["public_cv_api_v1_public_profiles__slug__cv_pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Cv
+         * @description Your CV. Made from your profile the first time you open it.
+         */
+        get: operations["get_cv_api_v1_cv_get"];
+        /** Save Cv */
+        put: operations["save_cv_api_v1_cv_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Cv
+         * @description Start the words again from your profile; the design stays.
+         */
+        post: operations["reset_cv_api_v1_cv_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Undo Cv */
+        post: operations["undo_cv_api_v1_cv_undo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv/ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Improve Cv
+         * @description Edit with AI in the background; every line is checked against your profile.
+         */
+        post: operations["improve_cv_api_v1_cv_ai_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv/document.html": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preview
+         * @description The document as it prints; `template`/`accent` try another design without saving.
+         */
+        get: operations["preview_api_v1_cv_document_html_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cv/cv.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download */
+        get: operations["download_api_v1_cv_cv_pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/cv/{slug}/document.html": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Document */
+        get: operations["public_document_api_v1_public_cv__slug__document_html_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/cv/{slug}/cv.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Pdf */
+        get: operations["public_pdf_api_v1_public_cv__slug__cv_pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/cv/{slug}/og.jpg": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Og Image */
+        get: operations["og_image_api_v1_public_cv__slug__og_jpg_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -655,6 +1027,16 @@ export interface components {
         Body_upload_cv_api_v1_profile_imports_post: {
             /** File */
             file: string;
+        };
+        /** Body_upload_image_api_v1_images_post */
+        Body_upload_image_api_v1_images_post: {
+            /** File */
+            file: string;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "avatar" | "project";
         };
         /** BriefOut */
         BriefOut: {
@@ -745,6 +1127,11 @@ export interface components {
             /** Company */
             company?: string | null;
         };
+        /** ContactOut */
+        ContactOut: {
+            /** Email */
+            email: string;
+        };
         /** CoverLetter */
         CoverLetter: {
             /** Greeting */
@@ -753,6 +1140,122 @@ export interface components {
             paragraphs?: string[];
             /** Closing */
             closing: string;
+        };
+        /** CvAiRequest */
+        CvAiRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "polish" | "one_page" | "summary" | "translate" | "custom";
+            /** Instruction */
+            instruction?: string | null;
+            /** Language */
+            language?: ("en" | "ms") | null;
+        };
+        /**
+         * CvOptions
+         * @description How the CV looks. Content lives in `CvContent`.
+         */
+        CvOptions: {
+            /** Photo Id */
+            photo_id?: string | null;
+            /**
+             * Density
+             * @default comfortable
+             * @enum {string}
+             */
+            density: "comfortable" | "compact";
+            /**
+             * Paper
+             * @default A4
+             * @enum {string}
+             */
+            paper: "A4" | "Letter";
+            /**
+             * Language
+             * @default en
+             * @enum {string}
+             */
+            language: "en" | "ms";
+            /** Hidden Sections */
+            hidden_sections?: ("summary" | "experience" | "projects" | "education" | "skills" | "certifications" | "languages")[];
+            /**
+             * Show Email
+             * @default true
+             */
+            show_email: boolean;
+            /**
+             * Show Phone
+             * @default true
+             */
+            show_phone: boolean;
+        };
+        /** CvOut */
+        CvOut: {
+            /**
+             * Template
+             * @enum {string}
+             */
+            template: "meridian" | "ledger" | "atelier" | "monogram" | "broadsheet";
+            /**
+             * Accent
+             * @enum {string}
+             */
+            accent: "ink" | "jade" | "cobalt" | "plum" | "crimson" | "ochre";
+            options: components["schemas"]["CvOptions"];
+            content: components["schemas"]["TailoredResume"];
+            /** Version */
+            version: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ready" | "working" | "failed";
+            /** Stage */
+            stage: string | null;
+            /** Error */
+            error: string | null;
+            /** Last Action */
+            last_action: string | null;
+            last_check: components["schemas"]["FactCheck"] | null;
+            /** Can Undo */
+            can_undo: boolean;
+            /** Stale */
+            stale: boolean;
+            /**
+             * Visibility
+             * @enum {string}
+             */
+            visibility: "off" | "link" | "public";
+            /** Slug */
+            slug: string;
+            /** Url */
+            url: string;
+            /** Published At */
+            published_at: string | null;
+            /** Facts */
+            facts: components["schemas"]["FactRef"][];
+            /** Sections */
+            sections: components["schemas"]["SectionRef"][];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CvUpdate */
+        CvUpdate: {
+            /** Version */
+            version: number;
+            /** Template */
+            template?: ("meridian" | "ledger" | "atelier" | "monogram" | "broadsheet") | null;
+            /** Accent */
+            accent?: ("ink" | "jade" | "cobalt" | "plum" | "crimson" | "ochre") | null;
+            options?: components["schemas"]["CvOptions"] | null;
+            content?: components["schemas"]["TailoredResume"] | null;
+            /** Visibility */
+            visibility?: ("off" | "link" | "public") | null;
         };
         /** Education */
         Education: {
@@ -850,6 +1353,37 @@ export interface components {
             database: boolean;
             /** Redis */
             redis: boolean;
+        };
+        /**
+         * Highlight
+         * @description A number worth leading with, taken from one of the profile's facts.
+         */
+        Highlight: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+            /** Fact Id */
+            fact_id?: string | null;
+        };
+        /** ImageOut */
+        ImageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "avatar" | "project";
+            /** Url */
+            url: string;
+            /** Width */
+            width: number;
+            /** Height */
+            height: number;
         };
         /** ImportOut */
         ImportOut: {
@@ -1259,6 +1793,128 @@ export interface components {
          * @enum {string}
          */
         OnboardingStep: "import" | "review" | "radar" | "done";
+        /** PageCertification */
+        PageCertification: {
+            /** Name */
+            name: string;
+            /** Issuer */
+            issuer: string | null;
+            /** Year */
+            year: number | null;
+            /** Url */
+            url: string | null;
+        };
+        /** PageEducation */
+        PageEducation: {
+            /** Institution */
+            institution: string;
+            /** Qualification */
+            qualification: string | null;
+            /** Field */
+            field: string | null;
+            /** Start Year */
+            start_year: number | null;
+            /** End Year */
+            end_year: number | null;
+            /** Grade */
+            grade: string | null;
+        };
+        /** PageExperience */
+        PageExperience: {
+            /** Title */
+            title: string;
+            /** Company */
+            company: string;
+            /** Location */
+            location: string | null;
+            /** Start */
+            start: string | null;
+            /** End */
+            end: string | null;
+            /** Current */
+            current: boolean;
+            /** Summary */
+            summary: string | null;
+            /** Bullets */
+            bullets: string[];
+        };
+        /** PageLanguage */
+        PageLanguage: {
+            /** Name */
+            name: string;
+            /** Proficiency */
+            proficiency: string | null;
+        };
+        /** PageLink */
+        PageLink: {
+            /** Label */
+            label: string;
+            /** Url */
+            url: string;
+        };
+        /** PageProject */
+        PageProject: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string | null;
+            /** Url */
+            url: string | null;
+            /** Summary */
+            summary: string | null;
+            /** Bullets */
+            bullets: string[];
+            /** Image Url */
+            image_url: string | null;
+            /** Image Width */
+            image_width: number | null;
+            /** Image Height */
+            image_height: number | null;
+            /** Featured */
+            featured: boolean;
+        };
+        /** PageSettings */
+        PageSettings: {
+            /** Photo Id */
+            photo_id?: string | null;
+            /**
+             * Availability
+             * @default open
+             * @enum {string}
+             */
+            availability: "open" | "casual" | "not_looking";
+            /** Availability Note */
+            availability_note?: string | null;
+            /** Contact Email */
+            contact_email?: string | null;
+            /** Highlights */
+            highlights?: components["schemas"]["Highlight"][];
+            /** Project Images */
+            project_images?: {
+                [key: string]: string;
+            };
+            /** Featured Project Id */
+            featured_project_id?: string | null;
+            /** Hidden Sections */
+            hidden_sections?: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages")[];
+            /**
+             * Show Location
+             * @default true
+             */
+            show_location: boolean;
+        };
+        /** PageSkillGroup */
+        PageSkillGroup: {
+            /**
+             * Category
+             * @enum {string}
+             */
+            category: "technical" | "tool" | "domain" | "soft";
+            /** Names */
+            names: string[];
+        };
         /** PasteRequest */
         PasteRequest: {
             /** Url */
@@ -1390,6 +2046,111 @@ export interface components {
             bullets?: components["schemas"]["Bullet"][];
             /** Id */
             id?: string;
+        };
+        /** PublicPage */
+        PublicPage: {
+            /** Slug */
+            slug: string;
+            /** Url */
+            url: string;
+            /**
+             * Template
+             * @enum {string}
+             */
+            template: "blueprint" | "broadsheet" | "salon" | "poster";
+            /**
+             * Appearance
+             * @enum {string}
+             */
+            appearance: "auto" | "light" | "dark";
+            /** Name */
+            name: string;
+            /** Headline */
+            headline: string | null;
+            /** Summary */
+            summary: string | null;
+            /** Location */
+            location: string | null;
+            /** Photo Url */
+            photo_url: string | null;
+            /**
+             * Availability
+             * @enum {string}
+             */
+            availability: "open" | "casual" | "not_looking";
+            /** Availability Note */
+            availability_note: string | null;
+            /** Has Contact */
+            has_contact: boolean;
+            /** Links */
+            links: components["schemas"]["PageLink"][];
+            /** Highlights */
+            highlights: components["schemas"]["Highlight"][];
+            /** Experiences */
+            experiences: components["schemas"]["PageExperience"][];
+            /** Projects */
+            projects: components["schemas"]["PageProject"][];
+            /** Education */
+            education: components["schemas"]["PageEducation"][];
+            /** Certifications */
+            certifications: components["schemas"]["PageCertification"][];
+            /** Skills */
+            skills: components["schemas"]["PageSkillGroup"][];
+            /** Languages */
+            languages: components["schemas"]["PageLanguage"][];
+            /** Hidden Sections */
+            hidden_sections: ("highlights" | "projects" | "experience" | "education" | "certifications" | "skills" | "languages")[];
+            /** Cv Url */
+            cv_url: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PublicProfileOut */
+        PublicProfileOut: {
+            /** Slug */
+            slug: string;
+            /** Url */
+            url: string;
+            /**
+             * Visibility
+             * @enum {string}
+             */
+            visibility: "off" | "link" | "public";
+            /**
+             * Template
+             * @enum {string}
+             */
+            template: "blueprint" | "broadsheet" | "salon" | "poster";
+            /**
+             * Appearance
+             * @enum {string}
+             */
+            appearance: "auto" | "light" | "dark";
+            settings: components["schemas"]["PageSettings"];
+            /** Version */
+            version: number;
+            /** Published At */
+            published_at: string | null;
+            stats: components["schemas"]["ViewStats"];
+            /** Missing */
+            missing: string[];
+        };
+        /** PublicProfileUpdate */
+        PublicProfileUpdate: {
+            /** Version */
+            version: number;
+            /** Slug */
+            slug?: string | null;
+            /** Visibility */
+            visibility?: ("off" | "link" | "public") | null;
+            /** Template */
+            template?: ("blueprint" | "broadsheet" | "salon" | "poster") | null;
+            /** Appearance */
+            appearance?: ("auto" | "light" | "dark") | null;
+            settings?: components["schemas"]["PageSettings"] | null;
         };
         /** RadarOptionsOut */
         RadarOptionsOut: {
@@ -1596,6 +2357,15 @@ export interface components {
             /** Id */
             id?: string;
         };
+        /** SlugCheckOut */
+        SlugCheckOut: {
+            /** Slug */
+            slug: string;
+            /** Available */
+            available: boolean;
+            /** Reason */
+            reason: string | null;
+        };
         /** SourceOptionOut */
         SourceOptionOut: {
             /** Key */
@@ -1746,6 +2516,27 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** ViewDay */
+        ViewDay: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Views */
+            views: number;
+        };
+        /** ViewStats */
+        ViewStats: {
+            /** Last 30 Days */
+            last_30_days: number;
+            /** Days */
+            days: components["schemas"]["ViewDay"][];
+            /** Sources */
+            sources: {
+                [key: string]: number;
+            };
         };
         /**
          * WorkMode
@@ -2877,6 +3668,628 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_image_api_v1_images_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_image_api_v1_images_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_image_api_v1_images__image_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_settings__api_v1_public_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProfileOut"];
+                };
+            };
+        };
+    };
+    update_settings_api_v1_public_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_slug_api_v1_public_profile_slug_check_get: {
+        parameters: {
+            query: {
+                slug: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlugCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_public_profile_preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicPage"];
+                };
+            };
+        };
+    };
+    suggest_api_v1_public_profile_highlights_suggest_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Highlight"][];
+                };
+            };
+        };
+    };
+    qr_code_api_v1_public_profile_qr_svg_get: {
+        parameters: {
+            query?: {
+                page?: "portfolio" | "cv";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_page_api_v1_public_profiles__slug__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reveal_contact_api_v1_public_profiles__slug__contact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    og_image_api_v1_public_profiles__slug__og_jpg_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_cv_api_v1_public_profiles__slug__cv_pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_cv_api_v1_cv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CvOut"];
+                };
+            };
+        };
+    };
+    save_cv_api_v1_cv_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CvUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CvOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_cv_api_v1_cv_reset_post: {
+        parameters: {
+            query: {
+                version: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CvOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    undo_cv_api_v1_cv_undo_post: {
+        parameters: {
+            query: {
+                version: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CvOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    improve_cv_api_v1_cv_ai_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CvAiRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CvOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_api_v1_cv_document_html_get: {
+        parameters: {
+            query?: {
+                template?: ("meridian" | "ledger" | "atelier" | "monogram" | "broadsheet") | null;
+                accent?: ("ink" | "jade" | "cobalt" | "plum" | "crimson" | "ochre") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_api_v1_cv_cv_pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    public_document_api_v1_public_cv__slug__document_html_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_pdf_api_v1_public_cv__slug__cv_pdf_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    og_image_api_v1_public_cv__slug__og_jpg_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

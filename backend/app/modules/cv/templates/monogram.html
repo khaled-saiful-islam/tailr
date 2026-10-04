@@ -1,0 +1,93 @@
+{% extends "_base.html" %}
+{#
+  Monogram: quiet and senior. A centred monogram (or photo), generous space, fine
+  rules and a single column. For leaders and anyone who wants calm authority.
+#}
+{% block page %}margin: 17mm 19mm 15mm;{% endblock %}
+{% block screen %}padding: 17mm 19mm 15mm;{% endblock %}
+{% block style %}
+body { font-family: "Figtree", Arial, sans-serif; }
+header { text-align: center; }
+.mark { width: 17mm; height: 17mm; margin: 0 auto 4.5mm; border-radius: 50%; border: 0.8pt solid var(--accent); display: grid; place-items: center; font-size: 12.5pt; font-weight: 600; letter-spacing: 0.08em; color: var(--accent); }
+.photo { display: block; width: 23mm; height: 23mm; margin: 0 auto 4.5mm; border-radius: 50%; object-fit: cover; }
+h1 { font-size: 25pt; font-weight: 600; letter-spacing: 0.005em; line-height: 1.05; }
+.headline { margin-top: 2mm; font-size: 10.6pt; color: var(--accent); font-weight: 500; letter-spacing: 0.02em; }
+.contact { margin-top: 3.6mm; display: flex; flex-wrap: wrap; justify-content: center; gap: 1mm 0; font-size: 8.5pt; color: var(--ink-2); }
+.contact span + span::before { content: ""; display: inline-block; width: 0.8pt; height: 0.9em; background: var(--line); margin: 0 3mm; vertical-align: -0.1em; }
+.summary { max-width: 150mm; margin: calc(6mm * var(--g)) auto 0; text-align: center; font-size: 10.4pt; line-height: 1.6; color: var(--ink-2); }
+h2 { display: flex; align-items: center; gap: 4mm; margin: calc(8mm * var(--g)) 0 calc(3.6mm * var(--g)); font-size: 9.2pt; font-weight: 700; letter-spacing: 0.08em; color: var(--accent); }
+h2::before, h2::after { content: ""; flex: 1; height: 0.6pt; background: var(--line); }
+.role { margin-bottom: calc(4.6mm * var(--g)); }
+.role-head { display: grid; grid-template-columns: 1fr auto; gap: 4mm; align-items: baseline; }
+.role-title { font-size: 10.8pt; font-weight: 600; }
+.org { color: var(--ink-2); }
+.dates { font-size: 8.6pt; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bullets { margin-top: 1.8mm; }
+.bullets li { position: relative; padding-left: 4.6mm; margin-bottom: calc(1.2mm * var(--g)); line-height: 1.5; break-inside: avoid; }
+.bullets li::before { content: ""; position: absolute; left: 0.4mm; top: 0.68em; width: 2.2mm; height: 0.8pt; background: var(--accent); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12mm; }
+.block li { margin-bottom: 2.2mm; line-height: 1.4; }
+.small { color: var(--ink-3); font-size: 8.6pt; }
+.skills p { margin-bottom: 1.6mm; line-height: 1.5; }
+.skills b { font-weight: 600; }
+{% endblock %}
+
+{% block body %}
+<header>
+  {% if photo %}<img class="photo" src="{{ photo }}" alt="" />{% else %}<div class="mark">{{ initials }}</div>{% endif %}
+  <h1>{{ name }}</h1>
+  {% if headline %}<p class="headline">{{ headline }}</p>{% endif %}
+  {% if contact %}
+  <p class="contact">{% for item in contact %}<span>{% if item.href %}<a href="{{ item.href }}">{{ item.text }}</a>{% else %}{{ item.text }}{% endif %}</span>{% endfor %}</p>
+  {% endif %}
+  {% if show.summary and summary %}<p class="summary">{{ summary }}</p>{% endif %}
+</header>
+
+{% if show.experience and roles %}
+<h2>{{ labels.experience }}</h2>
+{% for role in roles %}
+<div class="role">
+  <div class="keep">
+    <div class="role-head"><span class="role-title">{{ role.title }}<span class="org">, {{ role.company }}</span></span><span class="dates">{{ role.dates }}</span></div>
+    {% if role.location %}<p class="small">{{ role.location }}</p>{% endif %}
+  </div>
+  {% if role.bullets %}<ul class="bullets">{% for bullet in role.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+{% if show.projects and projects %}
+<h2>{{ labels.projects }}</h2>
+{% for project in projects %}
+<div class="role">
+  <div class="keep">
+    <div class="role-head"><span class="role-title">{{ project.name }}{% if project.role %}<span class="org">, {{ project.role }}</span>{% endif %}</span>{% if project.url %}<span class="dates">{{ project.url }}</span>{% endif %}</div>
+  </div>
+  {% if project.bullets %}<ul class="bullets">{% for bullet in project.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="cols">
+  <div>
+    {% if show.skills and skill_groups %}
+    <h2>{{ labels.skills }}</h2>
+    <div class="skills keep">{% for group in skill_groups %}<p><b>{{ group.label }}.</b> {{ group.names | join(", ") }}</p>{% endfor %}</div>
+    {% endif %}
+    {% if show.languages and languages %}
+    <h2>{{ labels.languages }}</h2>
+    <ul class="block">{% for language in languages %}<li>{{ language.name }}{% if language.level %} <span class="small">{{ language.level }}</span>{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  <div>
+    {% if show.education and education %}
+    <h2>{{ labels.education }}</h2>
+    <ul class="block">{% for item in education %}<li class="keep"><strong>{{ item.title }}</strong>{% if item.institution %}<br />{{ item.institution }}{% endif %}<br /><span class="small">{{ item.dates }}{% if item.grade %}, {{ item.grade }}{% endif %}</span></li>{% endfor %}</ul>
+    {% endif %}
+    {% if show.certifications and certifications %}
+    <h2>{{ labels.certifications }}</h2>
+    <ul class="block">{% for cert in certifications %}<li class="keep">{{ cert.name }}{% if cert.issuer or cert.date %}<br /><span class="small">{{ [cert.issuer, cert.date] | select | join(", ") }}</span>{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

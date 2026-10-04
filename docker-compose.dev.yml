@@ -9,6 +9,9 @@ services:
       - ./backend:/srv
       - tailr-files:/srv/data/files
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "app"]
+    environment:
+      # Public pages use the Vite dev server's shell in development.
+      WEB_SHELL_URL: http://host.docker.internal:8403/public.html
 
   worker:
     build:

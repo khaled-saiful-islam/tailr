@@ -3,7 +3,7 @@
  *
  *   GET  /health         → { status: "ok" }
  *   POST /pdf  {html, format?}  → application/pdf
- *   POST /png  {html, width?}   → image/png (first screen, for thumbnails)
+ *   POST /png  {html, width?, height?} → image/png (first screen: thumbnails, link previews)
  *
  * Only reachable inside the compose network; never exposed publicly.
  */
@@ -23,6 +23,7 @@ interface PdfBody {
 interface PngBody {
   html: string;
   width?: number;
+  height?: number;
 }
 
 const htmlSchema = { type: "string", minLength: 1, maxLength: MAX_BODY_BYTES };
@@ -54,13 +55,17 @@ app.post<{ Body: PngBody }>(
       body: {
         type: "object",
         required: ["html"],
-        properties: { html: htmlSchema, width: { type: "integer", minimum: 200, maximum: 2000 } },
+        properties: {
+          html: htmlSchema,
+          width: { type: "integer", minimum: 200, maximum: 2000 },
+          height: { type: "integer", minimum: 200, maximum: 2000 },
+        },
         additionalProperties: false,
       },
     },
   },
   async (request, reply) => {
-    const png = await renderPng(request.body.html, { width: request.body.width });
+    const png = await renderPng(request.body.html, { width: request.body.width, height: request.body.height });
     return reply.type("image/png").send(png);
   },
 );

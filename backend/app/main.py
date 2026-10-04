@@ -20,6 +20,8 @@ from app.core.errors import install_error_handlers
 from app.core.logging import configure_logging, get_logger
 from app.core.redis import close_redis
 from app.modules.auth.seed import ensure_admin
+from app.modules.cv.router import page_router as cv_page_router
+from app.modules.public_profile.router import page_router
 from app.worker import broker
 
 log = get_logger(__name__)
@@ -97,6 +99,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     install_error_handlers(app)
     app.include_router(api_router)
+    app.include_router(page_router)  # /p/{slug}: portfolio sites
+    app.include_router(cv_page_router)  # /cv/{slug}: shared CVs
     return app
 
 

@@ -1,5 +1,6 @@
 @import "@fontsource-variable/mona-sans/standard.css";
 @import "tailwindcss";
+@import "../public/tokens.css";
 
 /* Dark mode follows the data-theme attribute set in index.html / ThemeProvider. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -274,5 +275,15 @@
 @keyframes tailr-stitch {
   to {
     stroke-dashoffset: -24;
+  }
+}
+
+/* CV Studio: an indeterminate bar while the AI edits. */
+@keyframes cv-slide {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(330%);
   }
 }

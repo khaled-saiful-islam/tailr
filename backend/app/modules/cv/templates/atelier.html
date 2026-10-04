@@ -1,0 +1,105 @@
+{% extends "_base.html" %}
+{% from "_parts.html" import icon, contact_text %}
+{#
+  Atelier: a colour band across the top with a big display name, the photo standing
+  on its edge, then a main column and a slim side column. Modern and confident.
+  The band bleeds to the top edge of page 1; later pages keep normal margins.
+#}
+{% block page %}margin: 14mm 0 13mm;{% endblock %}
+{% block screen %}padding: 0 0 13mm;{% endblock %}
+{% block style %}
+@page :first { margin-top: 0; }
+body { font-family: "Instrument Sans", Arial, sans-serif; }
+.band { position: relative; background: var(--accent); color: #fff; padding: 14mm 16mm 12mm; {% if photo %}padding-right: 62mm;{% endif %} min-height: 56mm; }
+.band h1 { font-family: "Syne", Arial, sans-serif; font-weight: 800; font-size: 33pt; line-height: 0.95; letter-spacing: -0.02em; }
+.band .headline { margin-top: 3mm; font-size: 12pt; font-weight: 500; opacity: 0.9; }
+.band .contact { margin-top: 5.5mm; display: flex; flex-wrap: wrap; gap: 1.6mm 5mm; font-size: 8.4pt; }
+.band .contact span { display: inline-flex; align-items: center; gap: 1.4mm; opacity: 0.92; }
+.photo { position: absolute; right: 16mm; bottom: -13mm; width: 38mm; height: 46mm; object-fit: cover; border: 1.6mm solid #fff; box-shadow: 0 2mm 6mm rgb(0 0 0 / 0.12); }
+.body { display: grid; grid-template-columns: minmax(0, 1fr) 56mm; gap: 0 9mm; padding: 9mm 16mm 0; }
+{% if photo %}.side { padding-top: 8mm; }{% endif %}
+h2 { display: flex; align-items: center; gap: 3mm; font-family: "Syne", Arial, sans-serif; font-weight: 700; font-size: 12.5pt; margin: calc(6mm * var(--g)) 0 calc(2.8mm * var(--g)); }
+h2::after { content: ""; flex: 1; height: 0.7pt; background: var(--line); }
+.main > h2:first-child, .side > h2:first-child { margin-top: 0; }
+.summary { font-size: 10.6pt; line-height: 1.55; color: var(--ink-2); }
+.role { margin-bottom: calc(4.4mm * var(--g)); }
+.role-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
+.role-title { font-weight: 700; font-size: 10.6pt; }
+.dates { font-size: 8.4pt; color: var(--accent); font-weight: 600; white-space: nowrap; }
+.org { color: var(--ink-3); font-size: 9.2pt; margin-top: 0.3mm; }
+.bullets { margin-top: 1.6mm; }
+.bullets li { position: relative; padding-left: 4.2mm; margin-bottom: calc(1.2mm * var(--g)); line-height: 1.45; break-inside: avoid; }
+.bullets li::before { content: ""; position: absolute; left: 0.4mm; top: 0.5em; width: 1.7mm; height: 1.7mm; border-radius: 50%; border: 0.9pt solid var(--accent); }
+.chips span { display: inline-block; background: var(--accent-soft); border-radius: 1.4mm; padding: 0.7mm 2mm; margin: 0 1.2mm 1.4mm 0; font-size: 8.5pt; }
+.group { margin-bottom: 2.6mm; }
+.group b { display: block; font-size: 8pt; font-weight: 600; color: var(--ink-3); margin-bottom: 1mm; }
+.side li { margin-bottom: 2.2mm; font-size: 9pt; line-height: 1.35; }
+.side .small { color: var(--ink-3); font-size: 8.2pt; }
+{% endblock %}
+
+{% block body %}
+<header class="band">
+  <h1>{{ name }}</h1>
+  {% if headline %}<p class="headline">{{ headline }}</p>{% endif %}
+  {% if contact %}
+  <p class="contact">{% for item in contact %}<span>{{ icon(item.kind) }}{{ contact_text(item) }}</span>{% endfor %}</p>
+  {% endif %}
+  {% if photo %}<img class="photo" src="{{ photo }}" alt="" />{% endif %}
+</header>
+
+<div class="body">
+  <div class="main">
+    {% if show.summary and summary %}<h2>{{ labels.summary }}</h2><p class="summary">{{ summary }}</p>{% endif %}
+
+    {% if show.experience and roles %}
+    <h2>{{ labels.experience }}</h2>
+    {% for role in roles %}
+    <div class="role">
+      <div class="keep">
+        <div class="role-head"><span class="role-title">{{ role.title }}</span><span class="dates">{{ role.dates }}</span></div>
+        <p class="org">{{ role.company }}{% if role.location %}, {{ role.location }}{% endif %}</p>
+      </div>
+      {% if role.bullets %}<ul class="bullets">{% for bullet in role.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if show.projects and projects %}
+    <h2>{{ labels.projects }}</h2>
+    {% for project in projects %}
+    <div class="role">
+      <div class="keep">
+        <div class="role-head"><span class="role-title">{{ project.name }}</span>{% if project.url %}<span class="dates">{{ project.url }}</span>{% endif %}</div>
+        {% if project.role %}<p class="org">{{ project.role }}</p>{% endif %}
+      </div>
+      {% if project.bullets %}<ul class="bullets">{% for bullet in project.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <aside class="side">
+    {% if show.skills and skill_groups %}
+    <h2>{{ labels.skills }}</h2>
+    {% for group in skill_groups %}
+    <div class="group keep"><b>{{ group.label }}</b><div class="chips">{% for name in group.names %}<span>{{ name }}</span>{% endfor %}</div></div>
+    {% endfor %}
+    {% endif %}
+
+    {% if show.education and education %}
+    <h2>{{ labels.education }}</h2>
+    <ul>{% for item in education %}<li class="keep"><strong>{{ item.title }}</strong>{% if item.institution %}<br />{{ item.institution }}{% endif %}<br /><span class="small">{{ item.dates }}{% if item.grade %}, {{ item.grade }}{% endif %}</span></li>{% endfor %}</ul>
+    {% endif %}
+
+    {% if show.certifications and certifications %}
+    <h2>{{ labels.certifications }}</h2>
+    <ul>{% for cert in certifications %}<li class="keep">{{ cert.name }}{% if cert.issuer or cert.date %}<br /><span class="small">{{ [cert.issuer, cert.date] | select | join(", ") }}</span>{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+
+    {% if show.languages and languages %}
+    <h2>{{ labels.languages }}</h2>
+    <ul>{% for language in languages %}<li>{{ language.name }}{% if language.level %} <span class="small">{{ language.level }}</span>{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

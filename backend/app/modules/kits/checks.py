@@ -81,6 +81,11 @@ def _numbers(text: str) -> set[str]:
     return found
 
 
+def numbers_in(text: str) -> set[str]:
+    """The numbers in a text, canonical: "40,000", "40k" and "40000" are all "40,000"."""
+    return _numbers(text)
+
+
 def same_numbers(original: str, rewritten: str) -> bool:
     """True when a rewrite (e.g. a translation) carries exactly the original's numbers."""
     return _numbers(original) == _numbers(rewritten)

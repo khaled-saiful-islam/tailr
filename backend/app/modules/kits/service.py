@@ -42,7 +42,7 @@ def _slug(text: str) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "-", text).strip("-")[:40] or "Tailr"
 
 
-def _sections(document: ProfileDocument) -> list[SectionRef]:
+def sections_of(document: ProfileDocument) -> list[SectionRef]:
     roles = [
         SectionRef(id=role.id, kind="role", label=f"{role.title} at {role.company}")
         for role in document.experiences
@@ -75,7 +75,7 @@ class KitService:
             if document
             else []
         )
-        sections = _sections(document) if document else []
+        sections = sections_of(document) if document else []
         assert job is not None
         return KitOut(
             id=kit.id,

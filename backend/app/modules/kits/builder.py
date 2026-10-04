@@ -81,7 +81,7 @@ async def _stage(kit_id: uuid.UUID, user_id: uuid.UUID, stage: str) -> None:
     await publish(user_id, "kit.progress", {"id": str(kit_id), "stage": stage})
 
 
-async def _judge(
+async def judge_lines(
     resume: TailoredResume, document: ProfileDocument, user_id: uuid.UUID
 ) -> set[tuple[str, int]]:
     """Ask the AI to flag lines that claim more than their facts say."""
@@ -180,7 +180,7 @@ async def run_kit(kit_id: uuid.UUID) -> None:
         resume, cover_letter, kit_extras = await asyncio.gather(tailor, letter, extras)
 
         await _stage(kit_id, user_id, "checking")
-        judged = await _judge(resume, document, user_id)
+        judged = await judge_lines(resume, document, user_id)
         resume, fact_check = enforce_truth(resume, document, judged)
         resume, fact_check = await localise_restored(
             resume, fact_check, document, language, user_id=user_id
