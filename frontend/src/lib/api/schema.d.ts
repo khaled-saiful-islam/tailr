@@ -339,6 +339,101 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/briefs/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today
+         * @description The latest brief with its matches, and when the next one is due.
+         */
+        get: operations["today_api_v1_briefs_today_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/briefs/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run Now
+         * @description Build a brief now (or return the one already building).
+         */
+        post: operations["run_now_api_v1_briefs_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/briefs/{brief_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Brief */
+        get: operations["get_brief_api_v1_briefs__brief_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Matches */
+        get: operations["list_matches_api_v1_matches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/matches/{match_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Match
+         * @description One job with its full Fit review. Opening a new job marks it seen.
+         */
+        get: operations["get_match_api_v1_matches__match_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Match */
+        patch: operations["update_match_api_v1_matches__match_id__patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -374,6 +469,44 @@ export interface components {
             /** File */
             file: string;
         };
+        /** BriefOut */
+        BriefOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            status: components["schemas"]["BriefStatus"];
+            /** Stage */
+            stage: string;
+            /** Trigger */
+            trigger: string;
+            /**
+             * Local Date
+             * Format: date
+             */
+            local_date: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Stats */
+            stats: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error: string | null;
+            /** Matches */
+            matches: components["schemas"]["MatchOut"][];
+        };
+        /**
+         * BriefStatus
+         * @enum {string}
+         */
+        BriefStatus: "building" | "ready" | "failed";
         /** Bullet */
         Bullet: {
             /** Text */
@@ -468,6 +601,15 @@ export interface components {
             /** Id */
             id?: string;
         };
+        /** GapOut */
+        GapOut: {
+            /** Text */
+            text: string;
+            /** Kind */
+            kind: string;
+            /** Tip */
+            tip: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -529,6 +671,62 @@ export interface components {
          * @enum {string}
          */
         ImportStatus: "queued" | "reading" | "understanding" | "ready" | "applied" | "failed";
+        /** InsightsOut */
+        InsightsOut: {
+            /** Summary */
+            summary: string;
+            /** Required Skills */
+            required_skills: string[];
+            /** Nice Skills */
+            nice_skills: string[];
+            /** Min Years */
+            min_years: number | null;
+            /** Seniority */
+            seniority: string | null;
+            /** Languages */
+            languages: string[];
+            /** Education */
+            education: string | null;
+            /** Agency */
+            agency: boolean;
+            /** Concerns */
+            concerns: string[];
+        };
+        /** JobSummaryOut */
+        JobSummaryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Source */
+            source: string;
+            /** Url */
+            url: string;
+            /** Title */
+            title: string;
+            /** Company */
+            company: string;
+            /** Location */
+            location: string | null;
+            work_mode: components["schemas"]["WorkMode"] | null;
+            /** Employment Type */
+            employment_type: string | null;
+            /** Posted At */
+            posted_at: string | null;
+            /** Posted Text */
+            posted_text: string | null;
+            /** Salary Text */
+            salary_text: string | null;
+            /** Salary Min */
+            salary_min: number | null;
+            /** Salary Max */
+            salary_max: number | null;
+            /** Company Logo */
+            company_logo: string | null;
+            /** Applicants */
+            applicants: string | null;
+        };
         /** Language */
         Language: {
             /** Name */
@@ -556,6 +754,83 @@ export interface components {
             identifier: string;
             /** Password */
             password: string;
+        };
+        /** MatchDetailOut */
+        MatchDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Score */
+            score: number;
+            /** Parts */
+            parts: {
+                [key: string]: number;
+            };
+            status: components["schemas"]["MatchStatus"];
+            /** Origin */
+            origin: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            review: components["schemas"]["ReviewOut"];
+            job: components["schemas"]["JobSummaryOut"];
+            /** Description */
+            description: string | null;
+            insights: components["schemas"]["InsightsOut"] | null;
+            /** Requirements */
+            requirements: components["schemas"]["RequirementOut"][];
+        };
+        /** MatchOut */
+        MatchOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Score */
+            score: number;
+            /** Parts */
+            parts: {
+                [key: string]: number;
+            };
+            status: components["schemas"]["MatchStatus"];
+            /** Origin */
+            origin: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            review: components["schemas"]["ReviewOut"];
+            job: components["schemas"]["JobSummaryOut"];
+        };
+        /** MatchPage */
+        MatchPage: {
+            /** Items */
+            items: components["schemas"]["MatchOut"][];
+            /** Total */
+            total: number;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /**
+         * MatchStatus
+         * @enum {string}
+         */
+        MatchStatus: "new" | "seen" | "saved" | "dismissed";
+        /** MatchUpdate */
+        MatchUpdate: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "seen" | "saved" | "dismissed" | "new";
         };
         /** Ok */
         Ok: {
@@ -810,6 +1085,38 @@ export interface components {
             /** Timezone */
             timezone?: string | null;
         };
+        /** RequirementOut */
+        RequirementOut: {
+            /** Skill */
+            skill: string;
+            /** Have */
+            have: boolean;
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Headline */
+            headline?: string | null;
+            /**
+             * Why
+             * @default []
+             */
+            why: string[];
+            /**
+             * Matched
+             * @default []
+             */
+            matched: string[];
+            /**
+             * Missing
+             * @default []
+             */
+            missing: string[];
+            /**
+             * Gaps
+             * @default []
+             */
+            gaps: components["schemas"]["GapOut"][];
+        };
         /**
          * Role
          * @enum {string}
@@ -898,6 +1205,16 @@ export interface components {
          * @enum {string}
          */
         Theme: "system" | "light" | "dark";
+        /** TodayOut */
+        TodayOut: {
+            brief: components["schemas"]["BriefOut"] | null;
+            /** Next Brief At */
+            next_brief_at: string | null;
+            /** Radar Ready */
+            radar_ready: boolean;
+            /** Profile Ready */
+            profile_ready: boolean;
+        };
         /** UpdateMeRequest */
         UpdateMeRequest: {
             /** Name */
@@ -1552,6 +1869,177 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    today_api_v1_briefs_today_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodayOut"];
+                };
+            };
+        };
+    };
+    run_now_api_v1_briefs_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BriefOut"];
+                };
+            };
+        };
+    };
+    get_brief_api_v1_briefs__brief_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                brief_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BriefOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_matches_api_v1_matches_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["MatchStatus"] | null;
+                min_score?: number;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_match_api_v1_matches__match_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_match_api_v1_matches__match_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                match_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MatchUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatchOut"];
                 };
             };
             /** @description Validation Error */

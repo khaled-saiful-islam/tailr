@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from app.api import system
 from app.modules.auth.router import router as auth_router
+from app.modules.brief.router import router as brief_router
 from app.modules.profile.router import router as profile_router
 from app.modules.radar.router import router as radar_router
 
@@ -16,5 +17,6 @@ v1 = APIRouter(prefix="/v1")
 v1.include_router(auth_router)
 v1.include_router(profile_router)
 v1.include_router(radar_router)
+v1.include_router(brief_router)
 
 api_router.include_router(v1)

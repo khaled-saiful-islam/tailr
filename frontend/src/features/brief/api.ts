@@ -1,0 +1,95 @@
+import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { api, unwrap, type Schemas } from "@/lib/api/client";
+import { useLiveEvent } from "@/lib/events";
+
+export type Today = Schemas["TodayOut"];
+export type Brief = Schemas["BriefOut"];
+export type Match = Schemas["MatchOut"];
+export type MatchDetail = Schemas["MatchDetailOut"];
+export type MatchPage = Schemas["MatchPage"];
+export type MatchStatus = Match["status"];
+
+export const todayKey = ["brief", "today"] as const;
+export const matchesKey = (status: string) => ["matches", status] as const;
+export const matchKey = (id: string) => ["match", id] as const;
+
+/** Today's brief. Refreshes live while one is being built. */
+export function useToday() {
+  const client = useQueryClient();
+  const refresh = () => void client.invalidateQueries({ queryKey: todayKey });
+  useLiveEvent("brief.progress", refresh);
+  useLiveEvent("brief.ready", () => {
+    refresh();
+    void client.invalidateQueries({ queryKey: ["matches"] });
+  });
+  return useQuery({
+    queryKey: todayKey,
+    queryFn: () => unwrap(api.GET("/api/v1/briefs/today")),
+    refetchInterval: (query) => (query.state.data?.brief?.status === "building" ? 4000 : false),
+  });
+}
+
+export function useRunBrief() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => unwrap(api.POST("/api/v1/briefs/run")),
+    onSuccess: (brief) =>
+      client.setQueryData<Today>(todayKey, (today) => (today ? { ...today, brief } : today)),
+  });
+}
+
+export function useMatches(status: MatchStatus | "all") {
+  return useQuery({
+    queryKey: matchesKey(status),
+    queryFn: () =>
+      unwrap(
+        api.GET("/api/v1/matches", {
+          params: { query: { status: status === "all" ? undefined : status, limit: 100 } },
+        }),
+      ),
+  });
+}
+
+export function useMatch(id: string) {
+  const client = useQueryClient();
+  return useQuery({
+    queryKey: matchKey(id),
+    queryFn: async () => {
+      const detail = await unwrap(api.GET("/api/v1/matches/{match_id}", { params: { path: { match_id: id } } }));
+      // Opening a job marks it seen; keep lists in step.
+      patchMatchEverywhere(client, detail.id, { status: detail.status });
+      return detail;
+    },
+  });
+}
+
+/** Apply a change to a match wherever it is cached (brief, lists, detail). */
+function patchMatchEverywhere(client: QueryClient, id: string, patch: Partial<Match>): void {
+  client.setQueryData<Today>(todayKey, (today) =>
+    today?.brief
+      ? {
+          ...today,
+          brief: {
+            ...today.brief,
+            matches: today.brief.matches
+              .map((m) => (m.id === id ? { ...m, ...patch } : m))
+              .filter((m) => m.status !== "dismissed"),
+          },
+        }
+      : today,
+  );
+  client.setQueriesData<MatchPage>({ queryKey: ["matches"] }, (page) =>
+    page ? { ...page, items: page.items.map((m) => (m.id === id ? { ...m, ...patch } : m)) } : page,
+  );
+  client.setQueryData<MatchDetail>(matchKey(id), (detail) => (detail ? { ...detail, ...patch } : detail));
+}
+
+export function useUpdateMatch() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "saved" | "dismissed" | "seen" | "new" }) =>
+      unwrap(api.PATCH("/api/v1/matches/{match_id}", { params: { path: { match_id: id } }, body: { status } })),
+    onMutate: ({ id, status }) => patchMatchEverywhere(client, id, { status }),
+    onSettled: () => void client.invalidateQueries({ queryKey: ["matches"] }),
+  });
+}

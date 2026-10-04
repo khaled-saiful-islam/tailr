@@ -115,7 +115,15 @@ Events are hints: the UI refetches the real data, so a missed event never loses 
 ## Data
 
 Postgres is the source of truth. pgvector stores 1024-dimensional `bge-m3` embeddings for
-jobs and profiles (HNSW index) once matching lands in M4. Redis holds only rebuildable data.
+jobs (HNSW index, cosine) and profiles. Redis holds only rebuildable data: the task queue,
+search and relevance caches, rate-limit counters and live-event channels.
+
+## The daily pipeline
+
+`docs/features/04-morning-brief.md` describes it end to end. The shape matters for scale:
+the **job catalog is shared** (a job is fetched, read by the AI and embedded once, whatever the
+number of users), searches are cached for an hour, and per-user work is limited to the cheap
+quick score plus fifteen AI reviews.
 
 ## Security checklist
 

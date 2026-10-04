@@ -3,4 +3,5 @@
 from __future__ import annotations
 
 from app.modules.auth import tasks as auth_tasks  # noqa: F401
+from app.modules.brief import tasks as brief_tasks  # noqa: F401
 from app.modules.profile import tasks as profile_tasks  # noqa: F401

@@ -4,6 +4,7 @@ import uuid
 from enum import StrEnum
 from typing import Any
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -24,6 +25,9 @@ class Profile(IdMixin, TimestampMixin, Base):
     version: Mapped[int] = mapped_column(Integer, default=1)
     strength: Mapped[int] = mapped_column(Integer, default=0)
     source: Mapped[str] = mapped_column(String(16), default="manual")
+    # The profile as one vector (bge-m3) for matching, and which version it describes.
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(1024))
+    embedded_version: Mapped[int | None] = mapped_column(Integer)
 
 
 class ImportStatus(StrEnum):

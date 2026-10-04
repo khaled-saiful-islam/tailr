@@ -162,7 +162,17 @@ async def search_many(sources: list[str], queries: list[SearchQuery]) -> list[So
     return outcomes
 
 
-async def fetch_details(ref: JobRef) -> JobDetail:
+async def fetch_details(ref: JobRef, runs: list[RunRecord] | None = None) -> JobDetail:
+    """Full description for one job. Pass `runs` to collect run records for a batch save."""
+    collected: list[RunRecord] = [] if runs is None else runs
+    try:
+        return await _fetch_details(ref, collected)
+    finally:
+        if runs is None:
+            await save_runs(collected)
+
+
+async def _fetch_details(ref: JobRef, runs: list[RunRecord]) -> JobDetail:
     source = registry.get_source(ref.source)
     if source is None:
         raise SourceError(ref.source, "switched off", retryable=False)
@@ -170,9 +180,9 @@ async def fetch_details(ref: JobRef) -> JobDetail:
     try:
         detail = await source.details(ref)
     except SourceError as error:
-        await save_runs(
-            [_record(ref.source, "details", ref.external_id, "failed", 0, started, error.message)]
+        runs.append(
+            _record(ref.source, "details", ref.external_id, "failed", 0, started, error.message)
         )
         raise
-    await save_runs([_record(ref.source, "details", ref.external_id, "ok", 1, started)])
+    runs.append(_record(ref.source, "details", ref.external_id, "ok", 1, started))
     return detail

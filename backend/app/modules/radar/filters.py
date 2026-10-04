@@ -60,16 +60,23 @@ def _contains_word(text: str, word: str) -> bool:
     return re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text, re.I) is not None
 
 
+_COMPANY_SUFFIX = re.compile(
+    r"\b(sdn\.? bhd\.?|berhad|bhd|pte\.? ltd\.?|ltd|inc|plc|\(m\)|malaysia)\b", re.I
+)
+
+
 def _normalise(text: str) -> str:
-    text = re.sub(
-        r"\b(sdn\.? bhd\.?|berhad|bhd|pte\.? ltd\.?|ltd|inc|plc|\(m\))\b", "", text, flags=re.I
-    )
     return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def _normalise_company(name: str) -> str:
+    """'SeaOwl Malaysia Sdn. Bhd.' and 'SeaOwl' are the same employer."""
+    return _normalise(_COMPANY_SUFFIX.sub("", name))
 
 
 def duplicate_key(card: JobCard) -> str:
     """Same company + same title = the same job posted on two sites."""
-    return f"{_normalise(card.company)}|{_normalise(card.title)}"
+    return f"{_normalise_company(card.company)}|{_normalise(card.title)}"
 
 
 @dataclass
@@ -116,7 +123,7 @@ def reason_to_drop(card: JobCard, settings: RadarSettings, now: datetime) -> str
     ):
         return "excluded_word"
     if any(
-        _normalise(name) and _normalise(name) in _normalise(card.company)
+        _normalise_company(name) and _normalise_company(name) in _normalise_company(card.company)
         for name in settings.exclude_companies
     ):
         return "excluded_company"

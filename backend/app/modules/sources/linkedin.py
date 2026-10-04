@@ -98,6 +98,9 @@ def parse_details(html: str, external_id: str) -> JobDetail:
 class LinkedInSource:
     key = "linkedin"
     label = "LinkedIn"
+    # LinkedIn throttles its job pages quickly: one at a time, with a pause.
+    detail_concurrency = 1
+    detail_pause = (1.0, 2.2)
 
     async def search(self, query: SearchQuery) -> list[JobCard]:
         cards: list[JobCard] = []
@@ -123,5 +126,7 @@ class LinkedInSource:
         return cards[: query.limit]
 
     async def details(self, ref: JobRef) -> JobDetail:
-        response = await http.fetch(self.key, "GET", JOB_URL.format(id=ref.external_id))
+        response = await http.fetch(
+            self.key, "GET", JOB_URL.format(id=ref.external_id), kind="details"
+        )
         return parse_details(response.text, ref.external_id)

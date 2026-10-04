@@ -191,8 +191,8 @@ ruff + mypy (backend), eslint + tsc (frontend) · pytest with a **separate test 
 - [x] **M0 Foundation** — repo, Docker, Makefile, config, logging, DB + Alembic, Redis, taskiq, SSE, auth, frontend shell + design system + auth pages, test infra, CI-ready scripts
 - [x] **M1 Profile Builder** — profile model + API, CV import (pdf/docx/image/text) with AI parsing, strength score, bullet coach, builder UI with live preview, onboarding import flow
 - [x] **M2 Job Radar** — preferences + AI-suggested roles/queries, live radar preview, Radar UI
-- [ ] **M3 Sources & catalog** — ~~source contract, LinkedIn, JobStreet; cache, rate limit~~ (done in M2), manual paste, job catalog + dedupe, details, enrichment, embeddings
-- [ ] **M4 Matching & Morning Brief** — Fit score, explanations, brief builder, scheduler dispatch, run-now, email digest, Today / Jobs / Job detail UI
+- [x] **M3 Sources & catalog** — ~~source contract, LinkedIn, JobStreet; cache, rate limit~~ (done in M2), job catalog + dedupe, details, enrichment, embeddings (paste-a-job moves to M5)
+- [x] **M4 Matching & Morning Brief** — Fit score, explanations, brief builder, scheduler dispatch, run-now, email digest, Today / Jobs / Job detail UI
 - [ ] **M5 Apply Kit** — tailoring pipeline, fact check, keywords, extras, renderer PDF, kit editor UI, Bahasa Malaysia option
 - [ ] **M6 Tracker & Momentum** — kanban, follow-up nudges, goals, streak, funnel, market pulse
 - [ ] **M7 Polish & hand-over** — demo seed (`make demo`), docs, README, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass

@@ -113,6 +113,8 @@ def parse_details(payload: dict[str, Any], external_id: str) -> JobDetail:
 class JobStreetSource:
     key = "jobstreet"
     label = "JobStreet"
+    detail_concurrency = 2
+    detail_pause = (0.2, 0.8)
 
     async def search(self, query: SearchQuery) -> list[JobCard]:
         location = "" if query.location.strip().lower() == "malaysia" else query.location

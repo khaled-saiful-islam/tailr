@@ -199,3 +199,7 @@ def test_keyword_fallback() -> None:
     assert keyword_match(roles, "Senior AI Engineer")
     assert keyword_match(roles, "Machine Learning Lead")
     assert not keyword_match(roles, "Support Engineer, L1")
+
+
+def test_duplicate_key_ignores_country_in_company() -> None:
+    assert duplicate_key(card(company="SeaOwl Malaysia")) == duplicate_key(card(company="SeaOwl"))
