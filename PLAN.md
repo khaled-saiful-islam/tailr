@@ -197,7 +197,7 @@ ruff + mypy (backend), eslint + tsc (frontend) · pytest with a **separate test 
 - [x] **M6 CV Studio** — 5 print-quality CV designs (Meridian, Ledger, Atelier, Monogram, Broadsheet), AI edits (polish, one page, summary, translate, free text) through the truth lock with undo, PDF, share page `/cv/<slug>` with link preview; plus the portfolio foundation (publishing, 4 web designs, pictures, truth-checked highlights, Open Graph, visits)
 - [x] **M7 Portfolio site** — about, expertise, achievements, project case-study pages, career timeline, testimonials, contact form to the owner's inbox, one-page or multi-page, AI drafting under the truth rules with a judge pass (docs/features/07-portfolio.md)
 - [x] **M8 Tracker & Momentum** — drag-and-drop board (keyboard too), day-7 follow-up nudge with a truth-checked draft, next-step reminders, weekly goal, brief-check streak, funnel, Market Pulse (docs/features/08-tracker-momentum.md)
-- [ ] **M9 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
+- [x] **M9 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
 
 Each milestone: tests green → docs updated → commit → push to GitHub. Every screen works on phones.
 

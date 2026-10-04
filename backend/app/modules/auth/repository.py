@@ -56,11 +56,20 @@ class SessionRepository:
     async def delete_by_hash(self, token_hash: str) -> None:
         await self.db.execute(delete(Session).where(Session.token_hash == token_hash))
 
-    async def delete_for_user(self, user_id: uuid.UUID, *, keep_hash: str | None = None) -> None:
+    async def delete_for_user(self, user_id: uuid.UUID, *, keep_hash: str | None = None) -> int:
         stmt = delete(Session).where(Session.user_id == user_id)
         if keep_hash:
             stmt = stmt.where(Session.token_hash != keep_hash)
-        await self.db.execute(stmt)
+        result = await self.db.execute(stmt)
+        return result.rowcount or 0  # type: ignore[attr-defined]
+
+    async def active_for_user(self, user_id: uuid.UUID, now: datetime) -> list[Session]:
+        rows = await self.db.execute(
+            select(Session)
+            .where(Session.user_id == user_id, Session.expires_at > now)
+            .order_by(Session.last_used_at.desc())
+        )
+        return list(rows.scalars().all())
 
     async def delete_expired(self, now: datetime) -> int:
         result = await self.db.execute(delete(Session).where(Session.expires_at <= now))

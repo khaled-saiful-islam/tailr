@@ -3,7 +3,9 @@ import { NavLink, Outlet } from "react-router";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/cn";
 import { useLiveConnection } from "@/lib/events";
+import { useMe } from "@/features/auth/api";
 import { NotificationBell } from "@/features/notifications/NotificationBell";
+import { useSyncAccountTheme } from "@/features/settings/useSyncAccountTheme";
 import { useNotificationAlerts } from "@/features/notifications/useNotificationAlerts";
 import { navItems } from "../nav";
 import { AccountMenu } from "./AccountMenu";
@@ -15,8 +17,14 @@ import { AccountMenu } from "./AccountMenu";
 export function AppShell() {
   useLiveConnection();
   useNotificationAlerts();
+  useSyncAccountTheme();
+  const { data: me } = useMe();
+  const railItems = navItems.filter(
+    (item) => !item.adminOnly || me?.role === "admin",
+  );
+  const tabItems = navItems.filter((item) => !item.adminOnly);
   // A tab bar with a single tab is noise; it appears once there is a choice to make.
-  const showTabBar = navItems.length > 1;
+  const showTabBar = tabItems.length > 1;
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line bg-surface px-4 py-5 lg:flex">
@@ -31,7 +39,7 @@ export function AppShell() {
           <NotificationBell side="bottom" align="start" />
         </div>
         <nav aria-label="Main" className="flex flex-col gap-1">
-          {navItems.map((item) => (
+          {railItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -99,7 +107,7 @@ export function AppShell() {
             aria-label="Main"
             className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-surface/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5 backdrop-blur lg:hidden"
           >
-            {navItems.map((item) => (
+            {tabItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

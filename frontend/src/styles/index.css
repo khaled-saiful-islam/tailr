@@ -26,7 +26,7 @@
   --tape: #f5c518;
   --tape-deep: #d9a900;
   --tape-ink: #1d1a0e;
-  --chalk: #3f6fe8;
+  --chalk: #2f5fd8; /* 5.3:1 on canvas, 4.6:1 on chalk-soft */
   --chalk-soft: #e3ebff;
   --pin: #d1343a;
   --pin-soft: #fde8e8;

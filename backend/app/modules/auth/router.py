@@ -7,9 +7,11 @@ from app.core.config import get_settings
 from app.core.schemas import Ok
 from app.modules.auth.schemas import (
     ChangePasswordRequest,
+    DeviceOut,
     LoginRequest,
     RegisterRequest,
     SessionOut,
+    SignedOutOut,
     UpdateMeRequest,
     UserOut,
 )
@@ -91,3 +93,16 @@ async def change_password(
         user, data.current_password, data.new_password, keep_token=session_token(request)
     )
     return Ok()
+
+
+@router.get("/sessions", response_model=list[DeviceOut])
+async def devices(request: Request, user: CurrentUser, db: DbSession) -> list[DeviceOut]:
+    """Where you're signed in, most recent first."""
+    return await AuthService(db).devices(user, session_token(request))
+
+
+@router.post("/sessions/sign-out-others", response_model=SignedOutOut)
+async def sign_out_others(request: Request, user: CurrentUser, db: DbSession) -> SignedOutOut:
+    """Sign out every other device; this one stays signed in."""
+    count = await AuthService(db).sign_out_others(user, session_token(request))
+    return SignedOutOut(signed_out=count)

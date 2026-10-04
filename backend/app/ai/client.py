@@ -30,8 +30,10 @@ from app.ai.schema import strict_json_schema
 from app.core.clock import utcnow
 from app.core.config import get_settings
 from app.core.db import session_scope
-from app.core.errors import RateLimitedError, UpstreamError
+from app.core.errors import PermissionDeniedError, RateLimitedError, UpstreamError
 from app.core.logging import get_logger
+from app.core.redis import get_redis
+from app.modules.auth.models import User
 
 log = get_logger(__name__)
 
@@ -202,8 +204,23 @@ class IlmuClient:
             raise UpstreamError(
                 "AI is not configured yet. Add LLM_API_KEY to .env.", code="ai_not_configured"
             )
-        if user_id is not None:
-            await enforce_daily_budget(user_id)
+        estimate = _estimate(body)
+        reserved = await reserve(user_id, estimate) if user_id is not None else 0
+        try:
+            return await self._call(path, body, purpose=purpose, user_id=user_id, estimate=estimate)
+        finally:
+            if user_id is not None:
+                await release(user_id, reserved)
+
+    async def _call(
+        self,
+        path: str,
+        body: dict[str, Any],
+        *,
+        purpose: str,
+        user_id: uuid.UUID | None,
+        estimate: int,
+    ) -> dict[str, Any]:
         started = time.perf_counter()
         model = str(body.get("model", ""))
         try:
@@ -224,7 +241,9 @@ class IlmuClient:
             raise UpstreamError(
                 "The AI service didn't answer. Please try again shortly."
             ) from error
-        await _record(purpose, model, user_id, started, data.get("usage"), status="ok")
+        # A reply without usage still costs something: count the estimate.
+        usage = data.get("usage") or {"prompt_tokens": estimate, "completion_tokens": 0}
+        await _record(purpose, model, user_id, started, usage, status="ok")
         return data
 
 
@@ -283,12 +302,67 @@ async def tokens_used_today(user_id: uuid.UUID) -> int:
     return int(total or 0)
 
 
-async def enforce_daily_budget(user_id: uuid.UUID) -> None:
-    budget = get_settings().ai_daily_budget_tokens
-    if budget > 0 and await tokens_used_today(user_id) >= budget:
+async def allowance(user_id: uuid.UUID) -> tuple[bool, int]:
+    """Whether AI is on for this user, and their daily token allowance (0: unlimited)."""
+    async with session_scope() as db:
+        row = (
+            await db.execute(
+                select(User.ai_enabled, User.ai_daily_budget).where(User.id == user_id)
+            )
+        ).first()
+    default = get_settings().ai_daily_budget_tokens
+    if row is None:
+        return True, default
+    enabled, budget = row
+    return bool(enabled), default if budget is None else int(budget)
+
+
+INFLIGHT_TTL_SECONDS = 600
+
+
+def _estimate(body: dict[str, Any]) -> int:
+    """A generous guess at a call's tokens: its input plus the most it may write."""
+    sent = json.dumps(body.get("messages") or body.get("input") or "", ensure_ascii=False)
+    return len(sent) // 3 + int(body.get("max_tokens") or 0)
+
+
+def _inflight_key(user_id: uuid.UUID) -> str:
+    return f"ai:inflight:{user_id}"
+
+
+async def reserve(user_id: uuid.UUID, estimate: int) -> int:
+    """Check AI is on and the allowance has room, holding `estimate` tokens while the call
+    runs, so calls made at the same moment can't all slip under the limit. Returns what
+    was held (0 when there's no limit)."""
+    enabled, budget = await allowance(user_id)
+    if not enabled:
+        raise PermissionDeniedError(
+            "AI features are turned off for your account. Ask your administrator.",
+            code="ai_disabled",
+        )
+    if budget <= 0:
+        return 0
+    redis = get_redis()
+    key = _inflight_key(user_id)
+    held = int(await redis.incrby(key, estimate))
+    await redis.expire(key, INFLIGHT_TTL_SECONDS)
+    used = await tokens_used_today(user_id)
+    if used >= budget or (estimate and used + held > budget):
+        await redis.decrby(key, estimate)
         raise RateLimitedError(
             "You've used today's AI allowance. It resets within 24 hours.", code="ai_budget"
         )
+    return estimate
+
+
+async def release(user_id: uuid.UUID, held: int) -> None:
+    if held:
+        await get_redis().decrby(_inflight_key(user_id), held)
+
+
+async def enforce_daily_budget(user_id: uuid.UUID) -> None:
+    """Raise if this user can't use AI now (switched off, or out of allowance)."""
+    await release(user_id, await reserve(user_id, 0))
 
 
 _client: AIClient | None = None

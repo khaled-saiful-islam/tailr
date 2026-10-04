@@ -34,6 +34,19 @@ How the backend harness works (`backend/tests/conftest.py`):
 - Uses Redis database 15, flushed before each test.
 - `client` is an httpx client bound to a fresh app; `signed_in` is the same client after a sign-up.
 
+### Browser smoke tests (`make e2e`)
+
+`e2e/` holds Playwright tests that run in the official Playwright image against the running
+stack, as a desktop and as a phone. They need the demo account:
+
+```bash
+make up && make demo && make e2e
+```
+
+Each test checks that no page scrolls sideways; the main pages are also scanned with axe and
+must have no serious or critical WCAG 2.2 AA problems. Failures leave a screenshot and a trace
+in `e2e/results/` (open a trace with `npx playwright show-trace <file>` in `e2e/`).
+
 ## Database changes
 
 1. Edit or add models in `app/modules/<feature>/models.py` and import new ones in `app/models.py`.

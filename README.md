@@ -38,6 +38,8 @@ Pick one, and Tailr tailors your resume, cover letter and apply kit for that exa
 | **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in five designs, one page or several. |
 | **Tracker** | Saved, preparing, applied, interviewing, offer: one board you drag along, with a follow-up nudge a week after applying, a truthful drafted email, and reminders before each next step. |
 | **Momentum** | A weekly goal, a streak of brief days, an honest funnel, and a weekly pulse of the skills and pay your market asks for. |
+| **Settings** | Name, time zone, theme, email, password, signed-in devices, AI use today, download all your data, delete your account. |
+| **Admin** | People and their AI use, per-person AI switch and daily allowance, disable or re-enable accounts, job-site health. |
 
 Tailr never applies on your behalf. It prepares; you decide.
 
@@ -50,11 +52,17 @@ git clone <repo-url> tailr && cd tailr
 make setup          # creates .env, builds images, starts everything
 ```
 
-Then open **http://localhost:8400** and sign in with the default admin:
+Then open **http://localhost:8400**. To see every feature with data straight away, load the
+demo account (no AI key or internet needed):
 
-| Username | Password |
-|---|---|
-| `admin` | `admin` |
+```bash
+make demo
+```
+
+| Account | Username | Password |
+|---|---|---|
+| Demo (a full profile, brief, kits, CV, portfolio, tracker) | `demo` | `Tailr-demo-2026` |
+| Administrator (people, AI use, job-site health) | `admin` | `admin` |
 
 Or create your own account from the sign-up page.
 
@@ -75,6 +83,8 @@ make down           # stop; your data is kept
 make dev            # hot reload: Python reloads on save, Vite UI on :8403
 make logs s=backend # follow one service's logs (omit s= for all)
 make test           # backend + frontend tests (separate test database)
+make demo           # (re)build the demo account from fixed data
+make e2e            # browser smoke tests + accessibility checks (after make demo)
 make lint           # ruff, mypy, eslint, tsc
 make migration m="add jobs"   # create a migration from model changes
 make gen-api        # regenerate the frontend's typed API client
@@ -163,7 +173,7 @@ make lint    # ruff + mypy (backend), eslint + tsc (frontend)
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
-| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job radar](docs/features/03-job-radar.md), [morning brief](docs/features/04-morning-brief.md), [apply kit and notifications](docs/features/05-apply-kit.md), [CV Studio](docs/features/06-cv-studio.md), [portfolio](docs/features/07-portfolio.md), [tracker and momentum](docs/features/08-tracker-momentum.md) |
+| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job radar](docs/features/03-job-radar.md), [morning brief](docs/features/04-morning-brief.md), [apply kit and notifications](docs/features/05-apply-kit.md), [CV Studio](docs/features/06-cv-studio.md), [portfolio](docs/features/07-portfolio.md), [tracker and momentum](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md) |
 | [docs/job-sources.md](docs/job-sources.md) | How Tailr reads LinkedIn and JobStreet, politely |
 | [docs/adr/](docs/adr) | Architecture decision records |
 
@@ -182,7 +192,7 @@ Tailr is built in milestones; each one is usable on its own.
 | M6 CV Studio: five CV designs, AI edits with truth checks and undo, PDF, share page with link preview; portfolio foundation (publishing, four designs, pictures, highlights, link previews, visits) | ✅ Done |
 | M7 Portfolio site: about, expertise, achievements, case-study pages, timeline, testimonials, contact form to an inbox, one or several pages, AI drafting with a truth judge | ✅ Done |
 | M8 Tracker and Momentum: drag-and-drop board, follow-up nudges with truthful drafts, next-step reminders, weekly goal, streak, funnel, Market Pulse | ✅ Done |
-| M9 Settings, admin (users, AI usage) and hand-over | Next |
+| M9 Settings, admin (people, AI use and allowances, disabling accounts, job-site health), demo account, browser smoke and accessibility tests | ✅ Done |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.
 

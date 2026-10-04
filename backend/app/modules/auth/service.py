@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core import rate_limit
 from app.core.clock import DEFAULT_TIMEZONE, is_valid_timezone, utcnow
 from app.core.config import get_settings
-from app.core.errors import AuthenticationError, ConflictError
+from app.core.errors import AuthenticationError, ConflictError, PermissionDeniedError
 from app.core.security import (
     hash_password,
     hash_token,
@@ -21,7 +21,7 @@ from app.core.security import (
 )
 from app.modules.auth.models import Session, User
 from app.modules.auth.repository import SessionRepository, UserRepository
-from app.modules.auth.schemas import RegisterRequest, UpdateMeRequest
+from app.modules.auth.schemas import DeviceOut, RegisterRequest, UpdateMeRequest
 
 LOGIN_ATTEMPTS_PER_WINDOW = 10
 LOGIN_WINDOW_SECONDS = 15 * 60
@@ -117,6 +117,12 @@ class AuthService:
     async def change_password(
         self, user: User, current: str, new: str, *, keep_token: str | None
     ) -> None:
+        if user.is_demo:
+            raise PermissionDeniedError(
+                "This is a shared demo account, so its password stays the same.",
+                code="demo_account",
+            )
+        await check_password_attempts(user)
         if not verify_password(current, user.password_hash):
             raise AuthenticationError("Your current password is incorrect.", code="bad_credentials")
         user.password_hash = hash_password(new)
@@ -127,3 +133,53 @@ class AuthService:
 
     async def get_user(self, user_id: uuid.UUID) -> User | None:
         return await self.users.get(user_id)
+
+    async def devices(self, user: User, token: str | None) -> list[DeviceOut]:
+        current = hash_token(token) if token else None
+        return [
+            DeviceOut(
+                id=session.id,
+                device=describe_device(session.user_agent),
+                ip_address=session.ip_address,
+                created_at=session.created_at,
+                last_used_at=session.last_used_at,
+                current=session.token_hash == current,
+            )
+            for session in await self.sessions.active_for_user(user.id, utcnow())
+        ]
+
+    async def sign_out_others(self, user: User, token: str | None) -> int:
+        if user.is_demo:  # others may be trying the demo right now
+            raise PermissionDeniedError(
+                "This is a shared demo account, so other people stay signed in.",
+                code="demo_account",
+            )
+        return await self.sessions.delete_for_user(
+            user.id, keep_hash=hash_token(token) if token else None
+        )
+
+
+async def check_password_attempts(user: User) -> None:
+    """Five password checks per account per 15 minutes, so a stolen session can't guess."""
+    await rate_limit.enforce(
+        f"password-check:{user.id}",
+        limit=5,
+        window_seconds=900,
+        message="Too many tries. Wait a few minutes, then try again.",
+    )
+
+
+_BROWSERS = (("Edg/", "Edge"), ("OPR/", "Opera"), ("Firefox/", "Firefox"),
+             ("Chrome/", "Chrome"), ("Safari/", "Safari"))  # fmt: skip
+_SYSTEMS = (("iPhone", "iPhone"), ("iPad", "iPad"), ("Android", "Android"),
+            ("Mac OS X", "macOS"), ("Windows", "Windows"), ("Linux", "Linux"))  # fmt: skip
+
+
+def describe_device(user_agent: str | None) -> str:
+    """'Chrome on macOS', from a user-agent string; good enough to recognise a device."""
+    agent = user_agent or ""
+    browser = next((name for key, name in _BROWSERS if key in agent), None)
+    system = next((name for key, name in _SYSTEMS if key in agent), None)
+    if browser and system:
+        return f"{browser} on {system}"
+    return browser or system or "Unknown device"

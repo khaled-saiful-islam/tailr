@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, true
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -50,6 +50,10 @@ class User(IdMixin, TimestampMixin, Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Set by an admin: AI on or off for this user, and their own daily token allowance
+    # (null means the default from settings).
+    ai_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=true())
+    ai_daily_budget: Mapped[int | None] = mapped_column(Integer)
 
 
 class Session(IdMixin, Base):

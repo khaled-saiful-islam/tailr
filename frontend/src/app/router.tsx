@@ -38,6 +38,14 @@ const TrackerPage = lazy(() =>
     default: m.TrackerPage,
   })),
 );
+const SettingsPage = lazy(() =>
+  import("@/features/settings/SettingsPage").then((m) => ({
+    default: m.SettingsPage,
+  })),
+);
+const AdminPage = lazy(() =>
+  import("@/features/admin/AdminPage").then((m) => ({ default: m.AdminPage })),
+);
 const KitPage = lazy(() =>
   import("@/features/kits/KitPage").then((m) => ({ default: m.KitPage })),
 );
@@ -139,6 +147,22 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <TrackerPage />
+          </Page>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <Page>
+            <SettingsPage />
+          </Page>
+        ),
+      },
+      {
+        path: "admin",
+        element: (
+          <Page>
+            <AdminPage />
           </Page>
         ),
       },

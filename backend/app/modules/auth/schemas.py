@@ -45,6 +45,21 @@ class UserOut(Schema):
     created_at: datetime
 
 
+class DeviceOut(Schema):
+    """A place you're signed in."""
+
+    id: uuid.UUID
+    device: str
+    ip_address: str | None
+    created_at: datetime
+    last_used_at: datetime
+    current: bool
+
+
+class SignedOutOut(Schema):
+    signed_out: int
+
+
 class SessionOut(Schema):
     """Who is signed in. `user` is null for visitors (a normal state, not an error)."""
 

@@ -144,6 +144,158 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Devices
+         * @description Where you're signed in, most recent first.
+         */
+        get: operations["devices_api_v1_auth_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/sessions/sign-out-others": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign Out Others
+         * @description Sign out every other device; this one stays signed in.
+         */
+        post: operations["sign_out_others_api_v1_auth_sessions_sign_out_others_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Usage */
+        get: operations["usage_api_v1_account_usage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export
+         * @description A JSON file of everything Tailr holds about you.
+         */
+        get: operations["export_api_v1_account_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Account
+         * @description Delete your account and everything in it. This can't be undone.
+         */
+        delete: operations["delete_account_api_v1_account_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["overview_api_v1_admin_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Users */
+        get: operations["users_api_v1_admin_users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** User */
+        get: operations["user_api_v1_admin_users__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update User
+         * @description Disable or re-enable the account, switch AI, set a daily budget, or change role.
+         */
+        patch: operations["update_user_api_v1_admin_users__user_id__patch"];
+        trace?: never;
+    };
     "/api/v1/profile": {
         parameters: {
             query?: never;
@@ -1208,6 +1360,112 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdminUserDetail */
+        AdminUserDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /** Username */
+            username: string | null;
+            role: components["schemas"]["Role"];
+            /** Is Active */
+            is_active: boolean;
+            /** Is Demo */
+            is_demo: boolean;
+            /** Ai Enabled */
+            ai_enabled: boolean;
+            /** Ai Daily Budget */
+            ai_daily_budget: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Login At */
+            last_login_at: string | null;
+            /** Tokens 24H */
+            tokens_24h: number;
+            /** Tokens 30D */
+            tokens_30d: number;
+            /** Default Budget */
+            default_budget: number;
+            /** Calls 30D */
+            calls_30d: number;
+            /** Errors 30D */
+            errors_30d: number;
+            /** Signed In Devices */
+            signed_in_devices: number;
+            /** Purposes 30D */
+            purposes_30d: components["schemas"]["PurposeUse"][];
+            /** Days */
+            days: components["schemas"]["DayUse"][];
+            /** Applications */
+            applications: number;
+            /** Kits */
+            kits: number;
+            /** Matches */
+            matches: number;
+        };
+        /** AdminUserPage */
+        AdminUserPage: {
+            /** Items */
+            items: components["schemas"]["AdminUserRow"][];
+            /** Total */
+            total: number;
+        };
+        /** AdminUserRow */
+        AdminUserRow: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Email */
+            email: string;
+            /** Username */
+            username: string | null;
+            role: components["schemas"]["Role"];
+            /** Is Active */
+            is_active: boolean;
+            /** Is Demo */
+            is_demo: boolean;
+            /** Ai Enabled */
+            ai_enabled: boolean;
+            /** Ai Daily Budget */
+            ai_daily_budget: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Login At */
+            last_login_at: string | null;
+            /** Tokens 24H */
+            tokens_24h: number;
+            /** Tokens 30D */
+            tokens_30d: number;
+        };
+        /**
+         * AdminUserUpdate
+         * @description Only the fields sent change. `ai_daily_budget: null` returns to the default.
+         */
+        AdminUserUpdate: {
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Ai Enabled */
+            ai_enabled?: boolean | null;
+            /** Ai Daily Budget */
+            ai_daily_budget?: number | null;
+            role?: components["schemas"]["Role"] | null;
+        };
         /** ApplicationDetail */
         ApplicationDetail: {
             /**
@@ -1662,6 +1920,48 @@ export interface components {
              * @enum {string}
              */
             state: "checked" | "missed" | "off" | "today" | "ahead" | "before";
+        };
+        /** DayUse */
+        DayUse: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Tokens */
+            tokens: number;
+        };
+        /** DeleteAccountRequest */
+        DeleteAccountRequest: {
+            /** Password */
+            password: string;
+        };
+        /**
+         * DeviceOut
+         * @description A place you're signed in.
+         */
+        DeviceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Device */
+            device: string;
+            /** Ip Address */
+            ip_address: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Last Used At
+             * Format: date-time
+             */
+            last_used_at: string;
+            /** Current */
+            current: boolean;
         };
         /** DraftRequest */
         DraftRequest: {
@@ -2368,6 +2668,36 @@ export interface components {
          * @enum {string}
          */
         OnboardingStep: "import" | "review" | "radar" | "done";
+        /**
+         * Overview
+         * @description The last 24 hours unless a field says otherwise.
+         */
+        Overview: {
+            /** Users */
+            users: number;
+            /** Active 7D */
+            active_7d: number;
+            /** New 7D */
+            new_7d: number;
+            /** Disabled */
+            disabled: number;
+            /** Tokens 24H */
+            tokens_24h: number;
+            /** Tokens 30D */
+            tokens_30d: number;
+            /** Calls 24H */
+            calls_24h: number;
+            /** Errors 24H */
+            errors_24h: number;
+            /** Default Budget */
+            default_budget: number;
+            /** Purposes 30D */
+            purposes_30d: components["schemas"]["PurposeUse"][];
+            /** Days */
+            days: components["schemas"]["DayUse"][];
+            /** Sources */
+            sources: components["schemas"]["SourceHealth"][];
+        };
         /** PageCase */
         PageCase: {
             /** Overview */
@@ -2895,6 +3225,15 @@ export interface components {
             /** Companies */
             companies?: components["schemas"]["CompanyOut"][];
         };
+        /** PurposeUse */
+        PurposeUse: {
+            /** Purpose */
+            purpose: string;
+            /** Tokens */
+            tokens: number;
+            /** Calls */
+            calls: number;
+        };
         /** RadarOptionsOut */
         RadarOptionsOut: {
             /** Places */
@@ -3086,6 +3425,11 @@ export interface components {
         SessionOut: {
             user: components["schemas"]["UserOut"] | null;
         };
+        /** SignedOutOut */
+        SignedOutOut: {
+            /** Signed Out */
+            signed_out: number;
+        };
         /** Skill */
         Skill: {
             /** Name */
@@ -3119,6 +3463,21 @@ export interface components {
             available: boolean;
             /** Reason */
             reason: string | null;
+        };
+        /** SourceHealth */
+        SourceHealth: {
+            /** Source */
+            source: string;
+            /** Runs */
+            runs: number;
+            /** Failed */
+            failed: number;
+            /** Empty */
+            empty: number;
+            /** Last Ok At */
+            last_ok_at: string | null;
+            /** Last Error */
+            last_error: string | null;
         };
         /** SourceOptionOut */
         SourceOptionOut: {
@@ -3269,6 +3628,20 @@ export interface components {
             /** Email Digest */
             email_digest?: boolean | null;
             onboarding_step?: components["schemas"]["OnboardingStep"] | null;
+        };
+        /**
+         * UsageOut
+         * @description Today's AI use against your allowance (0 means no limit).
+         */
+        UsageOut: {
+            /** Ai Enabled */
+            ai_enabled: boolean;
+            /** Tokens Today */
+            tokens_today: number;
+            /** Daily Budget */
+            daily_budget: number;
+            /** Calls Today */
+            calls_today: number;
         };
         /** UserOut */
         UserOut: {
@@ -3570,6 +3943,237 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Ok"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    devices_api_v1_auth_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceOut"][];
+                };
+            };
+        };
+    };
+    sign_out_others_api_v1_auth_sessions_sign_out_others_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedOutOut"];
+                };
+            };
+        };
+    };
+    usage_api_v1_account_usage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsageOut"];
+                };
+            };
+        };
+    };
+    export_api_v1_account_export_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_account_api_v1_account_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ok"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_api_v1_admin_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Overview"];
+                };
+            };
+        };
+    };
+    users_api_v1_admin_users_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                status?: "all" | "disabled" | "ai_off" | "admins";
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    user_api_v1_admin_users__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_api_v1_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUserUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDetail"];
                 };
             };
             /** @description Validation Error */

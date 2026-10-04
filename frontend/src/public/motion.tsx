@@ -94,7 +94,8 @@ export function MaskRise({
 }) {
   const words = text.split(/\s+/).filter(Boolean);
   return (
-    <span className={className} aria-label={text} role="text">
+    <span className={className}>
+      <span className="sr-only">{text}</span>
       {words.map((word, index) => (
         <span
           key={`${word}-${index}`}
@@ -185,7 +186,8 @@ export function CountUp({
   }, [inView, reduce, value]);
 
   return (
-    <span ref={ref} className={className} aria-label={value}>
+    <span ref={ref} className={className}>
+      <span className="sr-only">{value}</span>
       <span aria-hidden className="tabular-nums">
         {shown}
       </span>

@@ -1,11 +1,22 @@
-import { Check, LogOut, Monitor, Moon, Sun } from "lucide-react";
+import {
+  Check,
+  LogOut,
+  Monitor,
+  Moon,
+  Settings,
+  ShieldCheck,
+  Sun,
+} from "lucide-react";
 import { DropdownMenu } from "radix-ui";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useMe, useSignOut } from "@/features/auth/api";
 import { cn } from "@/lib/cn";
 import { initials } from "@/lib/format";
 import { useTheme, type ThemeChoice } from "../theme-context";
+
+const item =
+  "flex cursor-pointer items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.875rem] outline-none data-[highlighted]:bg-surface-2";
 
 const themes: { value: ThemeChoice; label: string; icon: typeof Sun }[] = [
   { value: "system", label: "Match my device", icon: Monitor },
@@ -84,6 +95,21 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
               </DropdownMenu.RadioItem>
             ))}
           </DropdownMenu.RadioGroup>
+          <DropdownMenu.Separator className="my-1 h-px bg-line" />
+          <DropdownMenu.Item asChild className={item}>
+            <Link to="/settings">
+              <Settings className="size-4 text-ink-2" aria-hidden />
+              Settings
+            </Link>
+          </DropdownMenu.Item>
+          {user.role === "admin" && (
+            <DropdownMenu.Item asChild className={item}>
+              <Link to="/admin">
+                <ShieldCheck className="size-4 text-ink-2" aria-hidden />
+                Admin
+              </Link>
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Separator className="my-1 h-px bg-line" />
           <DropdownMenu.Item
             onSelect={onSignOut}

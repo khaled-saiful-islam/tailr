@@ -153,11 +153,11 @@ export function PreviewPanel({
                 key={source.key}
                 className="flex items-baseline justify-between gap-3 text-[0.9375rem] text-ink-3"
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex shrink-0 items-center gap-1.5">
                   <Lock className="size-3.5" aria-hidden />
                   {source.label}
                 </span>
-                <span className="text-right">{source.note}</span>
+                <span className="min-w-0 text-right">{source.note}</span>
               </li>
             ))}
           </ul>

@@ -29,8 +29,8 @@ PY_TEST := $(COMPOSE) run --rm --entrypoint "" -v "$(PWD)/backend:/srv" \
 	backend
 NODE := docker run --rm -v "$(PWD)/frontend:/app" -v tailr-node-modules:/app/node_modules -w /app node:22-alpine sh -c
 
-.PHONY: help setup up down restart dev logs ps migrate migration seed test test-backend test-frontend \
-	lint fmt typecheck gen-api shell psql redis-cli reset clean _banner _env
+.PHONY: help setup up down restart dev logs ps migrate migration seed demo test test-backend test-frontend \
+	lint fmt typecheck gen-api e2e shell psql redis-cli reset clean _banner _env
 
 help: ## Show this help
 	@echo "$(BOLD)Tailr$(RESET) — jobs that fit, applications made to measure"
@@ -94,6 +94,9 @@ migration: ## Create a migration from model changes: make migration m="add jobs"
 seed: ## Create the default admin again if it was removed
 	@$(COMPOSE) exec backend python -c "import asyncio; from app.core.db import init_engine; from app.modules.auth.seed import ensure_admin; init_engine(); asyncio.run(ensure_admin())"
 
+demo: ## Create (or reset) the demo account, with every feature filled in. No network needed.
+	@$(COMPOSE) exec backend python -m app.scripts.seed_demo
+
 test: test-backend test-frontend ## Run every test suite
 
 test-backend: ## Backend tests (separate test database, never your data)
@@ -103,6 +106,12 @@ test-backend: ## Backend tests (separate test database, never your data)
 
 test-frontend: ## Frontend unit tests
 	@$(NODE) "npm ci --no-audit --no-fund --silent && npm test"
+
+e2e: ## Browser smoke tests with accessibility checks (needs `make up` and `make demo`)
+	@docker run --rm --init --ipc=host --network tailr_default -e BASE_URL=http://frontend \
+		-v "$(PWD)/e2e:/e2e" -v tailr-e2e-modules:/e2e/node_modules -w /e2e \
+		mcr.microsoft.com/playwright:v1.63.0-noble \
+		sh -c "npm ci --no-audit --no-fund --silent && npx playwright test"
 
 lint: ## Lint and type-check backend and frontend
 	@$(COMPOSE) build -q --build-arg INSTALL_DEV=true backend

@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
 from app.core.db import session_factory
-from app.core.errors import AuthenticationError
-from app.modules.auth.models import User
+from app.core.errors import AuthenticationError, PermissionDeniedError
+from app.modules.auth.models import Role, User
 from app.modules.auth.service import AuthService
 
 
@@ -52,3 +52,12 @@ async def current_user(request: Request, db: DbSession) -> User:
 
 
 CurrentUser = Annotated[User, Depends(current_user)]
+
+
+async def require_admin(user: CurrentUser) -> User:
+    if user.role != Role.ADMIN:
+        raise PermissionDeniedError("Only administrators can do that.", code="admin_only")
+    return user
+
+
+AdminUser = Annotated[User, Depends(require_admin)]

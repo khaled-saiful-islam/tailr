@@ -68,6 +68,8 @@ class Settings(BaseSettings):
     seed_admin_username: str = "admin"
     seed_admin_password: str = "admin"  # noqa: S105 - documented dev default, refused in production
     seed_admin_email: str = "admin@tailr.local"
+    # `make demo`: the demo account's password. Seeding refuses this default in production.
+    seed_demo_password: str = "Tailr-demo-2026"  # noqa: S105 - documented demo default
 
     # Uploads
     upload_max_mb: int = 10

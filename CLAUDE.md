@@ -4,7 +4,7 @@ Read `PLAN.md` (scope, decisions, build order) and `docs/architecture.md` first.
 
 ## Ground rules
 
-- **Run with Docker via `make`.** `make up`, `make test`, `make lint`. Ports 8400–8405.
+- **Run with Docker via `make`.** `make up`, `make test`, `make lint`, `make demo`, `make e2e`. Ports 8400–8405.
 - **Tests use `tailr_test`**, never the dev database. Each test rolls back.
 - **Backend module shape** is fixed: models · schemas · repository · service · router · tasks.
   Routers are thin; modules talk through services; raise `AppError` subclasses.
