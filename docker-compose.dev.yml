@@ -1,0 +1,24 @@
+# Hot reload for the Python services: source is mounted, uvicorn and taskiq reload on save.
+# Used by `make dev` together with the Vite dev server.
+services:
+  backend:
+    build:
+      args:
+        INSTALL_DEV: "true"
+    volumes:
+      - ./backend:/srv
+      - tailr-files:/srv/data/files
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "app"]
+
+  worker:
+    build:
+      args:
+        INSTALL_DEV: "true"
+    volumes:
+      - ./backend:/srv
+      - tailr-files:/srv/data/files
+    command: ["taskiq", "worker", "app.worker:broker", "app.tasks", "--workers", "1", "--max-async-tasks", "20", "--reload"]
+
+  scheduler:
+    volumes:
+      - ./backend:/srv

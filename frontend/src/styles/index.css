@@ -1,0 +1,239 @@
+@import "@fontsource-variable/mona-sans/standard.css";
+@import "tailwindcss";
+
+/* Dark mode follows the data-theme attribute set in index.html / ThemeProvider. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Tailr design tokens
+   A tailor's cutting table: pattern-paper white, worsted navy, measuring-tape
+   yellow, tailor's-chalk blue. Semantic names only — components never use hex.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --canvas: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --surface-3: #e3e8f0;
+  --ink: #14213d;
+  --ink-2: #47536d;
+  --ink-3: #66718a;
+  --line: #dde2eb;
+  --line-strong: #c3cad8;
+  --primary: #14213d;
+  --primary-ink: #ffffff;
+  --primary-hover: #22335a;
+  --tape: #f5c518;
+  --tape-deep: #d9a900;
+  --tape-ink: #1d1a0e;
+  --chalk: #3f6fe8;
+  --chalk-soft: #e3ebff;
+  --pin: #d1343a;
+  --pin-soft: #fde8e8;
+  --fit-strong: #13805a;
+  --fit-good: #2f6fd6;
+  --fit-stretch: #a76a07;
+  --fit-low: #66718a;
+  --overlay: rgb(20 33 61 / 0.42);
+  --shadow-sheet: 0 1px 0 rgb(20 33 61 / 0.04), 0 18px 48px -18px rgb(20 33 61 / 0.28);
+  --grid-dot: rgb(20 33 61 / 0.09);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --canvas: #0e1526;
+  --surface: #151f36;
+  --surface-2: #1b2741;
+  --surface-3: #24324f;
+  --ink: #e9edf6;
+  --ink-2: #aeb8cd;
+  --ink-3: #8d98b1;
+  --line: #26334f;
+  --line-strong: #364568;
+  --primary: #f5c518;
+  --primary-ink: #14213d;
+  --primary-hover: #ffd43a;
+  --tape: #f5c518;
+  --tape-deep: #d9a900;
+  --tape-ink: #1d1a0e;
+  --chalk: #86a8ff;
+  --chalk-soft: #1f2d52;
+  --pin: #ff6b70;
+  --pin-soft: #3a1d26;
+  --fit-strong: #3fcf91;
+  --fit-good: #86a8ff;
+  --fit-stretch: #f0b44c;
+  --fit-low: #8d98b1;
+  --overlay: rgb(4 8 18 / 0.6);
+  --shadow-sheet: 0 1px 0 rgb(0 0 0 / 0.3), 0 24px 60px -20px rgb(0 0 0 / 0.65);
+  --grid-dot: rgb(233 237 246 / 0.07);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Mona Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-hover: var(--primary-hover);
+  --color-tape: var(--tape);
+  --color-tape-deep: var(--tape-deep);
+  --color-tape-ink: var(--tape-ink);
+  --color-chalk: var(--chalk);
+  --color-chalk-soft: var(--chalk-soft);
+  --color-pin: var(--pin);
+  --color-pin-soft: var(--pin-soft);
+  --color-fit-strong: var(--fit-strong);
+  --color-fit-good: var(--fit-good);
+  --color-fit-stretch: var(--fit-stretch);
+  --color-fit-low: var(--fit-low);
+  --color-overlay: var(--overlay);
+
+  --shadow-sheet: var(--shadow-sheet);
+
+  /* Radii follow hierarchy: documents are nearly square, controls soft, sheets round. */
+  --radius-doc: 3px;
+  --radius-control: 10px;
+  --radius-panel: 14px;
+  --radius-sheet: 20px;
+
+  --ease-tailor: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Type scale (Mona Sans). Expanded width is reserved for display type. ── */
+@utility type-display {
+  font-stretch: 125%;
+  font-weight: 760;
+  font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+@utility type-title {
+  font-stretch: 118%;
+  font-weight: 720;
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 2.125rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+@utility type-heading {
+  font-stretch: 110%;
+  font-weight: 680;
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+@utility type-label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+@utility type-figure {
+  font-stretch: 112%;
+  font-weight: 720;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Pattern paper: a faint dot grid with a cross every fourth dot, like drafting paper. */
+@utility pattern-paper {
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(circle at 1px 1px, var(--grid-dot) 1px, transparent 1.5px),
+    linear-gradient(var(--grid-dot), var(--grid-dot)),
+    linear-gradient(90deg, var(--grid-dot), var(--grid-dot));
+  background-size:
+    24px 24px,
+    9px 1px,
+    1px 9px;
+  background-position:
+    0 0,
+    92px 96px,
+    96px 92px;
+}
+
+/* Basting stitch: the dashed thread line used for selection and AI-in-progress. */
+@utility stitch {
+  background-image: linear-gradient(90deg, currentColor 55%, transparent 0);
+  background-size: 9px 1.5px;
+  background-repeat: repeat-x;
+}
+
+/* Tailor's chalk: marks text the AI wrote or changed. */
+@utility chalk-mark {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: color-mix(in oklab, var(--chalk) 70%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--tape) 55%, transparent);
+    color: var(--tape-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--chalk);
+    outline-offset: 2px;
+  }
+  /* Headings balance their lines; paragraphs avoid a lone last word. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Never clip words: long tokens (emails, URLs) wrap instead of overflowing. */
+  p,
+  h1,
+  h2,
+  h3,
+  li,
+  dd,
+  label {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Menus and popovers open with a short drop. */
+@keyframes tailr-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+@utility animate-pop {
+  animation: tailr-pop 160ms var(--ease-tailor);
+}

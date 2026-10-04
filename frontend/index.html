@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Tailr finds fresh jobs that fit you every morning and tailors your resume for the ones you choose." />
+    <meta name="theme-color" content="#14213D" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Tailr — jobs that fit</title>
+    <script>
+      // Apply the saved theme before first paint, so there is no flash.
+      (function () {
+        try {
+          var saved = localStorage.getItem("tailr.theme") || "system";
+          var dark = saved === "dark" || (saved === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.dataset.theme = dark ? "dark" : "light";
+        } catch (e) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
