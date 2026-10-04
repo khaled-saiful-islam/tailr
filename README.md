@@ -179,3 +179,7 @@ Tailr is built in milestones; each one is usable on its own.
 | M7 Polish and hand-over | Planned |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.
+
+## License
+
+[MIT](LICENSE) © Khaled Saiful Islam
