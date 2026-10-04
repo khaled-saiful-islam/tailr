@@ -10,6 +10,7 @@ from app.modules.cv.models import Cv
 from app.modules.jobs.models import Job
 from app.modules.kits.models import Kit
 from app.modules.media.models import StoredImage
+from app.modules.momentum.models import ActivityDay, Goal
 from app.modules.notifications.models import Notification
 from app.modules.profile.models import CvImport, Profile
 from app.modules.public_profile.models import (
@@ -19,13 +20,18 @@ from app.modules.public_profile.models import (
 )
 from app.modules.radar.models import Radar
 from app.modules.sources.models import SourceRun
+from app.modules.tracker.models import Application, ApplicationEvent
 
 __all__ = [
+    "ActivityDay",
     "AiRun",
+    "Application",
+    "ApplicationEvent",
     "Base",
     "Brief",
     "Cv",
     "CvImport",
+    "Goal",
     "Job",
     "Kit",
     "Match",

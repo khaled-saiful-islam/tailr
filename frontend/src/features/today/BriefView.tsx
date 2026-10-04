@@ -9,6 +9,8 @@ import { useRunBrief, useToday, type Brief } from "@/features/brief/api";
 import { BriefProgress } from "@/features/brief/components/BriefProgress";
 import { MatchRow } from "@/features/brief/components/MatchRow";
 import { TopPick } from "@/features/brief/components/TopPick";
+import { MarketPulse } from "@/features/momentum/components/MarketPulse";
+import { MomentumStrip } from "@/features/momentum/components/MomentumStrip";
 import { greeting, longDate } from "@/lib/format";
 
 function nextBriefLabel(iso: string | null | undefined): string | null {
@@ -86,6 +88,13 @@ export function BriefView() {
         </div>
       </header>
 
+      {/* After today's brief is fetched, so opening it already counts toward the streak. */}
+      {today.data && (
+        <div className="mt-8">
+          <MomentumStrip />
+        </div>
+      )}
+
       <div className="mt-10">
         {today.isPending ? (
           <div className="grid min-h-[30vh] place-items-center">
@@ -142,6 +151,8 @@ export function BriefView() {
           </div>
         )}
       </div>
+
+      {today.data && !building && <MarketPulse />}
     </div>
   );
 }

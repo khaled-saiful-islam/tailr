@@ -34,6 +34,8 @@ from app.modules.kits.schemas import (
 from app.modules.matching.signals import profile_signals
 from app.modules.profile.document import ProfileDocument
 from app.modules.profile.service import ProfileService
+from app.modules.tracker.models import Stage
+from app.modules.tracker.service import TrackerService
 
 KITS_PER_DAY = 20
 
@@ -101,6 +103,7 @@ class KitService:
             candidate_name=document.basics.full_name if document else None,
             created_at=kit.created_at,
             updated_at=kit.updated_at,
+            application=await TrackerService(self.db).ref_for_job(kit.user_id, kit.job_id),
         )
 
     async def _own(self, user: User, kit_id: uuid.UUID) -> Kit:
@@ -141,6 +144,9 @@ class KitService:
         if match.status in {MatchStatus.NEW, MatchStatus.SEEN}:
             match.status = MatchStatus.SAVED
         await self.db.flush()
+        await TrackerService(self.db).track(
+            user.id, job_id=kit.job_id, match_id=match.id, kit_id=kit.id, stage=Stage.PREPARING
+        )
         await self.db.refresh(kit)
         out = await self._out(kit)
         await self._start(kit)

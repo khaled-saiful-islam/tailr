@@ -129,6 +129,12 @@ export function useUpdateMatch() {
         }),
       ),
     onMutate: ({ id, status }) => patchMatchEverywhere(client, id, { status }),
-    onSettled: () => void client.invalidateQueries({ queryKey: ["matches"] }),
+    onSettled: (_data, _error, { id }) => {
+      void client.invalidateQueries({ queryKey: ["matches"] });
+      // Saving puts a job on the tracker; skipping an untouched one takes it off.
+      void client.invalidateQueries({ queryKey: matchKey(id) });
+      void client.invalidateQueries({ queryKey: ["applications"] });
+      void client.invalidateQueries({ queryKey: ["momentum"] });
+    },
   });
 }

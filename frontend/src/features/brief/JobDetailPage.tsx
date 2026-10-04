@@ -9,6 +9,7 @@ import { TailorAction } from "@/features/kits/components/TailorAction";
 import { useMatch, type MatchDetail } from "./api";
 import { PART_LABEL, PART_ORDER, sentence } from "./format";
 import { MatchActions, MatchMeta } from "./components/MatchParts";
+import { TrackerRow } from "./components/TrackerRow";
 
 export function JobDetailPage() {
   const { matchId = "" } = useParams();
@@ -185,6 +186,9 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
 
       <div className="mt-6 border-y border-line py-5">
         <TailorAction matchId={detail.id} />
+        <div className="mt-5 border-t border-dashed border-line pt-4">
+          <TrackerRow match={detail} />
+        </div>
       </div>
 
       <dl className="mt-6 flex flex-col gap-3">

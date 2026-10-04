@@ -36,7 +36,8 @@ Pick one, and Tailr tailors your resume, cover letter and apply kit for that exa
 | **Add any job** | Paste a link or the ad itself; Tailr measures it like a brief job. |
 | **CV Studio** | Your CV in five print-quality designs. Polish it with AI (every line checked against your profile), download a PDF, or share a link. |
 | **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in four designs, one page or several. |
-| **Tracker** | Saved, applied, interviewing, offer: one board, with follow-up nudges. |
+| **Tracker** | Saved, preparing, applied, interviewing, offer: one board you drag along, with a follow-up nudge a week after applying, a truthful drafted email, and reminders before each next step. |
+| **Momentum** | A weekly goal, a streak of brief days, an honest funnel, and a weekly pulse of the skills and pay your market asks for. |
 
 Tailr never applies on your behalf. It prepares; you decide.
 
@@ -162,7 +163,7 @@ make lint    # ruff + mypy (backend), eslint + tsc (frontend)
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
-| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job radar](docs/features/03-job-radar.md), [morning brief](docs/features/04-morning-brief.md), [apply kit and notifications](docs/features/05-apply-kit.md), [CV Studio](docs/features/06-cv-studio.md), [portfolio](docs/features/07-portfolio.md) |
+| [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job radar](docs/features/03-job-radar.md), [morning brief](docs/features/04-morning-brief.md), [apply kit and notifications](docs/features/05-apply-kit.md), [CV Studio](docs/features/06-cv-studio.md), [portfolio](docs/features/07-portfolio.md), [tracker and momentum](docs/features/08-tracker-momentum.md) |
 | [docs/job-sources.md](docs/job-sources.md) | How Tailr reads LinkedIn and JobStreet, politely |
 | [docs/adr/](docs/adr) | Architecture decision records |
 
@@ -180,8 +181,8 @@ Tailr is built in milestones; each one is usable on its own.
 | M5 Apply Kit: truth-checked resume, cover letter, answers and interview prep (English or Bahasa Malaysia), live preview and PDFs, add any job by link or text, notifications | ✅ Done |
 | M6 CV Studio: five CV designs, AI edits with truth checks and undo, PDF, share page with link preview; portfolio foundation (publishing, four designs, pictures, highlights, link previews, visits) | ✅ Done |
 | M7 Portfolio site: about, expertise, achievements, case-study pages, timeline, testimonials, contact form to an inbox, one or several pages, AI drafting with a truth judge | ✅ Done |
-| M8 Tracker and Momentum | Next |
-| M9 Settings, admin (users, AI usage) and hand-over | Planned |
+| M8 Tracker and Momentum: drag-and-drop board, follow-up nudges with truthful drafts, next-step reminders, weekly goal, streak, funnel, Market Pulse | ✅ Done |
+| M9 Settings, admin (users, AI usage) and hand-over | Next |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.
 

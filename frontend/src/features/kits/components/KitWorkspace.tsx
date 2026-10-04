@@ -16,6 +16,7 @@ import {
 } from "../api";
 import { letterAsText } from "../edit";
 import { DocumentFrame } from "./DocumentFrame";
+import { AppliedAction } from "./AppliedAction";
 import { AnswersPanel, InterviewPanel } from "./ExtrasPanels";
 import { KitProof } from "./KitProof";
 import { LetterEditor } from "./LetterEditor";
@@ -92,6 +93,7 @@ export function KitWorkspace({
         >
           Copy letter text
         </Button>
+        <AppliedAction kit={kit} />
         <div className="ml-auto">
           <SaveIndicator
             status={editor.status}

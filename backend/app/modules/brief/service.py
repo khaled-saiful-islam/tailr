@@ -27,8 +27,10 @@ from app.modules.brief.schemas import (
 from app.modules.jobs.insights import JobInsights
 from app.modules.jobs.models import Job
 from app.modules.matching.signals import has_skill, profile_signals
+from app.modules.momentum.service import MomentumService
 from app.modules.profile.service import ProfileService
 from app.modules.radar.models import Radar
+from app.modules.tracker.service import TrackerService
 
 RUNS_PER_DAY = 8
 
@@ -85,6 +87,8 @@ class BriefService:
             await self.db.execute(select(Radar).where(Radar.user_id == user.id))
         ).scalar_one_or_none()
         document = await ProfileService(self.db).document_for(user.id)
+        if radar is not None:
+            await MomentumService(self.db).record_check(user)
         return TodayOut(
             brief=await self._brief_out(brief) if brief else None,
             next_brief_at=radar.next_brief_at if radar else None,
@@ -183,6 +187,7 @@ class BriefService:
             description=job.description_text or job.snippet,
             insights=InsightsOut.model_validate(job.insights) if job.insights else None,
             requirements=await self._requirements(user, match, job),
+            application=await TrackerService(self.db).ref_for_job(user.id, job.id),
         )
 
     async def _requirements(self, user: User, match: Match, job: Job) -> list[RequirementOut]:
@@ -208,5 +213,10 @@ class BriefService:
         match.status_changed_at = utcnow()
         if match.status == MatchStatus.SEEN and match.seen_at is None:
             match.seen_at = utcnow()
+        tracker = TrackerService(self.db)
+        if match.status == MatchStatus.SAVED:
+            await tracker.track(user.id, job_id=job.id, match_id=match.id)
+        else:
+            await tracker.forget_saved(user.id, job.id)
         await self.db.flush()
         return _match_out(match, job)

@@ -567,6 +567,140 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Board */
+        get: operations["board_api_v1_applications_get"];
+        put?: never;
+        /**
+         * Track
+         * @description Put a job from your matches on the board (or move it forward to `stage`).
+         */
+        post: operations["track_api_v1_applications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_api_v1_applications__application_id__get"];
+        put?: never;
+        post?: never;
+        /** Remove */
+        delete: operations["remove_api_v1_applications__application_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update
+         * @description Move (stage, position) or edit. Only the fields you send change; null clears one.
+         */
+        patch: operations["update_api_v1_applications__application_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/follow-up/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft Follow Up
+         * @description A short, truthful follow-up email, saved on the application.
+         */
+        post: operations["draft_follow_up_api_v1_applications__application_id__follow_up_draft_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{application_id}/follow-up/done": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Followed Up */
+        post: operations["followed_up_api_v1_applications__application_id__follow_up_done_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/momentum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Overview */
+        get: operations["overview_api_v1_momentum_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/momentum/goal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Set Goal */
+        put: operations["set_goal_api_v1_momentum_goal_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/momentum/pulse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Market Pulse
+         * @description Skills, pay and work modes across the jobs Tailr matched to you this week.
+         */
+        get: operations["market_pulse_api_v1_momentum_pulse_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -1074,6 +1208,135 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ApplicationDetail */
+        ApplicationDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            stage: components["schemas"]["Stage"];
+            /** Position */
+            position: number;
+            /**
+             * Stage Changed At
+             * Format: date-time
+             */
+            stage_changed_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Notes */
+            notes: string | null;
+            /** Applied At */
+            applied_at: string | null;
+            /** Next Step */
+            next_step: string | null;
+            /** Next Step At */
+            next_step_at: string | null;
+            /** Contact Name */
+            contact_name: string | null;
+            /** Contact Email */
+            contact_email: string | null;
+            /** Follow Up Due At */
+            follow_up_due_at: string | null;
+            /** Nudged At */
+            nudged_at: string | null;
+            /** Followed Up At */
+            followed_up_at: string | null;
+            follow_up_draft: components["schemas"]["FollowUpDraft"] | null;
+            /** Match Id */
+            match_id: string | null;
+            /** Score */
+            score: number | null;
+            /** Kit Id */
+            kit_id: string | null;
+            /** Kit Status */
+            kit_status: string | null;
+            job: components["schemas"]["JobSummaryOut"];
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+        };
+        /** ApplicationOut */
+        ApplicationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            stage: components["schemas"]["Stage"];
+            /** Position */
+            position: number;
+            /**
+             * Stage Changed At
+             * Format: date-time
+             */
+            stage_changed_at: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Notes */
+            notes: string | null;
+            /** Applied At */
+            applied_at: string | null;
+            /** Next Step */
+            next_step: string | null;
+            /** Next Step At */
+            next_step_at: string | null;
+            /** Contact Name */
+            contact_name: string | null;
+            /** Contact Email */
+            contact_email: string | null;
+            /** Follow Up Due At */
+            follow_up_due_at: string | null;
+            /** Nudged At */
+            nudged_at: string | null;
+            /** Followed Up At */
+            followed_up_at: string | null;
+            follow_up_draft: components["schemas"]["FollowUpDraft"] | null;
+            /** Match Id */
+            match_id: string | null;
+            /** Score */
+            score: number | null;
+            /** Kit Id */
+            kit_id: string | null;
+            /** Kit Status */
+            kit_status: string | null;
+            job: components["schemas"]["JobSummaryOut"];
+        };
+        /** ApplicationRef */
+        ApplicationRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            stage: components["schemas"]["Stage"];
+            /** Applied At */
+            applied_at: string | null;
+        };
+        /** ApplicationUpdate */
+        ApplicationUpdate: {
+            stage?: components["schemas"]["Stage"] | null;
+            /** Position */
+            position?: number | null;
+            /** Notes */
+            notes?: string | null;
+            /** Applied At */
+            applied_at?: string | null;
+            /** Next Step */
+            next_step?: string | null;
+            /** Next Step At */
+            next_step_at?: string | null;
+            /** Contact Name */
+            contact_name?: string | null;
+            /** Contact Email */
+            contact_email?: string | null;
+        };
         /** ApplyImportRequest */
         ApplyImportRequest: {
             /**
@@ -1110,6 +1373,15 @@ export interface components {
             summary?: string | null;
             /** Links */
             links?: components["schemas"]["Link"][];
+        };
+        /** Board */
+        Board: {
+            /** Items */
+            items: components["schemas"]["ApplicationOut"][];
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
         };
         /** Body_upload_cv_api_v1_profile_imports_post */
         Body_upload_cv_api_v1_profile_imports_post: {
@@ -1241,6 +1513,13 @@ export interface components {
             /** Company */
             company?: string | null;
         };
+        /** CompanyOut */
+        CompanyOut: {
+            /** Name */
+            name: string;
+            /** Jobs */
+            jobs: number;
+        };
         /** ContactOut */
         ContactOut: {
             /** Email */
@@ -1371,6 +1650,19 @@ export interface components {
             /** Visibility */
             visibility?: ("off" | "link" | "public") | null;
         };
+        /** DayOut */
+        DayOut: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "checked" | "missed" | "off" | "today" | "ahead" | "before";
+        };
         /** DraftRequest */
         DraftRequest: {
             /** Parts */
@@ -1394,6 +1686,30 @@ export interface components {
             details?: string | null;
             /** Id */
             id?: string;
+        };
+        /**
+         * EventKind
+         * @enum {string}
+         */
+        EventKind: "added" | "stage" | "next_step" | "followed_up";
+        /** EventOut */
+        EventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["EventKind"];
+            stage: components["schemas"]["Stage"] | null;
+            /** Detail */
+            detail: {
+                [key: string]: string;
+            };
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
         };
         /** Experience */
         Experience: {
@@ -1462,6 +1778,33 @@ export interface components {
             /** Owner */
             owner: string;
         };
+        /** FollowUpDraft */
+        FollowUpDraft: {
+            /** Subject */
+            subject: string;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** FunnelOut */
+        FunnelOut: {
+            /** Saved */
+            saved: number;
+            /** Preparing */
+            preparing: number;
+            /** Applied */
+            applied: number;
+            /** Interview */
+            interview: number;
+            /** Offer */
+            offer: number;
+            /** Rejected */
+            rejected: number;
+        };
         /** GapOut */
         GapOut: {
             /** Text */
@@ -1470,6 +1813,30 @@ export interface components {
             kind: string;
             /** Tip */
             tip: string;
+        };
+        /** GoalOut */
+        GoalOut: {
+            /** Target */
+            target: number;
+            /** Done */
+            done: number;
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /**
+             * Week End
+             * Format: date
+             */
+            week_end: string;
+            /** Days Left */
+            days_left: number;
+        };
+        /** GoalUpdate */
+        GoalUpdate: {
+            /** Weekly Applications */
+            weekly_applications: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1741,6 +2108,7 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+            application?: components["schemas"]["ApplicationRef"] | null;
         };
         /** KitRegenerate */
         KitRegenerate: {
@@ -1838,6 +2206,7 @@ export interface components {
             insights: components["schemas"]["InsightsOut"] | null;
             /** Requirements */
             requirements: components["schemas"]["RequirementOut"][];
+            application?: components["schemas"]["ApplicationRef"] | null;
         };
         /** MatchOut */
         MatchOut: {
@@ -1948,6 +2317,12 @@ export interface components {
         MessageSent: {
             /** Sent */
             sent: boolean;
+        };
+        /** MomentumOut */
+        MomentumOut: {
+            goal: components["schemas"]["GoalOut"];
+            streak: components["schemas"]["StreakOut"];
+            funnel: components["schemas"]["FunnelOut"];
         };
         /** NotificationOut */
         NotificationOut: {
@@ -2161,6 +2536,15 @@ export interface components {
             company?: string | null;
             /** Text */
             text?: string | null;
+        };
+        /** PayOut */
+        PayOut: {
+            /** Low */
+            low: number;
+            /** High */
+            high: number;
+            /** Jobs */
+            jobs: number;
         };
         /** PlaceOut */
         PlaceOut: {
@@ -2480,6 +2864,37 @@ export interface components {
             appearance?: ("auto" | "light" | "dark") | null;
             settings?: components["schemas"]["PageSettings"] | null;
         };
+        /**
+         * PulseOut
+         * @description This week's matched jobs, summed up. `ready` is false until there are enough.
+         */
+        PulseOut: {
+            /** Ready */
+            ready: boolean;
+            /**
+             * Since
+             * Format: date
+             */
+            since: string;
+            /** Jobs */
+            jobs: number;
+            /**
+             * Good Fit
+             * @default 0
+             */
+            good_fit: number;
+            /** Skills */
+            skills?: components["schemas"]["SkillOut"][];
+            pay?: components["schemas"]["PayOut"] | null;
+            /** Your Minimum */
+            your_minimum?: number | null;
+            /** Modes */
+            modes?: {
+                [key: string]: number;
+            };
+            /** Companies */
+            companies?: components["schemas"]["CompanyOut"][];
+        };
         /** RadarOptionsOut */
         RadarOptionsOut: {
             /** Places */
@@ -2685,6 +3100,17 @@ export interface components {
             /** Id */
             id?: string;
         };
+        /** SkillOut */
+        SkillOut: {
+            /** Name */
+            name: string;
+            /** Jobs */
+            jobs: number;
+            /** Share */
+            share: number;
+            /** Have */
+            have: boolean;
+        };
         /** SlugCheckOut */
         SlugCheckOut: {
             /** Slug */
@@ -2704,6 +3130,22 @@ export interface components {
             available: boolean;
             /** Note */
             note: string | null;
+        };
+        /**
+         * Stage
+         * @enum {string}
+         */
+        Stage: "saved" | "preparing" | "applied" | "interview" | "offer" | "rejected";
+        /** StreakOut */
+        StreakOut: {
+            /** Current */
+            current: number;
+            /** Best */
+            best: number;
+            /** Checked Today */
+            checked_today: boolean;
+            /** Week */
+            week: components["schemas"]["DayOut"][];
         };
         /** StrengthCheckOut */
         StrengthCheckOut: {
@@ -2806,6 +3248,16 @@ export interface components {
             radar_ready: boolean;
             /** Profile Ready */
             profile_ready: boolean;
+        };
+        /** TrackRequest */
+        TrackRequest: {
+            /**
+             * Match Id
+             * Format: uuid
+             */
+            match_id: string;
+            /** @default saved */
+            stage: components["schemas"]["Stage"];
         };
         /** UpdateMeRequest */
         UpdateMeRequest: {
@@ -3944,6 +4396,289 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    board_api_v1_applications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Board"];
+                };
+            };
+        };
+    };
+    track_api_v1_applications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrackRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detail_api_v1_applications__application_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_api_v1_applications__application_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_api_v1_applications__application_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_follow_up_api_v1_applications__application_id__follow_up_draft_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    followed_up_api_v1_applications__application_id__follow_up_done_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    overview_api_v1_momentum_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MomentumOut"];
+                };
+            };
+        };
+    };
+    set_goal_api_v1_momentum_goal_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoalUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MomentumOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    market_pulse_api_v1_momentum_pulse_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PulseOut"];
                 };
             };
         };

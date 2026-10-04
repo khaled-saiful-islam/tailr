@@ -34,6 +34,7 @@ from app.modules.radar.settings import RadarSettings
 from app.modules.sources.base import JobCard, JobDetail, JobRef, SourceError
 from app.modules.sources.service import fetch_details
 from app.modules.sources.text import clean, html_to_text
+from app.modules.tracker.service import TrackerService
 
 PASTES_PER_DAY = 30
 MIN_TEXT = 200
@@ -167,6 +168,7 @@ async def paste_job(
         select(Match.id).where(Match.user_id == user.id, Match.job_id == job.id)
     )
     assert match_id is not None
+    await TrackerService(db).track(user.id, job_id=job.id, match_id=match_id)
     return match_id
 
 

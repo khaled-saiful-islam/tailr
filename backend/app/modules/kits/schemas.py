@@ -9,6 +9,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.core.schemas import Schema
+from app.modules.tracker.refs import ApplicationRef
 
 Language = Literal["en", "ms"]
 Tone = Literal["confident", "warm", "concise"]
@@ -158,6 +159,7 @@ class KitOut(Schema):
     candidate_name: str | None
     created_at: datetime
     updated_at: datetime
+    application: ApplicationRef | None = None
 
 
 class KitSummaryOut(Schema):

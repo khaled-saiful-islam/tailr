@@ -12,11 +12,13 @@ from app.modules.cv.router import public_router as public_cv_router
 from app.modules.jobs.router import router as jobs_router
 from app.modules.kits.router import router as kits_router
 from app.modules.media.router import router as images_router
+from app.modules.momentum.router import router as momentum_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.profile.router import router as profile_router
 from app.modules.public_profile.router import owner_router as public_profile_router
 from app.modules.public_profile.router import visitor_router as public_pages_router
 from app.modules.radar.router import router as radar_router
+from app.modules.tracker.router import router as tracker_router
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(system.router)
@@ -28,6 +30,8 @@ v1.include_router(radar_router)
 v1.include_router(brief_router)
 v1.include_router(jobs_router)
 v1.include_router(kits_router)
+v1.include_router(tracker_router)
+v1.include_router(momentum_router)
 v1.include_router(notifications_router)
 v1.include_router(images_router)
 v1.include_router(public_profile_router)

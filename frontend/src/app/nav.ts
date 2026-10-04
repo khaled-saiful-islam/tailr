@@ -1,5 +1,6 @@
 import {
   BriefcaseBusiness,
+  KanbanSquare,
   Radar,
   Sunrise,
   UserRound,
@@ -16,6 +17,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { to: "/", label: "Today", icon: Sunrise },
   { to: "/jobs", label: "Jobs", icon: BriefcaseBusiness },
+  { to: "/tracker", label: "Tracker", icon: KanbanSquare },
   { to: "/radar", label: "Radar", icon: Radar },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];

@@ -7,6 +7,7 @@ from typing import Any, Literal
 from app.core.schemas import Schema
 from app.modules.brief.models import BriefStatus, MatchStatus
 from app.modules.sources.base import WorkMode
+from app.modules.tracker.refs import ApplicationRef
 
 
 class JobSummaryOut(Schema):
@@ -73,6 +74,7 @@ class MatchDetailOut(MatchOut):
     description: str | None
     insights: InsightsOut | None
     requirements: list[RequirementOut]
+    application: ApplicationRef | None = None
 
 
 class BriefOut(Schema):

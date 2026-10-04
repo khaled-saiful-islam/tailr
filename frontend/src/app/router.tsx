@@ -33,6 +33,11 @@ const JobDetailPage = lazy(() =>
     default: m.JobDetailPage,
   })),
 );
+const TrackerPage = lazy(() =>
+  import("@/features/tracker/TrackerPage").then((m) => ({
+    default: m.TrackerPage,
+  })),
+);
 const KitPage = lazy(() =>
   import("@/features/kits/KitPage").then((m) => ({ default: m.KitPage })),
 );
@@ -126,6 +131,14 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <JobDetailPage />
+          </Page>
+        ),
+      },
+      {
+        path: "tracker",
+        element: (
+          <Page>
+            <TrackerPage />
           </Page>
         ),
       },

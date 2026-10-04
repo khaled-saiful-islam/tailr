@@ -271,6 +271,14 @@
   }
 }
 
+/* Side sheets slide in from the right edge. */
+@keyframes tailr-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+
 /* Apply kit: a running stitch while the application is being tailored. */
 @keyframes tailr-stitch {
   to {
