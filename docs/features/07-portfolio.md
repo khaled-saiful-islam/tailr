@@ -25,9 +25,9 @@ Several pages gives Home (hero, achievements, three projects, a short about), Ab
 and Contact. Every address works both ways: `/p/<address>/about` scrolls to About on a
 one-page site. Projects always get their own page.
 
-## Four designs
+## Five designs
 
-All four are built phone-first with container queries, so the editor's desktop and phone
+All five are built phone-first with container queries, so the editor's desktop and phone
 previews are exact. Each has light and dark modes and respects reduced motion.
 
 | Design | For | Character |
@@ -36,6 +36,7 @@ previews are exact. Each has light and dark modes and respects reduced motion.
 | **Broadsheet** | Business and consulting | A newspaper: serif headlines, rules, a lead story, drop caps on case studies |
 | **Salon** | Designers | A gallery: giant type, museum labels, pictures revealed behind a curtain, a "View" cursor |
 | **Poster** | Graduates and generalists | Bright shapes, a bento "at a glance", stickers and bold colour |
+| **Stamp** | Developers, makers, creators | Neo-brutalist print: thick ink borders, hard shadows that buttons press into, giant two-tone headlines, tilted skill stickers on a red panel, graph-paper and dot-grid sections (Bricolage Grotesque and Space Grotesk) |
 
 Big headings never split a word. A heading marked `data-fit` keeps its designed size
 unless its longest word ("recommendations" on a phone) is wider than the line, then

@@ -35,7 +35,7 @@ Pick one, and Tailr tailors your resume, cover letter and apply kit for that exa
 | **Apply Kit** | One tap: a tailored resume (every line traced to your real experience), cover letter, screening answers and interview notes, in English or Bahasa Malaysia. It runs in the background and Tailr notifies you when it's ready. |
 | **Add any job** | Paste a link or the ad itself; Tailr measures it like a brief job. |
 | **CV Studio** | Your CV in five print-quality designs. Polish it with AI (every line checked against your profile), download a PDF, or share a link. |
-| **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in four designs, one page or several. |
+| **Portfolio** | A personal website made from your profile: about, expertise, achievements, case-study pages, timeline, kind words and a contact form, in five designs, one page or several. |
 | **Tracker** | Saved, preparing, applied, interviewing, offer: one board you drag along, with a follow-up nudge a week after applying, a truthful drafted email, and reminders before each next step. |
 | **Momentum** | A weekly goal, a streak of brief days, an honest funnel, and a weekly pulse of the skills and pay your market asks for. |
 

@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.core.schemas import Schema
 
 Visibility = Literal["off", "link", "public"]
-Template = Literal["blueprint", "broadsheet", "salon", "poster"]
+Template = Literal["blueprint", "broadsheet", "salon", "poster", "stamp"]
 Appearance = Literal["auto", "light", "dark"]
 Availability = Literal["open", "casual", "not_looking"]
 Section = Literal[
@@ -27,7 +27,7 @@ Section = Literal[
     "contact",
 ]
 
-TEMPLATES: tuple[Template, ...] = ("blueprint", "broadsheet", "salon", "poster")
+TEMPLATES: tuple[Template, ...] = ("blueprint", "broadsheet", "salon", "poster", "stamp")
 
 
 class Highlight(BaseModel):

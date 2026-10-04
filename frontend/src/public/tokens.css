@@ -11,6 +11,8 @@
 @import "@fontsource-variable/instrument-sans/standard.css";
 @import "@fontsource-variable/unbounded";
 @import "@fontsource-variable/figtree";
+@import "@fontsource-variable/bricolage-grotesque/standard.css";
+@import "@fontsource-variable/space-grotesk";
 
 [data-template] {
   background: var(--pg);
@@ -140,6 +142,58 @@
   --pg-accent-2: #ffbe0b;
   --pg-accent-3: #5b9bff;
   --pg-accent-ink: #101014;
+}
+
+/* Stamp: neo-brutalist print. Thick ink, hard shadows, a red stamp, pastel stickers. */
+[data-template="stamp"] {
+  --pg: #ffffff;
+  --pg-2: #fff4e0;
+  --pg-ink: #0b0b0b;
+  --pg-ink-2: #2f2f2f;
+  --pg-ink-3: #555555;
+  --pg-line: #0b0b0b;
+  --pg-accent: #d61f16;
+  --pg-accent-2: #fff4e0;
+  --pg-accent-3: #e6f9da;
+  --pg-accent-ink: #ffffff;
+  --pg-grid: rgb(11 11 11 / 0.075);
+  --pg-display: "Bricolage Grotesque Variable", "Arial Black", sans-serif;
+  --pg-body: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --pg-mono: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Stamp's own: sticker colours, the hard shadow, and the dark "night" panel. */
+  --stamp-cream: #fff4e0;
+  --stamp-mint: #e6f9da;
+  --stamp-sky: #e1efff;
+  --stamp-blush: #ffe3df;
+  --stamp-shadow: #0b0b0b;
+  --stamp-night: #0b0b0b;
+  --stamp-night-ink: #ffffff;
+  --stamp-night-grid: rgb(255 255 255 / 0.07);
+  --stamp-night-shadow: rgb(255 255 255 / 0.32);
+  --stamp-foot: #f2f1ee;
+}
+[data-template="stamp"][data-mode="dark"] {
+  --pg: #121212;
+  --pg-2: #1f1b14;
+  --pg-ink: #f6f1e7;
+  --pg-ink-2: #d9d3c7;
+  --pg-ink-3: #aaa397;
+  --pg-line: #f6f1e7;
+  --pg-accent: #ff4a3d;
+  --pg-accent-2: #1f1b14;
+  --pg-accent-3: #18291b;
+  --pg-accent-ink: #121212;
+  --pg-grid: rgb(246 241 231 / 0.06);
+  --stamp-cream: #2a2418;
+  --stamp-mint: #18291b;
+  --stamp-sky: #152335;
+  --stamp-blush: #33191a;
+  --stamp-shadow: #f6f1e7;
+  --stamp-night: #000000;
+  --stamp-night-ink: #f6f1e7;
+  --stamp-night-grid: rgb(246 241 231 / 0.07);
+  --stamp-night-shadow: rgb(246 241 231 / 0.32);
+  --stamp-foot: #181818;
 }
 
 @theme inline {

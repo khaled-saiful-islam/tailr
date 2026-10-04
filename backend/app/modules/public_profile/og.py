@@ -79,6 +79,20 @@ PALETTES: dict[str, dict[str, Any]] = {
         ),
         "fonts": ["unbounded", "figtree"],
     },
+    "stamp": {
+        "bg": "#FFF4E0", "ink": "#0B0B0B", "ink2": "#303030", "ink3": "#555555",
+        "accent": "#D61F16", "badge_bg": "#0B0B0B", "badge_ink": "#FFFFFF",
+        "photo_ring": "#0B0B0B", "photo_radius": "0", "badge_radius": "0",
+        "display_font": "'Bricolage Grotesque', Arial, sans-serif", "display_weight": 800,
+        "body_font": "'Space Grotesk', Arial, sans-serif", "tracking": "-0.04em",
+        "texture": (
+            "background-color: #FFF4E0;"
+            " background-image: linear-gradient(rgba(11,11,11,0.07) 1px, transparent 1px),"
+            " linear-gradient(90deg, rgba(11,11,11,0.07) 1px, transparent 1px);"
+            " background-size: 36px 36px; border-left: 26px solid #D61F16;"
+        ),
+        "fonts": ["bricolage", "spacegrotesk"],
+    },
 }  # fmt: skip
 
 AVAILABILITY = {"open": "Open to new roles", "casual": "Open to the right role"}

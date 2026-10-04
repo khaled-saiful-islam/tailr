@@ -27,6 +27,7 @@ const TEMPLATES: Record<TemplateKey, ComponentType<TemplateProps>> = {
   ),
   salon: site(() => import("./templates/salon").then((m) => m.salon)),
   poster: site(() => import("./templates/poster").then((m) => m.poster)),
+  stamp: site(() => import("./templates/stamp").then((m) => m.stamp)),
 };
 
 const darkQuery = "(prefers-color-scheme: dark)";

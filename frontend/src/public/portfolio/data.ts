@@ -1,5 +1,5 @@
 /** What the portfolio sections show, derived from the page data. */
-import { dateRange, monthYear, yearsOfWork } from "../format";
+import { dateRange, monthYear, shows, yearsOfWork } from "../format";
 import type { PageProject, PublicPage, Section } from "../types";
 
 export interface TimelineItem {
@@ -122,4 +122,29 @@ export function projectYear(project: PageProject): string | null {
 
 export function lastUpdated(page: PublicPage): string {
   return monthYear(page.updated_at.slice(0, 7)) ?? "";
+}
+
+/** The big numbers: chosen highlights, or honest counts from the profile. */
+export function figures(page: PublicPage): { value: string; label: string }[] {
+  if (shows(page, "highlights")) return page.highlights;
+  const skills = page.skills.reduce(
+    (sum, group) => sum + group.names.length,
+    0,
+  );
+  const counts = [
+    {
+      value: String(page.projects.length),
+      label: page.projects.length === 1 ? "project" : "projects",
+    },
+    {
+      value: String(page.experiences.length),
+      label: page.experiences.length === 1 ? "role" : "roles",
+    },
+    { value: String(skills), label: "skills" },
+    {
+      value: String(page.languages.length),
+      label: page.languages.length === 1 ? "language" : "languages",
+    },
+  ];
+  return counts.filter((count) => Number(count.value) > 0);
 }

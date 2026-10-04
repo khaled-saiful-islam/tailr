@@ -2744,7 +2744,7 @@ export interface components {
              * Template
              * @enum {string}
              */
-            template: "blueprint" | "broadsheet" | "salon" | "poster";
+            template: "blueprint" | "broadsheet" | "salon" | "poster" | "stamp";
             /**
              * Appearance
              * @enum {string}
@@ -2835,7 +2835,7 @@ export interface components {
              * Template
              * @enum {string}
              */
-            template: "blueprint" | "broadsheet" | "salon" | "poster";
+            template: "blueprint" | "broadsheet" | "salon" | "poster" | "stamp";
             /**
              * Appearance
              * @enum {string}
@@ -2859,7 +2859,7 @@ export interface components {
             /** Visibility */
             visibility?: ("off" | "link" | "public") | null;
             /** Template */
-            template?: ("blueprint" | "broadsheet" | "salon" | "poster") | null;
+            template?: ("blueprint" | "broadsheet" | "salon" | "poster" | "stamp") | null;
             /** Appearance */
             appearance?: ("auto" | "light" | "dark") | null;
             settings?: components["schemas"]["PageSettings"] | null;

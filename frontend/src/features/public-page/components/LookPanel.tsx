@@ -34,6 +34,12 @@ const TEMPLATES: {
     idea: "Bold and graphic. Leads with what you've achieved.",
     suits: "Graduates, interns, career switchers",
   },
+  {
+    key: "stamp",
+    name: "Stamp",
+    idea: "Loud print: thick ink, hard shadows, a red stamp.",
+    suits: "Developers, makers, creators",
+  },
 ];
 
 interface Props {
