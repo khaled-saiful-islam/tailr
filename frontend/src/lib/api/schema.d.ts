@@ -264,6 +264,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/radar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Radar
+         * @description Your radar, or sensible defaults from your profile before the first save.
+         */
+        get: operations["get_radar_api_v1_radar_get"];
+        /** Save Radar */
+        put: operations["save_radar_api_v1_radar_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/radar/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Radar Options */
+        get: operations["radar_options_api_v1_radar_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/radar/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suggest Roles */
+        post: operations["suggest_roles_api_v1_radar_suggest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/radar/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Radar
+         * @description Run the searches now and show what this radar would catch (results cached for an hour).
+         */
+        post: operations["preview_radar_api_v1_radar_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -496,6 +571,76 @@ export interface components {
          * @enum {string}
          */
         OnboardingStep: "import" | "review" | "radar" | "done";
+        /** PlaceOut */
+        PlaceOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+        };
+        /** PreviewJobOut */
+        PreviewJobOut: {
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /** Company */
+            company: string;
+            /** Location */
+            location: string | null;
+            /** Url */
+            url: string;
+            /** Posted At */
+            posted_at: string | null;
+            /** Posted Text */
+            posted_text: string | null;
+            /** Salary Text */
+            salary_text: string | null;
+            work_mode: components["schemas"]["WorkMode"] | null;
+        };
+        /** PreviewOut */
+        PreviewOut: {
+            /**
+             * Searched At
+             * Format: date-time
+             */
+            searched_at: string;
+            /** Searches */
+            searches: string[];
+            /** Found */
+            found: number;
+            /** On Target */
+            on_target: number;
+            /** Matching */
+            matching: number;
+            /** Dropped */
+            dropped: {
+                [key: string]: number;
+            };
+            /** Sources */
+            sources: components["schemas"]["PreviewSourceOut"][];
+            /** Samples */
+            samples: components["schemas"]["PreviewJobOut"][];
+        };
+        /** PreviewRequest */
+        PreviewRequest: {
+            settings: components["schemas"]["RadarSettings"];
+        };
+        /** PreviewSourceOut */
+        PreviewSourceOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Status */
+            status: string;
+            /** Found */
+            found: number;
+            /** Matching */
+            matching: number;
+            /** Error */
+            error?: string | null;
+        };
         /** ProfileDocument */
         ProfileDocument: {
             basics?: components["schemas"]["Basics"];
@@ -547,6 +692,110 @@ export interface components {
             /** Id */
             id?: string;
         };
+        /** RadarOptionsOut */
+        RadarOptionsOut: {
+            /** Places */
+            places: components["schemas"]["PlaceOut"][];
+            /** Sources */
+            sources: components["schemas"]["SourceOptionOut"][];
+        };
+        /** RadarOut */
+        RadarOut: {
+            /** Exists */
+            exists: boolean;
+            settings: components["schemas"]["RadarSettings"];
+            /** Version */
+            version: number;
+            /** Next Brief At */
+            next_brief_at: string | null;
+            /**
+             * Searches
+             * @description The searches the brief will run, in order.
+             */
+            searches: string[];
+            /** Updated At */
+            updated_at: string | null;
+        };
+        /** RadarSettings */
+        RadarSettings: {
+            /**
+             * Roles
+             * @description Job titles to search for (up to 6).
+             */
+            roles?: string[];
+            /**
+             * Anywhere
+             * @description Anywhere in Malaysia.
+             * @default true
+             */
+            anywhere: boolean;
+            /**
+             * Places
+             * @description State keys, used when `anywhere` is off.
+             */
+            places?: string[];
+            /** Work Modes */
+            work_modes?: components["schemas"]["WorkMode"][];
+            /** Employment Types */
+            employment_types?: ("full_time" | "part_time" | "contract" | "internship")[];
+            /**
+             * Seniority
+             * @description Empty means any level.
+             */
+            seniority?: ("intern" | "entry" | "mid" | "senior" | "lead" | "manager")[];
+            /**
+             * Salary Min
+             * @description RM per month.
+             */
+            salary_min?: number | null;
+            /**
+             * Include No Salary
+             * @default true
+             */
+            include_no_salary: boolean;
+            /** Must Have */
+            must_have?: string[];
+            /** Exclude Keywords */
+            exclude_keywords?: string[];
+            /** Exclude Companies */
+            exclude_companies?: string[];
+            /**
+             * Freshness Days
+             * @default 3
+             * @enum {integer}
+             */
+            freshness_days: 1 | 3 | 7;
+            /**
+             * Min Fit
+             * @default 60
+             */
+            min_fit: number;
+            /** Sources */
+            sources?: string[];
+            /**
+             * Brief Time
+             * @default 07:00
+             */
+            brief_time: string;
+            /** Brief Days */
+            brief_days?: number[];
+            /**
+             * Email Brief
+             * @default true
+             */
+            email_brief: boolean;
+            /**
+             * Paused
+             * @default false
+             */
+            paused: boolean;
+        };
+        /** RadarUpdate */
+        RadarUpdate: {
+            settings: components["schemas"]["RadarSettings"];
+            /** Version */
+            version: number;
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /** Name */
@@ -566,6 +815,13 @@ export interface components {
          * @enum {string}
          */
         Role: "user" | "admin";
+        /** RoleSuggestionOut */
+        RoleSuggestionOut: {
+            /** Title */
+            title: string;
+            /** Reason */
+            reason: string;
+        };
         /**
          * SessionOut
          * @description Who is signed in. `user` is null for visitors (a normal state, not an error).
@@ -586,6 +842,17 @@ export interface components {
             level?: ("learning" | "working" | "strong" | "expert") | null;
             /** Id */
             id?: string;
+        };
+        /** SourceOptionOut */
+        SourceOptionOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Available */
+            available: boolean;
+            /** Note */
+            note: string | null;
         };
         /** StrengthCheckOut */
         StrengthCheckOut: {
@@ -608,6 +875,13 @@ export interface components {
             checks: components["schemas"]["StrengthCheckOut"][];
             /** Bullet Issues */
             bullet_issues: components["schemas"]["BulletIssueOut"][];
+        };
+        /** SuggestionsOut */
+        SuggestionsOut: {
+            /** Roles */
+            roles: components["schemas"]["RoleSuggestionOut"][];
+            /** Seniority */
+            seniority: ("intern" | "entry" | "mid" | "senior" | "lead" | "manager")[];
         };
         /** SummaryOut */
         SummaryOut: {
@@ -676,6 +950,11 @@ export interface components {
             /** Context */
             ctx?: Record<string, never>;
         };
+        /**
+         * WorkMode
+         * @enum {string}
+         */
+        WorkMode: "onsite" | "hybrid" | "remote";
         /** YearMonth */
         YearMonth: {
             /** Year */
@@ -1156,6 +1435,132 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SummaryOut"];
+                };
+            };
+        };
+    };
+    get_radar_api_v1_radar_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RadarOut"];
+                };
+            };
+        };
+    };
+    save_radar_api_v1_radar_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RadarUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RadarOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    radar_options_api_v1_radar_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RadarOptionsOut"];
+                };
+            };
+        };
+    };
+    suggest_roles_api_v1_radar_suggest_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestionsOut"];
+                };
+            };
+        };
+    };
+    preview_radar_api_v1_radar_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

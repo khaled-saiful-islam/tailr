@@ -33,6 +33,7 @@ export function TodayPage() {
 
   const step = user?.onboarding_step ?? "import";
   const profileDone = step === "radar" || step === "done";
+  const radarDone = step === "done";
 
   const steps: SetupStep[] = [
     { title: "Create your account", body: "You're in. Welcome to Tailr.", icon: Check, status: "done" },
@@ -60,16 +61,27 @@ export function TodayPage() {
     },
     {
       title: "Set your job radar",
-      body: "Roles, places, salary and deal-breakers, plus the time you want your brief.",
+      body: radarDone
+        ? "Your radar is on. Tune it any time: roles, places, pay and when your brief arrives."
+        : "Roles, places, salary and deal-breakers, plus the time you want your brief.",
       icon: Radar,
-      status: profileDone ? "next" : "later",
-      note: profileDone ? "The job radar arrives in the next build of Tailr." : undefined,
+      status: radarDone ? "done" : profileDone ? "next" : "later",
+      action: radarDone ? (
+        <Button variant="secondary" size="sm" asChild>
+          <Link to="/radar">Open your radar</Link>
+        </Button>
+      ) : profileDone ? (
+        <Button asChild>
+          <Link to="/radar">Set up my radar</Link>
+        </Button>
+      ) : undefined,
     },
     {
       title: "Read your first brief",
       body: "Fresh jobs from LinkedIn and JobStreet, each measured against your profile.",
       icon: Sunrise,
-      status: "later",
+      status: radarDone ? "next" : "later",
+      note: radarDone ? "Morning briefs arrive in the next build of Tailr." : undefined,
     },
   ];
 

@@ -11,6 +11,7 @@ const SignUpPage = lazy(() => import("@/features/auth/SignUpPage").then((m) => (
 const TodayPage = lazy(() => import("@/features/today/TodayPage").then((m) => ({ default: m.TodayPage })));
 const ProfilePage = lazy(() => import("@/features/profile/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 const ImportPage = lazy(() => import("@/features/profile/pages/ImportPage").then((m) => ({ default: m.ImportPage })));
+const RadarPage = lazy(() => import("@/features/radar/RadarPage").then((m) => ({ default: m.RadarPage })));
 const ImportProgressPage = lazy(() =>
   import("@/features/profile/pages/ImportProgressPage").then((m) => ({ default: m.ImportProgressPage })),
 );
@@ -72,6 +73,14 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <ImportProgressPage />
+          </Page>
+        ),
+      },
+      {
+        path: "radar",
+        element: (
+          <Page>
+            <RadarPage />
           </Page>
         ),
       },

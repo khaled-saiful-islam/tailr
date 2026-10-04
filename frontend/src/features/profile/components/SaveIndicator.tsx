@@ -1,7 +1,7 @@
 import { Check, CircleAlert, CloudUpload } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Spinner } from "@/components/ui/Spinner";
-import type { SaveStatus } from "../hooks/useProfileEditor";
+import type { SaveStatus } from "@/lib/useVersionedAutosave";
 
 interface SaveIndicatorProps {
   status: SaveStatus;

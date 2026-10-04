@@ -231,3 +231,21 @@
 @utility animate-pop {
   animation: tailr-pop 160ms var(--ease-tailor);
 }
+
+/* Radar: the beam turns about the scope's centre; contacts ping outwards. */
+@keyframes tailr-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tailr-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
