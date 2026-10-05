@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { FactRef } from "../api";
 import type { Attempt, Mark, Plan } from "./api";
 import { duration, PITCH_ID } from "./model";
-import { MarkButtons, Sources } from "./parts";
+import { MarkButtons, Sources, WithPrompts } from "./parts";
 import { PracticeBox } from "./PracticeBox";
 
 export function PitchCard({
@@ -43,7 +43,9 @@ export function PitchCard({
           About {duration(pitch.seconds)} to say
         </span>
       </div>
-      <p className="mt-4 text-[1.0625rem] leading-relaxed">{pitch.text}</p>
+      <p className="mt-4 text-[1.0625rem] leading-relaxed">
+        <WithPrompts text={pitch.text} />
+      </p>
       <Sources factIds={pitch.fact_ids ?? []} facts={facts} />
       <p className="mt-3 text-[0.875rem] text-ink-2">
         Learn the shape, not the words: who you are now, two proofs that matter

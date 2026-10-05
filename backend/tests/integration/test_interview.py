@@ -377,8 +377,13 @@ async def test_the_honesty_check_drops_merged_claims(
         return draft.model_copy(update={"pitch": pitch})
 
     def judge(messages: list[dict[str, Any]], schema: Any) -> JudgeVerdict:
-        items = re.findall(r"^(\d+)\. (.+)$", messages[-1]["content"], re.MULTILINE)
-        flagged = [n for n, text in items if "team of 4" in text or "Delivered fraud" in text]
+        # Each item: "N. text" (a story also has its question first), then its sources.
+        blocks = re.findall(
+            r"^(\d+)\. (.*?)(?=\n   source:|\n\n\d+\. |\Z)",
+            messages[-1]["content"],
+            re.MULTILINE | re.DOTALL,
+        )
+        flagged = [n for n, text in blocks if "team of 4" in text or "Delivered fraud" in text]
         return JudgeVerdict(
             unsupported=[Unsupported(index=int(n), reason="merged") for n in flagged]
         )
@@ -387,7 +392,26 @@ async def test_the_honesty_check_drops_merged_claims(
     kit_id = await _kit(signed_in)
     done(await signed_in.post(f"/api/v1/kits/{kit_id}/interview/plan"))
     plan = (await signed_in.get(f"/api/v1/kits/{kit_id}/interview")).json()["plan"]
-    assert plan["pitch"]["text"] == "I'm an AI engineer at Selat Pay."
+    # The merged sentence is gone; what's left is too thin, so the pitch uses their own words.
+    assert "team of 4 to build it" not in plan["pitch"]["text"]
+    assert plan["pitch"]["text"].endswith("is the right next step for you]")
     led = next(q for q in plan["questions"] if q["kind"] == "experience")
     assert led["story"] is None
     assert plan["stories_removed"] == 3  # two by the number checks, one by the judge
+
+
+async def test_a_pitch_cut_to_nothing_falls_back_to_the_candidates_own_words(
+    signed_in: httpx.AsyncClient, ai: FakeAIClient
+) -> None:
+    def judge(messages: list[dict[str, Any]], schema: Any) -> JudgeVerdict:
+        # Flags every item, so every pitch sentence (and every story) is left out.
+        count = len(re.findall(r"^\d+\. ", messages[-1]["content"], re.MULTILINE))
+        return JudgeVerdict(unsupported=[Unsupported(index=n, reason="no") for n in range(count)])
+
+    ai.on("kits.interview_judge", judge)
+    kit_id = await _kit(signed_in)
+    done(await signed_in.post(f"/api/v1/kits/{kit_id}/interview/plan"))
+    pitch = (await signed_in.get(f"/api/v1/kits/{kit_id}/interview")).json()["plan"]["pitch"]
+    assert pitch["text"].startswith("I'm ")
+    assert pitch["text"].endswith("is the right next step for you]")
+    assert pitch["seconds"] > 0

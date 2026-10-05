@@ -6,6 +6,7 @@ import { copyText } from "@/lib/clipboard";
 import { cn } from "@/lib/cn";
 import type { Attempt } from "./api";
 import { duration, scoreLabel } from "./model";
+import { WithPrompts } from "./parts";
 
 const SCORES: { key: keyof Attempt["feedback"]["scores"]; label: string }[] = [
   { key: "structure", label: "Clear story" },
@@ -82,26 +83,6 @@ function List({
         ))}
       </ul>
     </div>
-  );
-}
-
-/** "[how you found the cause]": a detail only you can add, highlighted so it's not missed. */
-function WithPrompts({ text }: { text: string }) {
-  return (
-    <>
-      {text.split(/(\[[^\]]+\])/).map((part, index) =>
-        part.startsWith("[") && part.endsWith("]") ? (
-          <mark
-            key={index}
-            className="rounded-[4px] bg-[color-mix(in_oklab,var(--tape)_35%,transparent)] px-1 text-ink"
-          >
-            {part}
-          </mark>
-        ) : (
-          part
-        ),
-      )}
-    </>
   );
 }
 

@@ -102,6 +102,26 @@ export function Sources({
   );
 }
 
+/** "[how you found the cause]": a detail only you can add, highlighted so it's not missed. */
+export function WithPrompts({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\[[^\]]+\])/).map((part, index) =>
+        part.startsWith("[") && part.endsWith("]") ? (
+          <mark
+            key={index}
+            className="rounded-[4px] bg-[color-mix(in_oklab,var(--tape)_35%,transparent)] px-1 text-ink"
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 const STAR: {
   key: keyof Omit<Story, "fact_ids">;
   letter: string;
@@ -129,7 +149,7 @@ export function StoryBlock({ card, facts }: { card: Card; facts: FactRef[] }) {
               </span>
               <p className="pt-0.5 leading-relaxed">
                 <span className="sr-only">{part.label}: </span>
-                {card.story?.[part.key]}
+                <WithPrompts text={card.story?.[part.key] ?? ""} />
               </p>
             </li>
           ))}

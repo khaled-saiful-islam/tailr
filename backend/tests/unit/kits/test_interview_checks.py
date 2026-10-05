@@ -6,13 +6,22 @@ from app.modules.kits.checks import FactSource
 from app.modules.kits.interview_checks import (
     check_feedback,
     check_story,
+    fallback_pitch,
+    first_person,
     keep_supported_sentences,
     numbers_of,
+    one_story_each,
     question_id,
     spoken_seconds,
     word_count,
 )
-from app.modules.kits.interview_schemas import AnswerScores, FeedbackDraft, StarStory
+from app.modules.kits.interview_schemas import (
+    AnswerScores,
+    FeedbackDraft,
+    PlanQuestion,
+    QuestionKind,
+    StarStory,
+)
 
 F1 = "86801513106b"
 SOURCES = {
@@ -85,3 +94,44 @@ def test_feedback_is_clamped_and_adds_nothing_new() -> None:
 def test_speaking_time_follows_a_calm_pace() -> None:
     assert word_count("One two three, four.") == 4
     assert spoken_seconds("word " * 150) == 60
+
+
+def _asked(kind: QuestionKind, text: str, facts: list[str]) -> PlanQuestion:
+    return PlanQuestion(
+        id=question_id(text),
+        kind=kind,
+        question=text,
+        why_they_ask="Why.",
+        story=_story("40k staff use it.", facts) if facts else None,
+    )
+
+
+def test_each_story_is_told_once_where_it_matters_most() -> None:
+    role = _asked("role", "How would you design it?", [F1])
+    told = _asked("experience", "Tell me about a system you built.", [F1, "9a1b2c3d4e5f"])
+    other = _asked("situational", "What if costs rise?", ["9a1b2c3d4e5f"])
+    none = _asked("motivation", "Why us?", [])
+
+    kept = one_story_each([role, told, other, none])
+
+    assert [q.id for q in kept] == [role.id, told.id, other.id, none.id]  # order unchanged
+    assert kept[1].story is not None  # "tell me about a time" keeps the story
+    assert kept[0].story is None  # the same facts aren't told again
+    assert kept[2].story is None
+
+
+def test_a_fallback_pitch_uses_only_the_candidates_own_words() -> None:
+    assert first_person("Built a RAG assistant for 40k staff.") == (
+        "I built a RAG assistant for 40k staff."
+    )
+    assert first_person("AWS certified.") == "AWS certified."  # not a verb: left alone
+    pitch = fallback_pitch(
+        "AI Engineer",
+        ["Built a RAG assistant for 40k staff.", "Cut serving cost by 38%."],
+        "Lead ML Engineer",
+        "Gajah Logistics",
+    )
+    assert pitch == (
+        "I'm an AI Engineer. I built a RAG assistant for 40k staff. I cut serving cost by 38%. "
+        "[Why Lead ML Engineer at Gajah Logistics is the right next step for you]"
+    )

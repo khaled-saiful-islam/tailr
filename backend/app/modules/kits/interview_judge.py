@@ -36,7 +36,8 @@ def _items(plan: InterviewPlan, sources: dict[str, FactSource], about_me: str) -
         _Item(
             "story",
             index,
-            " ".join([q.story.situation, q.story.task, q.story.action, q.story.result]),
+            f"Question: {q.question}\nStory: "
+            + " ".join([q.story.situation, q.story.task, q.story.action, q.story.result]),
             [sources[f].text for f in q.story.fact_ids if f in sources],
         )
         for index, q in enumerate(plan.questions)

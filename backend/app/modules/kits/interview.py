@@ -32,8 +32,10 @@ from app.modules.kits import interview_prompts as prompts
 from app.modules.kits.builder import profile_with_ids
 from app.modules.kits.checks import fact_sources
 from app.modules.kits.interview_checks import (
+    MIN_PITCH_WORDS,
     assemble_plan,
     check_feedback,
+    fallback_pitch,
     question_id,
     spoken_seconds,
     word_count,
@@ -50,6 +52,7 @@ from app.modules.kits.interview_schemas import (
     InterviewPlan,
     InterviewPrepOut,
     MarkUpdate,
+    Pitch,
     PracticeAttempt,
     SkillQuestionsDraft,
     StoryPlanDraft,
@@ -107,6 +110,20 @@ def own_words(document: ProfileDocument) -> list[str]:
     """Everything the candidate wrote about themselves: the only source of their numbers."""
     facts = [source.text for source in fact_sources(document).values()]
     return [*facts, document.basics.summary or "", document.basics.headline or ""]
+
+
+def _with_pitch(plan: InterviewPlan, document: ProfileDocument, job: Job) -> InterviewPlan:
+    """Never leave the pitch empty: if the checks cut it down to almost nothing, use the
+    candidate's own words instead (their headline and two of the facts it chose)."""
+    if word_count(plan.pitch.text) >= MIN_PITCH_WORDS:
+        return plan
+    sources = fact_sources(document)
+    chosen = [f for f in plan.pitch.fact_ids if f in sources] or list(sources)[:2]
+    text = fallback_pitch(
+        document.basics.headline, [sources[f].text for f in chosen], job.title, job.company
+    )
+    pitch = Pitch(text=text, fact_ids=chosen[:2], seconds=spoken_seconds(text))
+    return plan.model_copy(update={"pitch": pitch})
 
 
 class InterviewService:
@@ -314,6 +331,7 @@ class InterviewService:
         )
         about_me = " ".join(filter(None, [document.basics.headline, document.basics.summary]))
         plan = await judge_plan(plan, fact_sources(document), about_me, user.id)
+        plan = _with_pitch(plan, document, job)
         locked = await self._kit(user, kit_id, lock=True)
         locked.extras = {**(locked.extras or {}), PLAN_KEY: jsonable_encoder(plan)}
         await self.db.flush()

@@ -139,7 +139,33 @@ def _questions(
         seen.add(question.id)
         removed += int(lost_story)
         bucket.append(question)
-    return [q for kind in KIND_ORDER for q in by_kind[kind]], removed
+    return one_story_each([q for kind in KIND_ORDER for q in by_kind[kind]]), removed
+
+
+# Where a story helps most: "tell me about a time" questions first, hypotheticals last.
+STORY_PRIORITY = ("experience", "gap", "role", "situational", "motivation")
+
+
+def one_story_each(questions: list[PlanQuestion]) -> list[PlanQuestion]:
+    """Each story (its facts) is told once, where it matters most; repeats are left out.
+
+    Telling the same story to three questions reads as having only one story.
+    """
+    used: set[str] = set()
+    keep: set[str] = set()
+    ranked = sorted(questions, key=lambda q: STORY_PRIORITY.index(q.kind))
+    for question in ranked:
+        if question.story is None:
+            continue
+        facts = set(question.story.fact_ids)
+        if facts & used:
+            continue
+        used |= facts
+        keep.add(question.id)
+    return [
+        q if q.story is None or q.id in keep else q.model_copy(update={"story": None})
+        for q in questions
+    ]
 
 
 def assemble_plan(
@@ -205,3 +231,30 @@ def check_feedback(draft: FeedbackDraft, answer: str, own_words: Iterable[str]) 
         better_answer=keep_supported_sentences(draft.better_answer, allowed, keep_prompts=True),
         unsupported=[_clean(item, 300) for item in draft.unsupported if item.strip()][:5],
     )
+
+
+MIN_PITCH_WORDS = 30
+
+
+def first_person(fact: str) -> str:
+    """'Built a RAG assistant ...' becomes 'I built a RAG assistant ...'.
+
+    CV lines open with a verb; anything else (an acronym, a name) is left as it is.
+    """
+    text = fact.strip().rstrip(".") + "."
+    if len(text) > 1 and text[0].isupper() and not text[1].isupper():
+        return f"I {text[0].lower()}{text[1:]}"
+    return text
+
+
+def fallback_pitch(headline: str | None, proofs: list[str], role: str, company: str) -> str:
+    """A plain pitch in the candidate's own words, for when the written one didn't survive
+    the checks: who they are, two proofs, and a prompt for the reason only they can give."""
+    title = (headline or "").strip()
+    article = "an" if title[:1].lower() in "aeiou" else "a"
+    lines = [
+        f"I'm {article} {title}." if title else "",
+        *(first_person(proof) for proof in proofs[:2]),
+        f"[Why {role} at {company} is the right next step for you]",
+    ]
+    return " ".join(line for line in lines if line)
