@@ -9,7 +9,9 @@ import { cn } from "@/lib/cn";
 import { TailorAction } from "@/features/kits/components/TailorAction";
 import { useMatch, type MatchDetail } from "./api";
 import { PART_LABEL, PART_ORDER, sentence } from "./format";
+import { CountUp } from "./components/CountUp";
 import { MatchActions, MatchMeta } from "./components/MatchParts";
+import { TailrsTake } from "./components/TailrsTake";
 import { TrackerRow } from "./components/TrackerRow";
 
 export function JobDetailPage() {
@@ -183,7 +185,7 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
       <FitTape score={detail.score} size="lg" className="mt-3" />
       <p className="mt-2 text-[0.875rem] text-ink-3">{MATCH_MEANING}</p>
       {review.headline && (
-        <p className="chalk-mark mt-5 leading-relaxed">{review.headline}</p>
+        <TailrsTake text={review.headline} className="mt-5" />
       )}
 
       <div className="mt-6 border-y border-line py-5">
@@ -199,7 +201,12 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
             <div key={part}>
               <div className="flex items-baseline justify-between text-[0.875rem]">
                 <dt className="text-ink-2">{PART_LABEL[part]}</dt>
-                <dd className="type-figure">{detail.parts[part]}</dd>
+                <dd className="type-figure">
+                  <CountUp
+                    value={detail.parts[part] ?? 0}
+                    delay={0.15 + index * 0.06}
+                  />
+                </dd>
               </div>
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
                 <motion.div

@@ -1,5 +1,11 @@
 import type { Match } from "../api";
-import { payLabel, placeLabel, sentence, sourceLabel } from "../format";
+import {
+  foundLabel,
+  payLabel,
+  placeLabel,
+  sentence,
+  sourceLabel,
+} from "../format";
 
 const job = (overrides: Partial<Match["job"]>): Match["job"] =>
   ({
@@ -40,5 +46,29 @@ describe("brief formatting", () => {
 
   it("names sources", () => {
     expect(sourceLabel("jobstreet")).toBe("JobStreet");
+  });
+});
+
+describe("when a job reached your list", () => {
+  const now = new Date(2026, 9, 5, 9, 30);
+  const at = (days: number, hour = 8) =>
+    new Date(2026, 9, 5 - days, hour).toISOString();
+
+  it("counts calendar days", () => {
+    expect(foundLabel({ created_at: at(0), origin: "brief" }, now)).toBe(
+      "Found today",
+    );
+    expect(foundLabel({ created_at: at(1, 23), origin: "brief" }, now)).toBe(
+      "Found yesterday",
+    );
+    expect(foundLabel({ created_at: at(3), origin: "brief" }, now)).toBe(
+      "Found 3 days ago",
+    );
+  });
+
+  it("says Added for jobs you added yourself", () => {
+    expect(foundLabel({ created_at: at(2), origin: "pasted" }, now)).toBe(
+      "Added 2 days ago",
+    );
   });
 });

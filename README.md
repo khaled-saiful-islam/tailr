@@ -32,13 +32,13 @@ application from your real experience. You apply yourself, and track it in one p
 |---|---|
 | **1. My profile** | Upload a CV (PDF, Word, a photo) or start fresh. AI fills in your experience, skills and achievements; you check and edit them. |
 | **2. Job preferences** | The roles, places, pay and work mode you want, and companies or words to leave out. |
-| **3. Jobs** | Tailr searches LinkedIn and JobStreet (straight away, and again every morning) and lists every job on your Jobs page with a **% match**, best first. Open one to see how well you match and what's missing. You can also add any job by link. |
-| **4. Prepare my application** | For one job: a CV and cover letter written only from your real experience (every line checked against your profile), answers to screening questions and interview prep, in English or Bahasa Malaysia, ready as PDFs. |
-| **5. My applications** | Saved, preparing, applied, interview, offer: one board you drag along, with a reminder to follow up a week after applying (and a drafted email), and a reminder before each interview. |
+| **3. Jobs** | Tailr searches LinkedIn and JobStreet (straight away, and again every morning) and lists every job on your Jobs page with a **% match**, best first. Open one to see how well you match and what's missing. You can also add any job by link. Jobs stay for 14 days after Tailr finds them; ones you save stay until you remove them. |
+| **4. Prepare my application** | For one job: a CV and cover letter written only from your real experience (every line checked against your profile), answers to screening questions and interview prep, in English or Bahasa Malaysia, ready as PDFs. Choose the language and tone and Tailr writes it again. Interview prep grows into a full plan: a one-minute pitch, the questions this interviewer will ask with your best story for each, honest answers for skills you lack, questions to ask them, and practice with feedback on your own answers. |
+| **5. My applications** | Saved, preparing, applied, interview, offer: one board you drag along, with a reminder to follow up a week after applying (and a drafted email), and a reminder before each interview. "Needs you now" lists what's due; each application has its own page showing only what matters at its stage. |
 | **Home** | What's new today, your best matches, your weekly goal, and what employers in your field are asking for. |
 | **My CV** | Your CV in five designs: improve it with AI, download a PDF or share a link. |
 | **My website** | A personal website made from your profile, with project pages and a contact form, in five designs. |
-| **Account settings** | Name, time zone, theme, emails, password, signed-in devices, AI use today, download your data, delete your account. |
+| **Account settings** | Name, time zone, light or dark and a colour palette (also one click from the side menu), emails, password, signed-in devices, AI use today, download your data, delete your account. |
 | **Working on it** | Searches, CV reading and every AI action run in the background: keep using Tailr, follow them next to the bell, and get a notification when they're done. |
 | **Admin** | People and their AI use, an AI switch and daily allowance per person, disable or re-enable accounts, job-site health. |
 
@@ -199,6 +199,7 @@ Tailr is built in milestones; each one is usable on its own.
 | M8 Tracker and Momentum: drag-and-drop board, follow-up nudges with truthful drafts, next-step reminders, weekly goal, streak, funnel, Market Pulse | ✅ Done |
 | M9 Settings, admin (people, AI use and allowances, disabling accounts, job-site health), demo account, browser smoke and accessibility tests | ✅ Done |
 | Background work: job searches, CV reading and every AI action run in the background with a "Working on it" tray, finish alerts and results kept across visits; the job-preferences check runs only when asked | ✅ Done |
+| Redesign: four colour palettes in light and dark, page and button motion, My applications with a page per application, a full interview plan with practice feedback, clearer application page, jobs kept 14 days | ✅ Done |
 
 Later: a desktop helper for Indeed and Glassdoor, a Chrome extension, voice mock interviews.
 

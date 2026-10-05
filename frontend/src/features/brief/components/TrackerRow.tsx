@@ -49,7 +49,7 @@ export function TrackerRow({ match }: { match: MatchDetail }) {
         <span className="text-ink-2">In My applications: </span>
         <span className="font-semibold">{STAGE_LABEL[application.stage]}</span>
         <Link
-          to={`/applications?open=${application.id}`}
+          to={`/applications/${application.id}`}
           className="ml-2 inline-flex items-center gap-1 font-semibold text-chalk hover:underline"
         >
           Open <ArrowRight className="size-3.5" aria-hidden />

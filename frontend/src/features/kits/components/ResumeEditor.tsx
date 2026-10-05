@@ -1,7 +1,6 @@
 import { Quote, Trash2 } from "lucide-react";
 import { ChipInput } from "@/components/ui/choice";
 import { IconButton, Labelled, TextArea } from "@/components/ui/controls";
-import { Field } from "@/components/ui/Field";
 import type {
   FactRef,
   SectionRef,
@@ -9,6 +8,7 @@ import type {
   TailoredResume,
 } from "../api";
 import { removeBullet, setBullet, sourcesFor, type SectionKey } from "../edit";
+import { OneLineField } from "./OneLineField";
 
 interface ResumeEditorProps {
   resume: TailoredResume;
@@ -44,13 +44,11 @@ export function ResumeEditor({
 
   return (
     <div className="flex flex-col gap-6">
-      <Field
+      <OneLineField
+        id="kit-headline"
         label="Headline"
         value={resume.headline}
-        onChange={(event) => {
-          const headline = event.target.value;
-          onChange((r) => ({ ...r, headline }));
-        }}
+        onChange={(headline) => onChange((r) => ({ ...r, headline }))}
       />
       <Labelled label="Summary" htmlFor="kit-summary">
         <TextArea

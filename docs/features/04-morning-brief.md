@@ -27,7 +27,17 @@ with a **Fit %** and a plain explanation. Users can also **Run my brief now**.
 
 ### Jobs (`/jobs`)
 
-Every measured job, newest first, with tabs: All, New, Saved, Not for me (with counts).
+Jobs from the last 14 days, good matches first, with tabs: All, New, Saved, Hidden (with
+counts). Each job says when it was posted and when Tailr found it ("Found 3 days ago";
+"Added" for jobs you added yourself).
+
+**How long jobs stay** (`JOBS_KEPT_DAYS = 14`, `brief/service.py`): a job Tailr found stays on
+the Jobs page and Home for 14 days, then drops off on its own; the page says so near the
+top. Jobs you saved, added yourself (by link or text) or put on My applications stay until
+you remove them. Hidden jobs stay on the Hidden tab however old they are. Old jobs are only
+hidden, never deleted, so a link to one still opens it. Changing your preferences doesn't
+remove earlier jobs; the next search adds jobs that fit the new ones, and the old ones age
+out.
 
 ### Job detail (`/jobs/:id`)
 
@@ -36,8 +46,10 @@ Every measured job, newest first, with tabs: All, New, Saved, Not for me (with c
   whether an agency posted it; **What they ask for**: each must-have skill marked as in your
   profile or not ("5 of 12 in your profile"); anything worth knowing (for example
   commission-only pay).
-- **Your fit** panel: the tape, the headline, a bar per part of the score, why you fit, gaps
-  with tips. (The *Tailor my application* button arrives with the Apply Kit.)
+- **Your fit** panel: the tape (it measures out and counts up), **Tailr's take** (the AI's
+  one-line read, labelled with a sparkle so it's clearly Tailr's opinion and not a link), a
+  bar per part of the score (filling and counting up), why you fit, gaps with tips, and
+  *Prepare my application*.
 - The full job ad.
 - Opening a new job marks it seen.
 
@@ -93,7 +105,7 @@ can never be dispatched twice) and queues `brief.build` for each user. Paused ra
 | `GET` | `/api/v1/briefs/today` | Latest brief with matches, next brief time, readiness flags |
 | `POST` | `/api/v1/briefs/run` | Build a brief now (202); returns the brief already building if any |
 | `GET` | `/api/v1/briefs/{id}` | One brief |
-| `GET` | `/api/v1/matches?status=&min_score=&limit=&offset=` | Matches, newest first, with counts per status |
+| `GET` | `/api/v1/matches?status=&min_score=&limit=&offset=` | Matches from the last 14 days (plus saved, added and tracked ones; any age for `status=dismissed`), newest first, with counts per status and `kept_days` |
 | `GET` | `/api/v1/matches/{id}` | One match with description, AI reading and requirements |
 | `PATCH` | `/api/v1/matches/{id}` | `{status: saved \| dismissed \| seen \| new}` |
 
@@ -114,4 +126,5 @@ Limits: 8 manual runs per user per day.
   after reading.
 - `tests/integration/test_brief.py`: a full brief with fake sites and fake AI (screening,
   duplicates across sites, ranking, reviews, email), no repeats in the next brief, below-the-bar
-  behaviour, triage and counts, privacy, and the scheduler dispatching due briefs once.
+  behaviour, triage and counts, jobs dropping off after 14 days unless saved, applied to or
+  hidden, privacy, and the scheduler dispatching due briefs once.

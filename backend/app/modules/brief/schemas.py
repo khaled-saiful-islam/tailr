@@ -105,3 +105,5 @@ class MatchPage(Schema):
     items: list[MatchOut]
     total: int
     counts: dict[str, int]
+    # How long found jobs stay listed; saved, added and tracked jobs stay until removed.
+    kept_days: int

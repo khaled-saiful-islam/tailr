@@ -56,7 +56,7 @@ export function SearchBanner({ brief }: { brief: Brief }) {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="rounded-panel border border-tape-deep/40 bg-tape/15 px-4 py-3.5 sm:px-5"
+      className="rounded-panel border border-tape-deep/40 bg-tape-soft px-4 py-3.5 sm:px-5"
     >
       <div className="flex gap-3">
         <span aria-hidden className="mt-0.5 shrink-0">

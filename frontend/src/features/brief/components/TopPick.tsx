@@ -6,6 +6,7 @@ import { FitTape } from "@/components/ui/FitTape";
 import type { Match } from "../api";
 import { sentence } from "../format";
 import { MatchActions, MatchMeta } from "./MatchParts";
+import { TailrsTake } from "./TailrsTake";
 
 /** The best new job, given room to show why it matches. */
 export function TopPick({ match }: { match: Match }) {
@@ -38,9 +39,7 @@ export function TopPick({ match }: { match: Match }) {
           </p>
           <MatchMeta match={match} className="mt-1" />
           {review.headline && (
-            <p className="chalk-mark mt-5 text-[1.0625rem] leading-relaxed">
-              {review.headline}
-            </p>
+            <TailrsTake text={review.headline} className="mt-5" large />
           )}
           {review.why.length > 0 && (
             <ul className="mt-4 flex flex-col gap-2">

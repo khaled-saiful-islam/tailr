@@ -21,7 +21,17 @@ export const STAGE_LABEL: Record<Stage, string> = {
   rejected: "Not successful",
 };
 
-/** What each column is for, in a line. */
+/** What each column holds, in a few words under its name. */
+export const STAGE_MEANING: Record<Stage, string> = {
+  saved: "Jobs you might apply to",
+  preparing: "Your CV and cover letter, being written or checked",
+  applied: "Sent. Waiting to hear back",
+  interview: "You're talking to them",
+  offer: "They want you",
+  rejected: "Not this time",
+};
+
+/** What an empty column is for, and how a job gets there. */
 export const STAGE_HINT: Record<Stage, string> = {
   saved: "Jobs you liked. Prepare an application when you're ready.",
   preparing: "Your application is being written, or ready to send.",

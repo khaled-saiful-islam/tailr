@@ -1,31 +1,27 @@
 import { motion } from "motion/react";
-import { Link, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import type { ReactNode } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useMomentum } from "@/features/momentum/api";
 import { AddJobDialog } from "@/features/kits/components/AddJobDialog";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { useBoard, useUpdateApplication, type Application } from "./api";
-import { ApplicationSheet } from "./components/ApplicationSheet";
+import { useBoard } from "./api";
 import { Board } from "./components/Board";
-import { Funnel } from "./components/Funnel";
+import { HowFar } from "./components/HowFar";
+import { NeedsYou } from "./components/NeedsYou";
 import { StageList } from "./components/StageList";
-import type { Stage } from "./stages";
+import { useMove } from "./useMove";
 
-const CHEERS: Partial<Record<Stage, string>> = {
-  applied: "Applied. Tailr will nudge you to follow up in a week.",
-  interview: "An interview. Add the date so Tailr can remind you.",
-  offer: "An offer. Well done.",
-};
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 function Empty() {
   return (
     <section className="rounded-sheet border border-dashed border-line-strong px-6 py-12 text-center">
       <h2 className="type-heading">No applications yet</h2>
       <p className="mx-auto mt-2 max-w-[34rem] text-ink-2">
-        A job lands here when you save it or prepare an application for it. Move
-        it along as things happen, and Tailr reminds you to follow up.
+        A job lands here when you save it or prepare an application for it. Each
+        one then shows what to do next, from preparing it to following up.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button asChild>
@@ -37,44 +33,46 @@ function Empty() {
   );
 }
 
-/** Every job you're pursuing, from saved to signed. */
+/**
+ * Sections fade up in turn. The board only fades: a transformed ancestor would throw
+ * off the dragged card, which is positioned against the window.
+ */
+function Rise({
+  delay,
+  lift = true,
+  children,
+}: {
+  delay: number;
+  lift?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={lift ? { opacity: 0, y: 12 } : { opacity: 0 }}
+      animate={lift ? { opacity: 1, y: 0 } : { opacity: 1 }}
+      transition={{ duration: 0.5, delay, ease: EASE }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/** Every job you're going for: what needs you now, then the whole board. */
 export function TrackerPage() {
   const board = useBoard();
   const momentum = useMomentum();
-  const update = useUpdateApplication();
+  const move = useMove();
+  const navigate = useNavigate();
   const wide = useMediaQuery("(min-width: 768px)");
-  const [params, setParams] = useSearchParams();
-  const openId = params.get("open");
+  const [params] = useSearchParams();
 
-  const setOpen = (id: string | null) =>
-    setParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        if (id) next.set("open", id);
-        else next.delete("open");
-        return next;
-      },
-      { replace: !id },
-    );
-
-  const move = (id: string, stage: Stage, position?: number) => {
-    const before = board.data?.items.find(
-      (item: Application) => item.id === id,
-    );
-    update.mutate(
-      { id, stage, ...(position === undefined ? {} : { position }) },
-      {
-        onSuccess: () => {
-          const cheer = CHEERS[stage];
-          if (cheer && before?.stage !== stage) toast.success(cheer);
-        },
-        onError: (error) => toast.error(error.message),
-      },
-    );
-  };
+  // Old links (notifications, reminders) opened a side sheet: open the page instead.
+  const legacy = params.get("open");
+  if (legacy) return <Navigate to={`/applications/${legacy}`} replace />;
 
   const goal = momentum.data?.goal;
   const items = board.data?.items ?? [];
+  const open = (id: string) => navigate(`/applications/${id}`);
 
   return (
     <div className="w-full px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
@@ -82,14 +80,13 @@ export function TrackerPage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.45, ease: EASE }}
           className="min-w-[min(100%,22rem)] flex-1"
         >
           <h1 className="type-title">My applications</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            Every job you're going for, from saved to offer. Move a card when
-            something changes. Tailr reminds you to follow up and before each
-            next step.
+            Every job you're going for, from saved to offer. Each card says what
+            to do next; open one to do it.
           </p>
         </motion.div>
         <div className="flex flex-wrap items-center gap-3">
@@ -122,26 +119,44 @@ export function TrackerPage() {
         </div>
       ) : (
         <>
+          <div className="mt-8">
+            <Rise delay={0.05}>
+              <NeedsYou items={items} />
+            </Rise>
+          </div>
+          <section aria-labelledby="board-heading" className="mt-10">
+            <Rise delay={0.12} lift={false}>
+              <div className="mb-4">
+                <h2 id="board-heading" className="type-heading">
+                  All your applications
+                </h2>
+                <p className="mt-1 text-[0.9375rem] text-ink-2">
+                  {wide
+                    ? "Drag a card to the next column when something changes, or open it to see what's next."
+                    : "Pick a stage, then open a job to see what's next."}
+                </p>
+              </div>
+              {wide ? (
+                <Board
+                  items={items}
+                  onOpen={open}
+                  onMove={(id, stage, position) => {
+                    const app = items.find((item) => item.id === id);
+                    if (app) move(app, stage, position);
+                  }}
+                />
+              ) : (
+                <StageList items={items} />
+              )}
+            </Rise>
+          </section>
           {momentum.data && (
-            <div className="mt-8 rounded-panel border border-line bg-surface p-5">
-              <Funnel funnel={momentum.data.funnel} />
+            <div className="mt-10">
+              <HowFar funnel={momentum.data.funnel} />
             </div>
           )}
-          <div className="mt-8">
-            {wide ? (
-              <Board items={items} onOpen={setOpen} onMove={move} />
-            ) : (
-              <StageList items={items} onOpen={setOpen} />
-            )}
-          </div>
         </>
       )}
-
-      <ApplicationSheet
-        id={openId}
-        onClose={() => setOpen(null)}
-        onMove={(id, stage) => move(id, stage)}
-      />
     </div>
   );
 }

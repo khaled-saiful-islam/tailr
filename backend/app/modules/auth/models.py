@@ -32,6 +32,15 @@ class Theme(StrEnum):
     DARK = "dark"
 
 
+class Palette(StrEnum):
+    """The accent colours, on top of light or dark. Tape is Tailr's own yellow and navy."""
+
+    TAPE = "tape"
+    LAGOON = "lagoon"
+    ORCHID = "orchid"
+    FERN = "fern"
+
+
 class User(IdMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
@@ -43,6 +52,9 @@ class User(IdMixin, TimestampMixin, Base):
     password_hash: Mapped[str] = mapped_column(String(255))
     timezone: Mapped[str] = mapped_column(String(64), default=DEFAULT_TIMEZONE)
     theme: Mapped[Theme] = mapped_column(String(16), default=Theme.SYSTEM)
+    palette: Mapped[Palette] = mapped_column(
+        String(16), default=Palette.TAPE, server_default=Palette.TAPE.value
+    )
     onboarding_step: Mapped[OnboardingStep] = mapped_column(
         String(16), default=OnboardingStep.IMPORT
     )

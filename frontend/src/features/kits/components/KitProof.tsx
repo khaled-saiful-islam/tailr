@@ -3,31 +3,19 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import type { Kit } from "../api";
+import { splitIssues } from "../status";
 
-/** Why you can trust it: every line checked against your profile, and the job's keywords. */
-export function KitProof({ kit }: { kit: Kit }) {
-  return (
-    <div className="grid items-start gap-4 md:grid-cols-2">
-      {kit.fact_check && <TruthCheck check={kit.fact_check} />}
-      {kit.keywords && <Keywords report={kit.keywords} />}
-    </div>
-  );
-}
-
-function TruthCheck({ check }: { check: NonNullable<Kit["fact_check"]> }) {
+export function TruthCheck({
+  check,
+}: {
+  check: NonNullable<Kit["fact_check"]>;
+}) {
   const [open, setOpen] = useState(false);
-  // Kits made before skills were reported separately keep them among the issues.
-  const issues = (check.issues ?? []).filter((i) => i.where !== "Skills");
-  const skillsRemoved = [
-    ...(check.skills_removed ?? []),
-    ...(check.issues ?? [])
-      .filter((i) => i.where === "Skills")
-      .map((i) => i.original),
-  ];
+  const { issues, skillsRemoved } = splitIssues(check);
   return (
     <section
       aria-labelledby="truth-heading"
-      className="rounded-panel border border-line bg-surface p-5"
+      className="rounded-control bg-surface-2 p-4 sm:p-5"
     >
       <div className="flex items-start gap-3">
         <ShieldCheck
@@ -35,9 +23,9 @@ function TruthCheck({ check }: { check: NonNullable<Kit["fact_check"]> }) {
           aria-hidden
         />
         <div className="min-w-0 flex-1">
-          <h2 id="truth-heading" className="font-semibold">
+          <h3 id="truth-heading" className="font-semibold">
             Checked against your profile
-          </h2>
+          </h3>
           <p className="mt-1 text-[0.9375rem] text-ink-2">
             Every line comes from your CV ({check.lines_checked} checked).{" "}
             {issues.length === 0
@@ -73,7 +61,7 @@ function TruthCheck({ check }: { check: NonNullable<Kit["fact_check"]> }) {
                   {issues.map((issue, index) => (
                     <li
                       key={index}
-                      className="rounded-control bg-surface-2 px-3.5 py-3 text-[0.875rem]"
+                      className="rounded-control bg-surface px-3.5 py-3 text-[0.875rem]"
                     >
                       <p className="font-medium">{issue.problem}</p>
                       <p className="mt-1 text-ink-3 line-through decoration-pin/60">
@@ -96,18 +84,18 @@ function TruthCheck({ check }: { check: NonNullable<Kit["fact_check"]> }) {
   );
 }
 
-function Keywords({ report }: { report: NonNullable<Kit["keywords"]> }) {
+export function Keywords({ report }: { report: NonNullable<Kit["keywords"]> }) {
   const covered = report.covered ?? [];
   const missing = report.missing ?? [];
   const gain = report.after - report.before;
   return (
     <section
       aria-labelledby="keywords-heading"
-      className="rounded-panel border border-line bg-surface p-5"
+      className="rounded-control bg-surface-2 p-4 sm:p-5"
     >
-      <h2 id="keywords-heading" className="font-semibold">
+      <h3 id="keywords-heading" className="font-semibold">
         Uses the job's keywords
-      </h2>
+      </h3>
       <p className="mt-1 text-[0.9375rem] text-ink-2">
         {gain > 0
           ? `Your CV now mentions ${report.after}% of the skills this ad asks for, up from ${report.before}%.`

@@ -10,6 +10,7 @@ import {
   type ApplicationDetail,
 } from "../api";
 import { dayLabel } from "../dates";
+import { followUpWhen } from "../next";
 
 function mailto(app: ApplicationDetail): string {
   const draft = app.follow_up_draft!;
@@ -38,8 +39,17 @@ function Writing() {
   );
 }
 
-/** A week after applying: a short, truthful note, ready to copy or send. */
-export function FollowUp({ app }: { app: ApplicationDetail }) {
+/**
+ * A week after applying: a short, truthful note, ready to copy or send. Without its
+ * intro, it sits inside a card that already says what's going on.
+ */
+export function FollowUp({
+  app,
+  intro = true,
+}: {
+  app: ApplicationDetail;
+  intro?: boolean;
+}) {
   const draft = useDraftFollowUp(app.id, (message) => toast.error(message));
   const done = useFollowedUp();
   const due = followUpDue(app);
@@ -63,21 +73,23 @@ export function FollowUp({ app }: { app: ApplicationDetail }) {
   return (
     <div
       className={
-        due
-          ? "rounded-panel border border-tape-deep/40 bg-tape/15 p-4"
-          : "rounded-panel border border-line p-4"
+        !intro
+          ? undefined
+          : due
+            ? "rounded-panel border border-tape-deep/40 bg-tape-soft p-4"
+            : "rounded-panel border border-line p-4"
       }
     >
-      <p className="font-semibold">
-        {due ? "Time to follow up" : "Following up"}
-      </p>
-      <p className="mt-1 text-[0.9375rem] text-ink-2">
-        {due
-          ? "It's been a week since you applied. A short, friendly note keeps you on their radar."
-          : app.follow_up_due_at
-            ? `Tailr will remind you on ${dayLabel(app.follow_up_due_at)}, a week after you applied.`
-            : "Tailr reminds you a week after you apply."}
-      </p>
+      {intro && (
+        <>
+          <p className="font-semibold">
+            {due ? "Time to follow up" : "Following up"}
+          </p>
+          <p className="mt-1 text-[0.9375rem] text-ink-2">
+            {followUpWhen(app, due)}
+          </p>
+        </>
+      )}
 
       {text ? (
         <div className="mt-4">

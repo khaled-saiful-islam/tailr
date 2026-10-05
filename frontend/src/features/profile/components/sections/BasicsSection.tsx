@@ -181,7 +181,9 @@ export function SummarySection({ doc, update }: SectionProps) {
             exit={{ opacity: 0 }}
             className="mt-4 rounded-[12px] border border-chalk/30 bg-chalk-soft/50 p-4"
           >
-            <p className="type-label text-chalk">Written from your profile</p>
+            <p className="type-label text-chalk">
+              Tailr wrote this from your profile
+            </p>
             <p className="chalk-mark mt-2 leading-relaxed">{draft.summary}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button

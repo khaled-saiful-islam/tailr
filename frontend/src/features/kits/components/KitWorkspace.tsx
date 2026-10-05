@@ -1,8 +1,9 @@
+import { Check } from "lucide-react";
+import { motion } from "motion/react";
 import { Tabs } from "radix-ui";
-import { useState, type ReactNode } from "react";
-import { Segmented } from "@/components/ui/choice";
+import { useEffect, useState, type ReactNode } from "react";
+import { useSearchParams } from "react-router";
 import { copyText } from "@/lib/clipboard";
-import { cn } from "@/lib/cn";
 import { useVersionedAutosave } from "@/lib/useVersionedAutosave";
 import { SaveIndicator } from "@/features/profile/components/SaveIndicator";
 import {
@@ -13,12 +14,21 @@ import {
   type TailoredResume,
 } from "../api";
 import { letterAsText } from "../edit";
-import { ApplySteps } from "./ApplySteps";
+import { InterviewPrep } from "../interview/InterviewPrep";
+import { useKitProgress } from "../progress";
+import { isApplied } from "../status";
+import { ApplySteps, type DocumentTab } from "./ApplySteps";
 import { DocumentFrame } from "./DocumentFrame";
-import { AnswersPanel, InterviewPanel } from "./ExtrasPanels";
-import { KitProof } from "./KitProof";
+import {
+  CopyTextButton,
+  DocumentPanel,
+  DownloadButton,
+} from "./DocumentPanels";
+import { AnswersPanel } from "./ExtrasPanels";
 import { LetterEditor } from "./LetterEditor";
 import { ResumeEditor } from "./ResumeEditor";
+import { TrustStrip } from "./TrustStrip";
+import { WritingCard } from "./WritingCard";
 
 interface Draft {
   resume: TailoredResume;
@@ -28,11 +38,28 @@ interface Draft {
 const TABS = [
   { value: "resume", label: "CV" },
   { value: "letter", label: "Cover letter" },
-  { value: "answers", label: "Answers" },
+  { value: "answers", label: "Form answers" },
   { value: "interview", label: "Interview prep" },
 ] as const;
 
-/** A prepared application: the steps to apply, the check, then each document to edit. */
+type TabValue = (typeof TABS)[number]["value"];
+const isTab = (value: string | null): value is TabValue =>
+  TABS.some((item) => item.value === value);
+
+/** Each tab's content slides in when it opens. */
+function Pane({ children }: { children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/** A prepared application: the steps to apply, how it's written, then each document. */
 export function KitWorkspace({
   kit,
   reload,
@@ -57,46 +84,73 @@ export function KitWorkspace({
       ),
     refetch: reload,
   });
-  const [tab, setTab] = useState<string>("resume");
+  const { progress, mark } = useKitProgress(kit.id);
+  // `?tab=interview` (from an interview reminder) opens straight on that tab.
+  const [params, setParams] = useSearchParams();
+  const linked = params.get("tab");
+  const [tab, setTabState] = useState<string>(
+    isTab(linked) ? linked : "resume",
+  );
+  const setTab = (next: string) => {
+    setTabState(next);
+    if (isTab(next)) setParams({ tab: next }, { replace: true });
+  };
+  useEffect(() => {
+    if (!isTab(linked) || linked === "resume") return;
+    document
+      .getElementById("application-tabs")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Only on arrival: later tab changes come from the person.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const draft = editor.value;
   if (!draft) return null;
   const busy = editor.status === "pending" || editor.status === "saving";
+  const applied = isApplied(kit);
+  const ticked: Record<string, boolean> = {
+    resume: progress.cv || applied,
+    letter: progress.letter || applied,
+  };
+  const status = (
+    <SaveIndicator
+      status={editor.status}
+      onRetry={editor.retry}
+      onReload={() => void editor.reload()}
+    />
+  );
+  const open = (next: DocumentTab) => {
+    setTab(next);
+    document
+      .getElementById("application-tabs")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const copyLetter = () => {
+    mark("letter");
+    void copyText(
+      letterAsText(draft.cover_letter, kit.candidate_name ?? ""),
+      "Cover letter",
+    );
+  };
 
   return (
-    <>
+    <div className="mt-8 flex flex-col gap-6">
       <ApplySteps
         kit={kit}
-        busy={busy}
-        onOpen={(next) => {
-          setTab(next);
-          document
-            .getElementById("application-tabs")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
-        onCopyLetter={() =>
-          void copyText(
-            letterAsText(draft.cover_letter, kit.candidate_name ?? ""),
-            "Cover letter",
-          )
-        }
+        progress={progress}
+        onOpen={open}
+        onSite={() => mark("site")}
       />
-      <div className="mt-4 flex justify-end">
-        <SaveIndicator
-          status={editor.status}
-          onRetry={editor.retry}
-          onReload={() => void editor.reload()}
-        />
-      </div>
-
-      <div className="mt-6">
-        <KitProof kit={kit} />
-      </div>
+      <WritingCard
+        key={`${kit.language}-${kit.tone}-${kit.status}`}
+        kit={kit}
+      />
+      <TrustStrip kit={kit} />
 
       <Tabs.Root
         id="application-tabs"
         value={tab}
         onValueChange={setTab}
-        className="mt-10 scroll-mt-6"
+        className="mt-4 scroll-mt-24 lg:scroll-mt-6"
       >
         <Tabs.List
           aria-label="Your application"
@@ -106,12 +160,27 @@ export function KitWorkspace({
             <Tabs.Trigger
               key={item.value}
               value={item.value}
-              className={cn(
-                "relative -mb-px h-11 px-3.5 text-[0.9375rem] font-medium text-ink-2 transition-colors hover:text-ink",
-                "border-b-[3px] border-transparent data-[state=active]:border-tape data-[state=active]:text-ink",
-              )}
+              className="relative flex h-11 items-center gap-1.5 px-3.5 text-[0.9375rem] font-medium text-ink-2 transition-colors hover:text-ink data-[state=active]:text-ink"
             >
               {item.label}
+              {ticked[item.value] && (
+                <>
+                  <Check
+                    aria-hidden
+                    className="size-3.5 text-fit-strong"
+                    strokeWidth={3}
+                  />
+                  <span className="sr-only">, done</span>
+                </>
+              )}
+              {tab === item.value && (
+                <motion.span
+                  layoutId="application-tab-line"
+                  aria-hidden
+                  className="absolute inset-x-1.5 -bottom-px h-[3px] rounded-full bg-tape"
+                  transition={{ type: "spring", stiffness: 480, damping: 36 }}
+                />
+              )}
             </Tabs.Trigger>
           ))}
         </Tabs.List>
@@ -120,108 +189,101 @@ export function KitWorkspace({
           value="resume"
           className="mt-6 focus-visible:outline-none"
         >
-          <EditAndPreview
-            editor={
-              <ResumeEditor
-                resume={draft.resume}
-                onChange={(recipe) =>
-                  editor.update((d) => ({ ...d, resume: recipe(d.resume) }))
-                }
-                facts={kit.facts}
-                sections={kit.sections}
-              />
-            }
-            preview={
-              <DocumentFrame
-                src={documentUrl(kit.id, "resume", "html", kit.version)}
-                title="CV preview"
-              />
-            }
-          />
+          <Pane>
+            <DocumentPanel
+              title="Your CV for this job"
+              status={status}
+              actions={
+                <DownloadButton
+                  busy={busy}
+                  href={documentUrl(kit.id, "resume", "pdf")}
+                  primary
+                  onDownload={() => mark("cv")}
+                >
+                  Download CV (PDF)
+                </DownloadButton>
+              }
+              editor={
+                <ResumeEditor
+                  resume={draft.resume}
+                  onChange={(recipe) =>
+                    editor.update((d) => ({ ...d, resume: recipe(d.resume) }))
+                  }
+                  facts={kit.facts}
+                  sections={kit.sections}
+                />
+              }
+              preview={
+                <DocumentFrame
+                  src={documentUrl(kit.id, "resume", "html", kit.version)}
+                  title="CV preview"
+                />
+              }
+            />
+          </Pane>
         </Tabs.Content>
         <Tabs.Content
           value="letter"
           className="mt-6 focus-visible:outline-none"
         >
-          <EditAndPreview
-            editor={
-              <LetterEditor
-                letter={draft.cover_letter}
-                onChange={(recipe) =>
-                  editor.update((d) => ({
-                    ...d,
-                    cover_letter: recipe(d.cover_letter),
-                  }))
-                }
-              />
-            }
-            preview={
-              <DocumentFrame
-                src={documentUrl(kit.id, "letter", "html", kit.version)}
-                title="Cover letter preview"
-              />
-            }
-          />
+          <Pane>
+            <DocumentPanel
+              title="Your cover letter"
+              status={status}
+              actions={
+                <>
+                  <CopyTextButton onCopy={copyLetter} />
+                  <DownloadButton
+                    busy={busy}
+                    href={documentUrl(kit.id, "letter", "pdf")}
+                    primary
+                    onDownload={() => mark("letter")}
+                  >
+                    Download PDF
+                  </DownloadButton>
+                </>
+              }
+              editor={
+                <LetterEditor
+                  letter={draft.cover_letter}
+                  onChange={(recipe) =>
+                    editor.update((d) => ({
+                      ...d,
+                      cover_letter: recipe(d.cover_letter),
+                    }))
+                  }
+                />
+              }
+              preview={
+                <DocumentFrame
+                  src={documentUrl(kit.id, "letter", "html", kit.version)}
+                  title="Cover letter preview"
+                />
+              }
+            />
+          </Pane>
         </Tabs.Content>
         <Tabs.Content
           value="answers"
           className="mt-6 focus-visible:outline-none"
         >
-          {kit.extras && <AnswersPanel extras={kit.extras} />}
+          <Pane>{kit.extras && <AnswersPanel extras={kit.extras} />}</Pane>
         </Tabs.Content>
         <Tabs.Content
           value="interview"
           className="mt-6 focus-visible:outline-none"
         >
-          {kit.extras && (
-            <InterviewPanel extras={kit.extras} facts={kit.facts} />
-          )}
+          <Pane>
+            {kit.extras && (
+              <InterviewPrep
+                kitId={kit.id}
+                extras={kit.extras}
+                facts={kit.facts}
+              />
+            )}
+          </Pane>
         </Tabs.Content>
       </Tabs.Root>
-    </>
-  );
-}
-
-/** Editor and live preview side by side on wide screens; a switch between them on narrow ones. */
-function EditAndPreview({
-  editor,
-  preview,
-}: {
-  editor: ReactNode;
-  preview: ReactNode;
-}) {
-  const [view, setView] = useState<"edit" | "preview">("edit");
-  return (
-    <>
-      <div className="mb-5 lg:hidden">
-        <Segmented
-          label="Show"
-          options={[
-            { value: "edit", label: "Edit" },
-            { value: "preview", label: "Preview" },
-          ]}
-          value={view}
-          onChange={setView}
-        />
-      </div>
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <div className={cn(view === "preview" && "hidden lg:block")}>
-          <p className="mb-5 text-[0.9375rem] text-ink-2">
-            Change anything. Edits save as you type and show up in the preview
-            and the PDF. Tailr checked what it wrote; what you change is up to
-            you.
-          </p>
-          {editor}
-        </div>
-        <div
-          className={cn(
-            "lg:sticky lg:top-6 lg:self-start",
-            view === "edit" && "hidden lg:block",
-          )}
-        >
-          {preview}
-        </div>
-      </div>
-    </>
+    </div>
   );
 }

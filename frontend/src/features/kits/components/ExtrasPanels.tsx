@@ -1,8 +1,7 @@
-import { Copy, Quote } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { copyText } from "@/lib/clipboard";
-import type { FactRef, KitExtras } from "../api";
-import { sourcesFor } from "../edit";
+import type { KitExtras } from "../api";
 
 /** Ready-to-paste answers for the application form, and a note for the recruiter. */
 export function AnswersPanel({ extras }: { extras: KitExtras }) {
@@ -53,61 +52,6 @@ export function AnswersPanel({ extras }: { extras: KitExtras }) {
         </p>
       </section>
     </div>
-  );
-}
-
-/** Likely interview questions, why they're asked, and the story from your profile that answers them. */
-export function InterviewPanel({
-  extras,
-  facts,
-}: {
-  extras: KitExtras;
-  facts: FactRef[];
-}) {
-  const questions = extras.interview ?? [];
-  return (
-    <section aria-labelledby="interview-heading" className="max-w-[48rem]">
-      <h2 id="interview-heading" className="type-heading">
-        Interview prep
-      </h2>
-      <p className="mt-1 text-ink-2">
-        What they'll probably ask, and which of your stories answers it best.
-      </p>
-      <ol className="mt-5 flex flex-col gap-4">
-        {questions.map((item) => {
-          const sources = sourcesFor(item.fact_ids, facts);
-          return (
-            <li
-              key={item.question}
-              className="rounded-panel border border-line bg-surface p-5"
-            >
-              <h3 className="text-[1.0625rem] font-semibold">
-                {item.question}
-              </h3>
-              <dl className="mt-3 flex flex-col gap-3 text-[0.9375rem]">
-                <div>
-                  <dt className="type-label text-ink-3">Why they ask</dt>
-                  <dd className="mt-0.5 text-ink-2">{item.why_they_ask}</dd>
-                </div>
-                <div>
-                  <dt className="type-label text-ink-3">Your story</dt>
-                  <dd className="mt-0.5 leading-relaxed">{item.your_story}</dd>
-                </div>
-              </dl>
-              {sources.length > 0 && (
-                <div className="mt-3 flex gap-1.5 text-[0.8125rem] text-ink-3">
-                  <Quote className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-                  <p>
-                    <span className="sr-only">From your profile: </span>
-                    {sources.map((s) => `${s.text} (${s.owner})`).join(" / ")}
-                  </p>
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </section>
   );
 }
 

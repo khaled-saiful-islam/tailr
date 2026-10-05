@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.auth.models import User
 from app.modules.brief.service import BriefService
 from app.modules.jobs.paste import paste_job
+from app.modules.kits.interview import InterviewService
 from app.modules.profile.schemas import CoachBulletRequest
 from app.modules.profile.service import ProfileService
 from app.modules.public_profile.service import PublicProfileService
@@ -120,9 +121,36 @@ async def draft_follow_up(
     out = await TrackerService(db).draft(user, application_id)
     return Outcome(
         result=out.model_dump(mode="json"),
-        link=f"/applications?open={application_id}",
+        link=f"/applications/{application_id}",
         note=("Your follow-up email is ready", f"For {out.job.title} at {out.job.company}."),
     )
+
+
+async def interview_plan(
+    db: AsyncSession, user: User, data: dict[str, Any], stage: Stage
+) -> Outcome:
+    await stage("Reading the job ad and your profile")
+    kit_id = uuid.UUID(data["kit_id"])
+    plan, job = await InterviewService(db).build_plan(user, kit_id, stage)
+    return Outcome(
+        result={"questions": len(plan.questions)},
+        link=f"/apply/{kit_id}?tab=interview",
+        note=(
+            "Your interview plan is ready",
+            f"{job.title} at {job.company}: {len(plan.questions)} questions, a 60-second "
+            "pitch and questions to ask them.",
+        ),
+    )
+
+
+async def interview_feedback(
+    db: AsyncSession, user: User, data: dict[str, Any], stage: Stage
+) -> Outcome:
+    kit_id = uuid.UUID(data["kit_id"])
+    attempt = await InterviewService(db).give_feedback(
+        user, kit_id, data["question_id"], data["answer"], stage
+    )
+    return Outcome(result=attempt.model_dump(mode="json"), link=f"/apply/{kit_id}?tab=interview")
 
 
 HANDLERS: dict[str, Handler] = {
@@ -134,6 +162,8 @@ HANDLERS: dict[str, Handler] = {
     "profile.improve_point": improve_point,
     "profile.summary": write_summary,
     "applications.follow_up": draft_follow_up,
+    "interview.plan": interview_plan,
+    "interview.feedback": interview_feedback,
 }
 
 # What a failure says in the notification, for work that notifies.
@@ -141,4 +171,5 @@ FAILED_TITLE = {
     "job.add": "Couldn't add that job",
     "website.draft": "Your website draft didn't finish",
     "applications.follow_up": "Your follow-up email didn't finish",
+    "interview.plan": "Your interview plan didn't finish",
 }

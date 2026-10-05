@@ -48,6 +48,7 @@ from app.scripts.demo_data import (
     radar_settings,
 )
 from app.scripts.demo_images import cover
+from app.scripts.demo_interview import teratai_plan
 from app.scripts.demo_jobs import JOBS, DemoJob, description, insights
 from app.scripts.demo_kits import gajah_kit, teratai_kit
 from app.scripts.demo_portfolio import add_portfolio
@@ -175,10 +176,14 @@ async def _kits(
     document: ProfileDocument,
     jobs: dict[str, tuple[Job, Match, DemoJob]],
 ) -> dict[str, Kit]:
-    """Two finished kits: one being prepared, one already sent."""
+    """Two finished kits: one being prepared (with a full interview plan), one already sent."""
     kits: dict[str, Kit] = {}
     for key, build in (("teratai", teratai_kit), ("gajah", gajah_kit)):
         job, match, _ = jobs[key]
+        fields = build(document)
+        if key == "teratai":
+            plan = teratai_plan(document, utcnow())
+            fields = {**fields, "extras": {**fields["extras"], **plan}}
         kit = Kit(
             user_id=user.id,
             job_id=job.id,
@@ -188,7 +193,7 @@ async def _kits(
             language="en",
             tone="confident",
             version=1,
-            **build(document),
+            **fields,
         )
         db.add(kit)
         kits[key] = kit

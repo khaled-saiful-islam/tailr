@@ -1,6 +1,5 @@
-/** Pure helpers for the board: columns, drop positions, and each card's status line. */
-import { relativeTime } from "@/lib/format";
-import { followUpDue, type Application } from "./api";
+/** Pure helpers for the board: columns and drop positions. */
+import type { Application } from "./api";
 import { STAGES, type Stage } from "./stages";
 
 export type Columns = Record<Stage, string[]>;
@@ -53,71 +52,4 @@ export function moveCard(
   const target = [...next[to]];
   target.splice(Math.max(0, Math.min(index, target.length)), 0, id);
   return { ...next, [to]: target };
-}
-
-export interface StatusLine {
-  text: string;
-  tone: "quiet" | "due" | "good";
-}
-
-const DAY = 86_400_000;
-
-function shortWhen(iso: string): string {
-  return new Intl.DateTimeFormat("en-MY", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
-
-/** The one line under each card that says what matters now. */
-export function statusLine(app: Application, now = new Date()): StatusLine {
-  if (followUpDue(app, now)) return { text: "Time to follow up", tone: "due" };
-  if (app.next_step_at && new Date(app.next_step_at) > now) {
-    const soon = new Date(app.next_step_at).getTime() - now.getTime() < DAY;
-    return {
-      text: `${app.next_step ?? "Next step"}, ${shortWhen(app.next_step_at)}`,
-      tone: soon ? "due" : "quiet",
-    };
-  }
-  switch (app.stage) {
-    case "saved":
-      return {
-        text: `Saved ${relativeTime(app.created_at, now)}`,
-        tone: "quiet",
-      };
-    case "preparing":
-      if (app.kit_status === "ready")
-        return { text: "Application ready to send", tone: "good" };
-      if (app.kit_status === "building")
-        return { text: "Writing your application", tone: "quiet" };
-      return {
-        text: `Since ${relativeTime(app.stage_changed_at, now)}`,
-        tone: "quiet",
-      };
-    case "applied":
-      if (app.followed_up_at)
-        return {
-          text: `Followed up ${relativeTime(app.followed_up_at, now)}`,
-          tone: "quiet",
-        };
-      return {
-        text: `Applied ${relativeTime(app.applied_at ?? app.stage_changed_at, now)}`,
-        tone: "quiet",
-      };
-    case "interview":
-      return { text: "Add your next step", tone: "quiet" };
-    case "offer":
-      return {
-        text: `Offer ${relativeTime(app.stage_changed_at, now)}`,
-        tone: "good",
-      };
-    case "rejected":
-      return {
-        text: `Not successful, ${relativeTime(app.stage_changed_at, now)}`,
-        tone: "quiet",
-      };
-  }
 }

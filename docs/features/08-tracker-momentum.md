@@ -8,7 +8,7 @@ The tracker is where every job you're pursuing lives, from saved to signed. Mome
 brings you back: a weekly goal, a streak of brief-check days, an honest funnel, and a pulse of
 what your market asks for and pays.
 
-## Tracker (`/tracker`)
+## Tracker (`/applications`)
 
 ### How jobs get there
 
@@ -23,38 +23,66 @@ Un-saving or skipping a job takes it off the board only if nothing has happened 
 (still saved, no kit, no notes, no next step). Jobs saved or tailored before the tracker
 existed were added by a one-off migration.
 
-### The board
+### The page, top to bottom
 
-- Five columns along the path: **Saved, Preparing, Applied, Interviewing, Offer**, and
-  **Not this time** as a drop zone under the board that opens into a list.
-- Drag a card to move it. With a keyboard: Space picks a card up, Left and Right move it a
-  stage, Up and Down move it within one, Space drops it, Escape cancels; Enter opens it.
-  Screen readers hear where it is at each step.
-- Each card shows the job, its Fit %, and the one thing that matters now: "Time to follow
-  up", the next step and when, "Kit ready to send", or how long it has been.
-- On phones: one stage at a time as a list (pick the stage above it); moving happens in the
-  card's sheet.
-- Above the board, the **funnel**: how many applications ever reached each stage and what
-  share moved on from the stage before. It counts the furthest stage each one reached, so
-  moving a card back never hides progress.
+1. **Needs you now**: what to do today, most urgent first (`next.ts`, `needsYou`).
+   - A next step in the next three days: "Technical interview with Selat Pay".
+   - A follow-up that's due: "Follow up with Gajah Logistics".
+   - An interview whose date has passed: "How did it go with Nusantara Telco?"
+   - An application ready to send: "Send your application to Teratai Bank".
+   - An interview with no date yet.
 
-### One application (a sheet, `?open=<id>`)
+   Each one opens the application. When nothing is due, it says so, and points at saved
+   jobs still waiting for an application.
+2. **All your applications**, the board.
+   - Five columns along the path: **Saved, Preparing, Applied, Interview, Offer**. Each has
+     its count and a few words on what it holds ("Sent. Waiting to hear back").
+   - **Not successful** sits under the board as a drop zone that opens into a list.
+   - Each card shows the job, its match, and the **one next thing** (`nextAction`):
+     "Prepare your application", "Ready: check it and send it", "Follow up today",
+     "Technical interview, Tue 6 Oct, 10:00", "Sent 2 days ago. Waiting to hear back".
+   - Drag a card to move it. With a keyboard: Space picks a card up, Left and Right move
+     it a stage, Up and Down move it within one, Space drops it, Escape cancels, and
+     Enter opens it. Screen readers hear where it is at each step. The lifted card is
+     drawn in a portal, so page transitions can't shift it.
+   - On phones: one stage at a time as a list, with the stage's meaning under the picker.
+3. **How far you've got**: a sentence first ("Of the 8 jobs you've saved, you applied to
+   5. 2 led to interviews, and 1 to an offer."), then a bar per step. It counts the
+   furthest stage each application reached, so moving a card back never hides progress.
+   The card says why these numbers can be bigger than the columns.
 
-- The job, links to the ad, its fit and your kit.
-- **Where it stands**: the five steps, and *Not this time* (reopen goes back to Applied if
-  it was sent, otherwise Saved).
-- **Follow up** (while applied): see below.
-- **Details**, saved as you type: applied on, next step and when, contact name and email,
-  notes. Anything still being saved when you close the sheet is sent at once.
-- **History**: added, each move, next steps, follow-ups.
-- **Remove from tracker** (asks first; its notes go with it).
+### One application (`/applications/<id>`)
 
-Moving to Applied (or past it) records the date, which you can correct.
+A page of its own (it used to be a side sheet). Old links (`/applications?open=<id>`)
+redirect here.
+
+- **Header**: back to My applications, the job, its match, links to the ad and job details.
+- **Where it stands**: the five steps with a line that fills up to the current one. Press
+  a step to move it there. **It didn't work out** closes it. Reaching an interview or an
+  offer gets a short confetti burst (none with reduced motion).
+- **What to do now**, one card that changes with the stage:
+
+  | Stage | The card |
+  |---|---|
+  | Saved | **Next: prepare your application** (language and **Prepare my application**), **Mark as applied** if it's already sent, **Not interested any more** (takes it off the board; the job stays on Jobs) |
+  | Preparing | While it's written: a running stitch and **Watch it being written**. When ready: three steps, **Open my application**, **Open the job ad**, **I've applied**. If preparing failed: open it to try again |
+  | Applied | **Sent. Now, wait to hear back** (or **Next: follow up** after a week), with the follow-up draft below; **I got an interview** / **They said no** |
+  | Interview | What it is and when (Tailr reminds you the day before), **Get ready for it**, which links to Interview prep (`/apply/<kit>?tab=interview`, or prepares an application first), then **I got an offer** / **They said no**. After the date: **How did it go?** |
+  | Offer | Congratulations, and three things to check before saying yes |
+  | Not successful | Said kindly; **Look at other jobs** or **Reopen it** (back to Applied if it was sent, otherwise Saved) |
+
+- **Notes and contact** (folded away until it's sent, or until there's something in it):
+  who you're talking to and their email (used by **Open in email**), notes, anything
+  coming up (while applied or with an offer), and the date you applied (which you can
+  correct). Saved as you type; anything still waiting is sent when you leave.
+- **History** (folded): added, each move, next steps, follow-ups.
+- **About the job**: where, pay, type, when it was posted, saved and applied.
+- **Remove from My applications** (asks first; its notes go with it).
 
 ## Follow-up nudges
 
 - **A week after applying**, if you haven't followed up, Tailr sends a notification:
-  "Follow up with Selat Pay?", which opens the application.
+  "Follow up with Selat Pay?", which opens the application's page.
 - **Draft a follow-up** writes a short email (under 110 words) from your tailored cover
   letter, or your profile's headline and summary. It may add one line on why you fit, from
   those words only. Every number must appear in that source, and there are no placeholders.
@@ -117,6 +145,7 @@ where the job stands.
 - Backend: `app/modules/tracker/` (`service.py` the board and moves, `followup.py` the
   draft and its truth check, `nudges.py` and `tasks.py` the reminders),
   `app/modules/momentum/` (`streak.py`, `pulse.py`, `service.py`).
-- Frontend: `src/features/tracker/` (board, columns, sheet, funnel; pure logic in
-  `board.ts`), `src/features/momentum/` (goal, streak, Market Pulse), plus the tracker row
+- Frontend: `src/features/tracker/` (`TrackerPage` with Needs you now, the board and How
+  far you've got; `ApplicationPage` with the stage cards in `components/detail/now/`; pure
+  logic in `board.ts` and `next.ts`), `src/features/momentum/` (goal, streak, Market Pulse), plus the tracker row
   on the job page and **I've applied** on the kit page.

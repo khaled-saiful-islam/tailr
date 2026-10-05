@@ -64,7 +64,7 @@ async def draft_follow_up(application_id: uuid.UUID, user: CurrentUser, db: DbSe
         "applications.follow_up",
         f"Drafting a follow-up to {app.job.company}",
         {"application_id": str(application_id)},
-        link=f"/applications?open={application_id}",
+        link=f"/applications/{application_id}",
     )
 
 

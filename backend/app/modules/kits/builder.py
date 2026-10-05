@@ -25,6 +25,7 @@ from app.modules.jobs.insights import JobInsights
 from app.modules.jobs.models import Job
 from app.modules.kits import prompts
 from app.modules.kits.checks import enforce_truth, fact_sources, keyword_report
+from app.modules.kits.interview_schemas import STORED_KEYS as INTERVIEW_KEYS
 from app.modules.kits.localise import localise_restored
 from app.modules.kits.models import Kit
 from app.modules.kits.schemas import (
@@ -195,7 +196,9 @@ async def run_kit(kit_id: uuid.UUID) -> None:
             if kit is not None:
                 kit.resume = resume.model_dump(mode="json")
                 kit.cover_letter = cover_letter.model_dump(mode="json")
-                kit.extras = kit_extras.model_dump(mode="json")
+                # Interview plans, practice and marks belong to the person: keep them.
+                kept = {k: v for k, v in (kit.extras or {}).items() if k in INTERVIEW_KEYS}
+                kit.extras = {**kit_extras.model_dump(mode="json"), **kept}
                 kit.fact_check = fact_check.model_dump(mode="json")
                 kit.keywords = keywords.model_dump(mode="json")
                 kit.status = "ready"

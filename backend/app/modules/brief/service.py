@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import uuid
+from datetime import datetime, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import ColumnElement, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import rate_limit
@@ -30,9 +31,29 @@ from app.modules.matching.signals import has_skill, profile_signals
 from app.modules.momentum.service import MomentumService
 from app.modules.profile.service import ProfileService
 from app.modules.radar.models import Radar
+from app.modules.tracker.models import Application
 from app.modules.tracker.service import TrackerService
 
 RUNS_PER_DAY = 8
+# Jobs stay on the Jobs page (and Home) this long after Tailr finds them. Jobs you saved,
+# added yourself or put on My applications stay until you remove them. Old ones are only
+# hidden, never deleted: a link to one still opens it.
+JOBS_KEPT_DAYS = 14
+
+
+def kept(user_id: uuid.UUID, now: datetime) -> ColumnElement[bool]:
+    """Found in the last JOBS_KEPT_DAYS, or something the person chose to keep."""
+    tracked = (
+        select(Application.id)
+        .where(Application.user_id == user_id, Application.job_id == Match.job_id)
+        .exists()
+    )
+    return or_(
+        Match.created_at >= now - timedelta(days=JOBS_KEPT_DAYS),
+        Match.status == MatchStatus.SAVED,
+        Match.origin == "pasted",
+        tracked,
+    )
 
 
 def _match_out(match: Match, job: Job) -> MatchOut:
@@ -57,7 +78,11 @@ class BriefService:
             await self.db.execute(
                 select(Match, Job)
                 .join(Job, Job.id == Match.job_id)
-                .where(Match.brief_id == brief.id, Match.status != MatchStatus.DISMISSED)
+                .where(
+                    Match.brief_id == brief.id,
+                    Match.status != MatchStatus.DISMISSED,
+                    kept(brief.user_id, utcnow()),
+                )
                 .order_by(Match.score.desc())
             )
         ).all()
@@ -137,10 +162,14 @@ class BriefService:
             .join(Job, Job.id == Match.job_id)
             .where(Match.user_id == user.id, Match.score >= min_score)
         )
-        if status is not None:
+        # "Not interested" keeps every dismissed job; everything else follows the 14 days.
+        keep = kept(user.id, utcnow())
+        if status == MatchStatus.DISMISSED:
             base = base.where(Match.status == status)
+        elif status is not None:
+            base = base.where(Match.status == status, keep)
         else:
-            base = base.where(Match.status != MatchStatus.DISMISSED)
+            base = base.where(Match.status != MatchStatus.DISMISSED, keep)
         total = await self.db.scalar(select(func.count()).select_from(base.subquery()))
         rows = (
             await self.db.execute(
@@ -153,7 +182,10 @@ class BriefService:
             (
                 await self.db.execute(
                     select(Match.status, func.count())
-                    .where(Match.user_id == user.id)
+                    .where(
+                        Match.user_id == user.id,
+                        or_(Match.status == MatchStatus.DISMISSED, keep),
+                    )
                     .group_by(Match.status)
                 )
             ).all()
@@ -162,6 +194,7 @@ class BriefService:
             items=[_match_out(match, job) for match, job in rows],
             total=int(total or 0),
             counts={str(key): int(value) for key, value in counts.items()},
+            kept_days=JOBS_KEPT_DAYS,
         )
 
     async def _own_match(self, user: User, match_id: uuid.UUID) -> tuple[Match, Job]:

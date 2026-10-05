@@ -40,6 +40,8 @@ dev = [
     "ruff>=0.8",
     "mypy>=1.13",
     "time-machine>=2.16",
+    # `make dev` runs the worker with --reload, which needs taskiq's file watcher.
+    "taskiq[reload]>=0.11",
 ]
 
 [tool.uv]

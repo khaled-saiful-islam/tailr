@@ -191,7 +191,7 @@ async def add_tracker(
             "Follow up with Gajah Logistics?",
             "You applied for Lead Machine Learning Engineer a week ago. "
             "Tailr can draft a short note.",
-            f"/applications?open={apps['gajah'].id}",
+            f"/applications/{apps['gajah'].id}",
             timedelta(days=1),
             False,
         ),

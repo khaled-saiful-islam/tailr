@@ -7,68 +7,243 @@
 
 /* ─────────────────────────────────────────────────────────────────────────
    Tailr design tokens
-   A tailor's cutting table: pattern-paper white, worsted navy, measuring-tape
-   yellow, tailor's-chalk blue. Semantic names only — components never use hex.
+   A tailor's cutting room: the measuring tape is the signature accent, worsted
+   cloth sets the ink and the primary, tailor's chalk marks links and focus.
+   Four palettes ("tape", "lagoon", "orchid", "fern") recolour the accents and
+   tint the neutrals; each has a light and a dark side. Dark is layered night:
+   a deep canvas, lifted surfaces, translucent hairlines and a faint glow.
+   Semantic names only: components never use hex. Every text colour meets
+   WCAG AA (4.5:1) on canvas, surface and surface-2 in every palette.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
-  --canvas: #f7f8fa;
+  --canvas: #f4f5f9;
+  --rail: #fbfbfd;
   --surface: #ffffff;
-  --surface-2: #eef1f6;
-  --surface-3: #e3e8f0;
-  --ink: #14213d;
-  --ink-2: #47536d;
-  --ink-3: #66718a;
-  --line: #dde2eb;
-  --line-strong: #c3cad8;
-  --primary: #14213d;
+  --surface-2: #edeff6;
+  --surface-3: #e1e5ef;
+  --ink: #131833;
+  --ink-2: #434a66;
+  --ink-3: #5d6581;
+  --line: #dfe2ec;
+  --line-strong: #c3c8d8;
+  --primary: #1b2152;
+  --primary-hover: #283070;
   --primary-ink: #ffffff;
-  --primary-hover: #22335a;
   --tape: #f5c518;
-  --tape-deep: #d9a900;
-  --tape-ink: #1d1a0e;
-  --chalk: #2f5fd8; /* 5.3:1 on canvas, 4.6:1 on chalk-soft */
-  --chalk-soft: #e3ebff;
-  --pin: #d1343a;
-  --pin-soft: #fde8e8;
-  --fit-strong: #13805a;
-  --fit-good: #2f6fd6;
-  --fit-stretch: #8f5c05; /* 5.7:1 on surface, 4.6:1 on surface-3 */
-  --fit-low: #66718a;
-  --overlay: rgb(20 33 61 / 0.42);
+  --tape-deep: #dcae00;
+  --tape-ink: #1d1700;
+  --tape-soft: #fff4cc;
+  --chalk: #2d50d0;
+  --chalk-soft: #e6ebff;
+  --pin: #c92f36;
+  --pin-soft: #fde9e9;
+  --fit-strong: #11785a;
+  --fit-good: #2c62c9;
+  --fit-stretch: #8a5804;
+  --fit-low: #5f6780;
+  --glow-1: rgb(245 197 24 / 0.16);
+  --glow-2: rgb(45 80 208 / 0.08);
+  --shade: 19 24 51;
+  --overlay: rgb(var(--shade) / 0.42);
   --shadow-sheet:
-    0 1px 0 rgb(20 33 61 / 0.04), 0 18px 48px -18px rgb(20 33 61 / 0.28);
-  --grid-dot: rgb(20 33 61 / 0.09);
+    0 1px 0 rgb(var(--shade) / 0.04), 0 18px 48px -18px rgb(var(--shade) / 0.3);
+  --shadow-lift: 0 14px 32px -18px rgb(var(--shade) / 0.35);
+  --grid-dot: rgb(var(--shade) / 0.09);
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --canvas: #0e1526;
-  --surface: #151f36;
-  --surface-2: #1b2741;
-  --surface-3: #24324f;
-  --ink: #e9edf6;
-  --ink-2: #aeb8cd;
-  --ink-3: #8d98b1;
-  --line: #26334f;
-  --line-strong: #364568;
-  --primary: #f5c518;
-  --primary-ink: #14213d;
-  --primary-hover: #ffd43a;
-  --tape: #f5c518;
-  --tape-deep: #d9a900;
-  --tape-ink: #1d1a0e;
-  --chalk: #86a8ff;
-  --chalk-soft: #1f2d52;
-  --pin: #ff6b70;
-  --pin-soft: #3a1d26;
-  --fit-strong: #3fcf91;
-  --fit-good: #86a8ff;
-  --fit-stretch: #f0b44c;
-  --fit-low: #8d98b1;
-  --overlay: rgb(4 8 18 / 0.6);
-  --shadow-sheet: 0 1px 0 rgb(0 0 0 / 0.3), 0 24px 60px -20px rgb(0 0 0 / 0.65);
-  --grid-dot: rgb(233 237 246 / 0.07);
+  --canvas: #090c17;
+  --rail: #0c1020;
+  --surface: #121729;
+  --surface-2: #181f35;
+  --surface-3: #222a44;
+  --ink: #eef1f9;
+  --ink-2: #b4bcd2;
+  --ink-3: #8f98b2;
+  --line: rgb(168 182 228 / 0.13);
+  --line-strong: rgb(168 182 228 / 0.24);
+  --primary: #f7cb2d;
+  --primary-hover: #ffd84f;
+  --primary-ink: #191300;
+  --tape: #f7cb2d;
+  --tape-deep: #dcb00c;
+  --tape-ink: #191300;
+  --tape-soft: #2b2210;
+  --chalk: #93b0ff;
+  --chalk-soft: #1b2552;
+  --pin: #ff7a7f;
+  --pin-soft: #3b1b24;
+  --fit-strong: #4ad6a0;
+  --fit-good: #93b4ff;
+  --fit-stretch: #f4bd57;
+  --fit-low: #97a0b8;
+  --glow-1: rgb(247 203 45 / 0.11);
+  --glow-2: rgb(110 140 255 / 0.14);
+  --shade: 0 0 0;
+  --overlay: rgb(2 4 10 / 0.68);
+  /* A hairline of light along the top edge gives dark cards their depth. */
+  --shadow-sheet:
+    inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 0 rgb(0 0 0 / 0.35),
+    0 24px 60px -20px rgb(0 0 0 / 0.72);
+  --shadow-lift:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 18px 40px -18px rgb(0 0 0 / 0.8);
+  --grid-dot: rgb(238 241 249 / 0.06);
   color-scheme: dark;
+}
+
+/* The other palettes: accents and tinted neutrals. Fit colours and shadows come from above. */
+:root[data-palette="lagoon"]:not([data-theme="dark"]) {
+  --canvas: #f2f7f7;
+  --rail: #f9fcfc;
+  --surface: #ffffff;
+  --surface-2: #e7f0f0;
+  --surface-3: #d8e6e6;
+  --ink: #0e2427;
+  --ink-2: #3a5559;
+  --ink-3: #55706f;
+  --line: #d6e3e3;
+  --line-strong: #b7cccc;
+  --primary: #0a4a50;
+  --primary-hover: #0e5f66;
+  --primary-ink: #ffffff;
+  --tape: #36c9b6;
+  --tape-deep: #20a896;
+  --tape-ink: #022622;
+  --tape-soft: #d9f5f0;
+  --chalk: #0a6886;
+  --chalk-soft: #dbeff5;
+  --glow-1: rgb(54 201 182 / 0.16);
+  --glow-2: rgb(10 104 134 / 0.08);
+  --shade: 14 36 39;
+}
+
+[data-palette="lagoon"][data-theme="dark"],
+[data-palette="lagoon"] [data-theme="dark"] {
+  --canvas: #061214;
+  --rail: #081719;
+  --surface: #0c1d20;
+  --surface-2: #11272b;
+  --surface-3: #193338;
+  --ink: #e7f5f3;
+  --ink-2: #a7c6c2;
+  --ink-3: #83a5a1;
+  --line: rgb(140 220 208 / 0.13);
+  --line-strong: rgb(140 220 208 / 0.24);
+  --primary: #4bdcc9;
+  --primary-hover: #74e7d8;
+  --primary-ink: #03201c;
+  --tape: #4bdcc9;
+  --tape-deep: #2fc0ad;
+  --tape-ink: #03201c;
+  --tape-soft: #0c2e2b;
+  --chalk: #7fd3fb;
+  --chalk-soft: #0f3142;
+  --glow-1: rgb(75 220 201 / 0.085);
+  --glow-2: rgb(127 211 251 / 0.07);
+  --shade: 0 0 0;
+}
+
+:root[data-palette="orchid"]:not([data-theme="dark"]) {
+  --canvas: #f7f5fa;
+  --rail: #fcfbfe;
+  --surface: #ffffff;
+  --surface-2: #f0ebf6;
+  --surface-3: #e5ddef;
+  --ink: #1d1430;
+  --ink-2: #4b4062;
+  --ink-3: #675c7f;
+  --line: #e5deee;
+  --line-strong: #cbc1da;
+  --primary: #3b1d66;
+  --primary-hover: #4d2985;
+  --primary-ink: #ffffff;
+  --tape: #c69cff;
+  --tape-deep: #ad7cf5;
+  --tape-ink: #1f0b3b;
+  --tape-soft: #f2e8ff;
+  --chalk: #6a3ad0;
+  --chalk-soft: #efe7ff;
+  --glow-1: rgb(198 156 255 / 0.2);
+  --glow-2: rgb(106 58 208 / 0.07);
+  --shade: 29 20 48;
+}
+
+[data-palette="orchid"][data-theme="dark"],
+[data-palette="orchid"] [data-theme="dark"] {
+  --canvas: #0d0915;
+  --rail: #110c1b;
+  --surface: #171123;
+  --surface-2: #1e172f;
+  --surface-3: #29203e;
+  --ink: #f3eefa;
+  --ink-2: #c3b8d8;
+  --ink-3: #9e93b6;
+  --line: rgb(200 172 255 / 0.13);
+  --line-strong: rgb(200 172 255 / 0.24);
+  --primary: #d2adff;
+  --primary-hover: #dfc3ff;
+  --primary-ink: #210e3c;
+  --tape: #d2adff;
+  --tape-deep: #bb8ff8;
+  --tape-ink: #210e3c;
+  --tape-soft: #25173c;
+  --chalk: #c6b0ff;
+  --chalk-soft: #2a1d4c;
+  --glow-1: rgb(210 173 255 / 0.09);
+  --glow-2: rgb(255 150 220 / 0.05);
+  --shade: 0 0 0;
+}
+
+:root[data-palette="fern"]:not([data-theme="dark"]) {
+  --canvas: #f3f7f2;
+  --rail: #fafcf9;
+  --surface: #ffffff;
+  --surface-2: #e9f0e8;
+  --surface-3: #dbe6d9;
+  --ink: #12241a;
+  --ink-2: #3f5444;
+  --ink-3: #5b705f;
+  --line: #d9e4d8;
+  --line-strong: #bccebb;
+  --primary: #163d29;
+  --primary-hover: #1e5036;
+  --primary-ink: #ffffff;
+  --tape: #a3d977;
+  --tape-deep: #86c25a;
+  --tape-ink: #0f2610;
+  --tape-soft: #eaf6de;
+  --chalk: #216c86;
+  --chalk-soft: #ddeff3;
+  --glow-1: rgb(163 217 119 / 0.2);
+  --glow-2: rgb(33 108 134 / 0.07);
+  --shade: 18 36 26;
+}
+
+[data-palette="fern"][data-theme="dark"],
+[data-palette="fern"] [data-theme="dark"] {
+  --canvas: #07100b;
+  --rail: #0a150e;
+  --surface: #0e1b13;
+  --surface-2: #14251a;
+  --surface-3: #1c3023;
+  --ink: #ebf4ed;
+  --ink-2: #afc6b4;
+  --ink-3: #8aa691;
+  --line: rgb(170 230 180 / 0.12);
+  --line-strong: rgb(170 230 180 / 0.22);
+  --primary: #ace283;
+  --primary-hover: #c1ec9f;
+  --primary-ink: #0e230c;
+  --tape: #ace283;
+  --tape-deep: #90cc65;
+  --tape-ink: #0e230c;
+  --tape-soft: #16290f;
+  --chalk: #86d1e8;
+  --chalk-soft: #11303a;
+  --glow-1: rgb(172 226 131 / 0.075);
+  --glow-2: rgb(134 209 232 / 0.06);
+  --shade: 0 0 0;
 }
 
 @theme inline {
@@ -77,6 +252,7 @@
     sans-serif;
 
   --color-canvas: var(--canvas);
+  --color-rail: var(--rail);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
@@ -91,6 +267,7 @@
   --color-tape: var(--tape);
   --color-tape-deep: var(--tape-deep);
   --color-tape-ink: var(--tape-ink);
+  --color-tape-soft: var(--tape-soft);
   --color-chalk: var(--chalk);
   --color-chalk-soft: var(--chalk-soft);
   --color-pin: var(--pin);
@@ -102,6 +279,7 @@
   --color-overlay: var(--overlay);
 
   --shadow-sheet: var(--shadow-sheet);
+  --shadow-lift: var(--shadow-lift);
 
   /* Radii follow hierarchy: documents are nearly square, controls soft, sheets round. */
   --radius-doc: 3px;
@@ -168,13 +346,75 @@
   background-repeat: repeat-x;
 }
 
-/* Tailor's chalk: marks text the AI wrote or changed. */
+/*
+ * Tailor's chalk: text the AI wrote or changed. A soft chalk-tinted note with an
+ * accent edge and a small sparkle, so it reads as "Tailr wrote this", never as a link.
+ */
 @utility chalk-mark {
-  text-decoration-line: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: color-mix(in oklab, var(--chalk) 70%, transparent);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
+  position: relative;
+  border-radius: var(--radius-control);
+  padding: 0.625rem 0.875rem 0.625rem 2.25rem;
+  background-color: color-mix(in oklab, var(--chalk) 9%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in oklab, var(--chalk) 70%, transparent);
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0.875rem;
+    top: 0.85rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    background-color: var(--chalk);
+    -webkit-mask: var(--sparkle) center / contain no-repeat;
+    mask: var(--sparkle) center / contain no-repeat;
+  }
+}
+
+/* Palette swatches in the appearance picker: each palette's accent over its cloth. */
+[data-swatch="tape"] {
+  --swatch-a: #f5c518;
+  --swatch-b: #1b2152;
+}
+[data-swatch="lagoon"] {
+  --swatch-a: #36c9b6;
+  --swatch-b: #0a4a50;
+}
+[data-swatch="orchid"] {
+  --swatch-a: #c69cff;
+  --swatch-b: #3b1d66;
+}
+[data-swatch="fern"] {
+  --swatch-a: #a3d977;
+  --swatch-b: #163d29;
+}
+@utility swatch {
+  background: linear-gradient(
+    135deg,
+    var(--swatch-a) 0 52%,
+    var(--swatch-b) 52% 100%
+  );
+}
+
+/* Cards that respond to the pointer: a small lift and a deeper shadow. */
+@utility hover-lift {
+  transition:
+    transform 220ms var(--ease-tailor),
+    box-shadow 220ms var(--ease-tailor),
+    border-color 220ms var(--ease-tailor);
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lift);
+      border-color: var(--line-strong);
+    }
+  }
+}
+
+/* Anything pressable: a quick give under the finger. */
+@utility press {
+  transition: transform 140ms var(--ease-tailor);
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
 }
 
 @layer base {
@@ -182,12 +422,43 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
+  :root {
+    /* Lucide's sparkles, used as a mask so it takes the palette colour. */
+    --sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.94 2.5a.5.5 0 0 1 .97 0l1.32 4.4a3 3 0 0 0 2.02 2.02l4.4 1.32a.5.5 0 0 1 0 .97l-4.4 1.32a3 3 0 0 0-2.02 2.02l-1.32 4.4a.5.5 0 0 1-.97 0l-1.32-4.4a3 3 0 0 0-2.02-2.02l-4.4-1.32a.5.5 0 0 1 0-.97l4.4-1.32a3 3 0 0 0 2.02-2.02z'/%3E%3Cpath d='M19 2v4M21 4h-4' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
   body {
     @apply bg-canvas text-ink antialiased;
+    /* A faint wash of the palette at the top of every page. */
+    background-image:
+      radial-gradient(
+        56rem 32rem at 100% -6rem,
+        var(--glow-1),
+        transparent 70%
+      ),
+      radial-gradient(48rem 28rem at -8% -4rem, var(--glow-2), transparent 70%);
+    background-repeat: no-repeat;
     font-family: var(--font-sans);
     font-size: 0.9375rem;
     line-height: 1.55;
     font-feature-settings: "ss01", "cv11";
+  }
+  /* Dark only: a soft light along the top of every card, and a fine grain over the
+     canvas, so dark pages feel made of material rather than flat colour. */
+  [data-theme="dark"] .bg-surface {
+    background-image: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.035),
+      transparent 9rem
+    );
+  }
+  [data-theme="dark"] body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   ::selection {
     background: color-mix(in oklab, var(--tape) 55%, transparent);
@@ -218,6 +489,27 @@
   }
 }
 
+/* Changing theme or palette: colours ease across instead of snapping. */
+.theme-fading,
+.theme-fading *,
+.theme-fading *::before,
+.theme-fading *::after {
+  transition:
+    background-color 320ms var(--ease-tailor),
+    border-color 320ms var(--ease-tailor),
+    color 320ms var(--ease-tailor),
+    fill 320ms var(--ease-tailor),
+    stroke 320ms var(--ease-tailor),
+    box-shadow 320ms var(--ease-tailor) !important;
+}
+
+/* With view transitions the new theme spreads from the control as a circle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -229,15 +521,19 @@
   }
 }
 
-/* Menus and popovers open with a short drop. */
+/* Menus and popovers open with a short drop, growing out of their trigger. */
 @keyframes tailr-pop {
   from {
     opacity: 0;
-    transform: translateY(4px) scale(0.98);
+    transform: translateY(4px) scale(0.96);
   }
 }
 @utility animate-pop {
-  animation: tailr-pop 160ms var(--ease-tailor);
+  animation: tailr-pop 180ms var(--ease-tailor);
+  transform-origin: var(
+    --radix-popover-content-transform-origin,
+    var(--radix-dropdown-menu-content-transform-origin, top)
+  );
 }
 
 /* Radar: the beam turns about the scope's centre; contacts ping outwards. */

@@ -1,11 +1,15 @@
 import { createContext, useContext } from "react";
+import type { Origin, Palette, Resolved, ThemeChoice } from "./appearance";
 
-export type ThemeChoice = "system" | "light" | "dark";
+export type { Palette, ThemeChoice } from "./appearance";
 
 export interface ThemeContextValue {
   choice: ThemeChoice;
-  resolved: "light" | "dark";
-  setChoice: (choice: ThemeChoice) => void;
+  resolved: Resolved;
+  palette: Palette;
+  /** With an origin, the change animates out from there; without, it's instant. */
+  setChoice: (choice: ThemeChoice, origin?: Origin) => void;
+  setPalette: (palette: Palette, origin?: Origin) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);

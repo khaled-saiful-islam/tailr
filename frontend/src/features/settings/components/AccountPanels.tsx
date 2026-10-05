@@ -1,18 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
-import { Segmented } from "@/components/ui/choice";
 import { Panel, Switch } from "@/components/ui/controls";
 import { Field } from "@/components/ui/Field";
-import { useTheme, type ThemeChoice } from "@/app/theme-context";
 import { useUpdateMe, type User } from "@/features/auth/api";
+import { AppearancePicker } from "./AppearancePicker";
 import { ZonePicker } from "./ZonePicker";
-
-const THEMES: { value: ThemeChoice; label: string }[] = [
-  { value: "system", label: "Match my device" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
 
 /** Your name, as Tailr greets you. */
 export function YouPanel({ user }: { user: User }) {
@@ -65,22 +58,14 @@ export function YouPanel({ user }: { user: User }) {
   );
 }
 
-/** Time zone, theme and email: saved the moment you change them. */
+/** Time zone, appearance and email: saved the moment you change them. */
 export function PreferencesPanel({ user }: { user: User }) {
   const update = useUpdateMe();
-  const { choice, setChoice } = useTheme();
 
-  const save = (
-    body: Parameters<typeof update.mutate>[0],
-    done: string,
-    undo?: () => void,
-  ) =>
+  const save = (body: Parameters<typeof update.mutate>[0], done: string) =>
     update.mutate(body, {
       onSuccess: () => toast.success(done),
-      onError: (error) => {
-        undo?.();
-        toast.error(error.message);
-      },
+      onError: (error) => toast.error(error.message),
     });
 
   return (
@@ -100,23 +85,12 @@ export function PreferencesPanel({ user }: { user: User }) {
         />
 
         <div>
-          <p className="type-label">Theme</p>
-          <div className="mt-2">
-            <Segmented
-              label="Theme"
-              options={THEMES}
-              value={choice}
-              onChange={(theme) => {
-                const before = choice;
-                setChoice(theme);
-                save({ theme }, "Theme saved to your account.", () =>
-                  setChoice(before),
-                );
-              }}
-            />
-          </div>
-          <p className="mt-2 text-[0.8125rem] text-ink-3">
-            Saved to your account, so it follows you to every device.
+          <p className="type-label">Appearance</p>
+          <AppearancePicker className="mt-3 max-w-[26rem]" />
+          <p className="mt-3 text-[0.8125rem] text-ink-3">
+            Saved to your account, so it follows you to every device. You can
+            also change it from the sun or moon button beside your
+            notifications.
           </p>
         </div>
 

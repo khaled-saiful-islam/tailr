@@ -8,11 +8,11 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-primary text-primary-ink hover:bg-primary-hover shadow-[inset_0_-1px_0_rgb(0_0_0/0.18)]",
+    "bg-primary text-primary-ink hover:bg-primary-hover shadow-[inset_0_-1px_0_rgb(0_0_0/0.18)] hover:shadow-[inset_0_-1px_0_rgb(0_0_0/0.18),0_10px_22px_-12px_var(--primary)]",
   secondary:
     "bg-surface text-ink border border-line-strong hover:border-ink-3 hover:bg-surface-2",
   ghost: "text-ink-2 hover:text-ink hover:bg-surface-2",
-  tape: "bg-tape text-tape-ink hover:bg-tape-deep shadow-[inset_0_-2px_0_rgb(0_0_0/0.14)]",
+  tape: "bg-tape text-tape-ink hover:bg-tape-deep shadow-[inset_0_-2px_0_rgb(0_0_0/0.14)] hover:shadow-[inset_0_-2px_0_rgb(0_0_0/0.14),0_10px_24px_-12px_var(--tape)]",
   danger: "bg-pin text-white hover:brightness-110",
 };
 
@@ -52,9 +52,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           "relative inline-flex select-none items-center justify-center rounded-control font-semibold",
-          "transition-[background-color,border-color,color,transform,filter] duration-150 ease-tailor",
-          "active:scale-[0.98] disabled:pointer-events-none disabled:opacity-55",
+          "transition-[background-color,border-color,color,transform,filter,box-shadow] duration-200 ease-tailor",
+          "active:scale-[0.97] disabled:pointer-events-none disabled:opacity-55",
           variants[variant],
+          // A filled button that can't be used goes quiet instead of murky.
+          disabled &&
+            !loading &&
+            (variant === "primary" || variant === "tape") &&
+            "bg-surface-3 text-ink-3 shadow-none",
           sizes[size],
           className,
         )}

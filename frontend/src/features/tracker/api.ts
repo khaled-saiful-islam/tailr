@@ -11,6 +11,7 @@ import {
   useLatestTask,
 } from "@/features/tasks/api";
 import { api, unwrap, type Schemas } from "@/lib/api/client";
+import { useLiveEvent } from "@/lib/events";
 import type { Stage } from "./stages";
 
 export type Application = Schemas["ApplicationOut"];
@@ -37,7 +38,12 @@ export function useBoard() {
   });
 }
 
+/** One application; follows its CV and cover letter while they're being written. */
 export function useApplication(id: string | null) {
+  const client = useQueryClient();
+  useLiveEvent("kit.ready", () => {
+    void client.invalidateQueries({ queryKey: boardKey });
+  });
   return useQuery({
     queryKey: detailKey(id ?? ""),
     queryFn: () =>
@@ -47,6 +53,8 @@ export function useApplication(id: string | null) {
         }),
       ),
     enabled: Boolean(id),
+    refetchInterval: (query) =>
+      query.state.data?.kit_status === "building" ? 4000 : false,
   });
 }
 
@@ -144,11 +152,14 @@ export function useRemoveApplication() {
 }
 
 /** Where a follow-up shows when it's done; the task carries it from the start. */
-const followUpLink = (appId: string) => `/applications?open=${appId}`;
+const followUpLinks = (appId: string) => [
+  `/applications/${appId}`,
+  `/applications?open=${appId}`, // tasks started before application pages
+];
 
 /**
- * Write a follow-up in the background. The application keeps the draft, so closing the
- * sheet loses nothing; reopening it while the note is being written shows that it's coming.
+ * Write a follow-up in the background. The application keeps the draft, so leaving the
+ * page loses nothing; coming back while the note is being written shows that it's coming.
  */
 export function useDraftFollowUp(
   appId: string,
@@ -172,12 +183,12 @@ export function useDraftFollowUp(
     },
   );
 
-  // Started earlier (before the sheet closed, or on another page or device): follow it.
+  // Started earlier (before leaving the page, or on another device): follow it.
   const latest = useLatestTask("applications.follow_up").data ?? null;
   const earlier =
     latest &&
     latest.id !== runner.task?.id &&
-    latest.link === followUpLink(appId)
+    followUpLinks(appId).includes(latest.link ?? "")
       ? latest
       : null;
   const earlierRunning = isActive(earlier);

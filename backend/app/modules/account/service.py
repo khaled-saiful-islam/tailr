@@ -40,7 +40,7 @@ SKIP = {"password_hash", "token_hash", "embedding", "embedded_version", "previou
 NO_KEY = frozenset({"file_key"})
 DEMO_LOCKED = "This is a shared demo account, so it can't be deleted."
 NO_OG = frozenset({"og_key"})
-USER_FIELDS = ("id", "email", "username", "name", "timezone", "theme", "email_digest",
+USER_FIELDS = ("id", "email", "username", "name", "timezone", "theme", "palette", "email_digest",
                "created_at", "last_login_at")  # fmt: skip
 
 

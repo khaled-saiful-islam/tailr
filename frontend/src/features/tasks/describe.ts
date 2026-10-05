@@ -16,6 +16,7 @@ export const NOTIFIES: ReadonlySet<string> = new Set([
   "application.prepare",
   "cv.read",
   "cv.improve",
+  "interview.plan",
 ]);
 
 /** What a finished alert says, for work that has no notification of its own. */
@@ -42,6 +43,11 @@ const WORDS: Record<
     done: "A stronger version of your point is ready",
     body: "Open My profile to use it.",
     failed: "Improving your point didn't finish",
+  },
+  "interview.feedback": {
+    done: "Feedback on your answer is ready",
+    body: "Open your application's interview prep to read it.",
+    failed: "Feedback on your answer didn't finish",
   },
   "profile.summary": {
     done: "Your summary is ready",

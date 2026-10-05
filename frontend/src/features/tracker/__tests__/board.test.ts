@@ -1,57 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { Application } from "../api";
-import {
-  columnOf,
-  moveCard,
-  positionAt,
-  statusLine,
-  toColumns,
-} from "../board";
+import { columnOf, moveCard, positionAt, toColumns } from "../board";
+import { app } from "./fixtures";
 import { fromDateInput, toDateInput, toDateTimeInput } from "../dates";
-
-const NOW = new Date("2026-10-04T08:00:00Z");
-
-function app(id: string, patch: Partial<Application> = {}): Application {
-  return {
-    id,
-    stage: "saved",
-    position: 0,
-    stage_changed_at: "2026-10-01T08:00:00Z",
-    created_at: "2026-10-01T08:00:00Z",
-    notes: null,
-    applied_at: null,
-    next_step: null,
-    next_step_at: null,
-    contact_name: null,
-    contact_email: null,
-    follow_up_due_at: null,
-    nudged_at: null,
-    followed_up_at: null,
-    follow_up_draft: null,
-    match_id: null,
-    score: 80,
-    kit_id: null,
-    kit_status: null,
-    job: {
-      id: `job-${id}`,
-      source: "linkedin",
-      url: "https://example.com",
-      title: "AI Engineer",
-      company: "Selat Pay",
-      location: null,
-      work_mode: null,
-      employment_type: null,
-      posted_at: null,
-      posted_text: null,
-      salary_text: null,
-      salary_min: null,
-      salary_max: null,
-      company_logo: null,
-      applicants: null,
-    },
-    ...patch,
-  };
-}
 
 describe("columns", () => {
   const items = [
@@ -91,42 +41,6 @@ describe("columns", () => {
     expect(positionAt(["new", "x"], 0, positions)).toBe(0);
     expect(positionAt(["x", "new"], 1, positions)).toBe(2);
     expect(positionAt(["new"], 0, positions)).toBe(0);
-  });
-});
-
-describe("status line", () => {
-  it("says when to follow up", () => {
-    const due = app("a", {
-      stage: "applied",
-      applied_at: "2026-09-26T08:00:00Z",
-      follow_up_due_at: "2026-10-03T08:00:00Z",
-    });
-    expect(statusLine(due, NOW)).toEqual({
-      text: "Time to follow up",
-      tone: "due",
-    });
-    expect(
-      statusLine({ ...due, followed_up_at: "2026-10-02T08:00:00Z" }, NOW).text,
-    ).toBe("Followed up 2 days ago");
-  });
-
-  it("shows the next step, urgent within a day", () => {
-    const soon = app("a", {
-      stage: "interview",
-      next_step: "Panel interview",
-      next_step_at: "2026-10-04T20:00:00Z",
-    });
-    const line = statusLine(soon, NOW);
-    expect(line.tone).toBe("due");
-    expect(line.text.startsWith("Panel interview, ")).toBe(true);
-  });
-
-  it("knows when an application is ready", () => {
-    const ready = app("a", { stage: "preparing", kit_status: "ready" });
-    expect(statusLine(ready, NOW)).toEqual({
-      text: "Application ready to send",
-      tone: "good",
-    });
   });
 });
 

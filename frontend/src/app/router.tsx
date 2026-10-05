@@ -39,6 +39,11 @@ const TrackerPage = lazy(() =>
     default: m.TrackerPage,
   })),
 );
+const ApplicationPage = lazy(() =>
+  import("@/features/tracker/ApplicationPage").then((m) => ({
+    default: m.ApplicationPage,
+  })),
+);
 const SettingsPage = lazy(() =>
   import("@/features/settings/SettingsPage").then((m) => ({
     default: m.SettingsPage,
@@ -148,6 +153,14 @@ export const router = createBrowserRouter([
         element: (
           <Page>
             <TrackerPage />
+          </Page>
+        ),
+      },
+      {
+        path: "applications/:applicationId",
+        element: (
+          <Page>
+            <ApplicationPage />
           </Page>
         ),
       },

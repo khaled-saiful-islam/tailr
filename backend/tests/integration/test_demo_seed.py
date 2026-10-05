@@ -83,6 +83,28 @@ async def test_demo_seed_fills_every_feature(
     assert cited
     assert cited <= facts  # every line points at a real fact
 
+    # The application being prepared already has a full interview plan, every story cited.
+    plans = [
+        (await client.get(f"/api/v1/kits/{item['id']}/interview")).json()["plan"]
+        for item in kit_list
+    ]
+    plan = next(item for item in plans if item)
+    assert len(plan["questions"]) >= 8
+    assert {question["kind"] for question in plan["questions"]} == {
+        "role",
+        "experience",
+        "motivation",
+        "gap",
+        "situational",
+    }
+    stories = {
+        fact_id
+        for question in plan["questions"]
+        if question["story"]
+        for fact_id in question["story"]["fact_ids"]
+    }
+    assert stories <= facts
+
     cv = (await client.get("/api/v1/cv")).json()
     assert cv["status"] == "ready"
 

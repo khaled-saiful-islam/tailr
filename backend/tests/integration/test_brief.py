@@ -6,13 +6,13 @@ from typing import Any
 
 import httpx
 import pytest
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.fake import FakeAIClient
 from app.core.clock import utcnow
 from app.modules.brief import mailer
-from app.modules.brief.models import Brief
+from app.modules.brief.models import Brief, Match
 from app.modules.brief.tasks import dispatch_due
 from app.modules.jobs.insights import JobInsights
 from app.modules.matching.review import FitReview, Gap
@@ -210,6 +210,50 @@ async def test_match_triage(
     await signed_in.patch(f"/api/v1/matches/{match['id']}", json={"status": "dismissed"})
     brief = (await signed_in.get("/api/v1/briefs/today")).json()["brief"]
     assert match["id"] not in [m["id"] for m in brief["matches"]]
+
+
+async def test_found_jobs_stay_for_two_weeks_unless_kept(
+    signed_in: httpx.AsyncClient,
+    db: AsyncSession,
+    sites: dict[str, FakeSource],
+    ai: FakeAIClient,
+    emails: list[dict[str, str]],
+) -> None:
+    await _ready(signed_in)
+    await signed_in.post("/api/v1/briefs/run")
+    fresh = (await signed_in.get("/api/v1/matches")).json()
+    assert fresh["kept_days"] == 14
+    first, second = (item["id"] for item in fresh["items"][:2])
+
+    # Three weeks later: found jobs have dropped off the Jobs page and Home.
+    await db.execute(update(Match).values(created_at=utcnow() - timedelta(days=21)))
+    await db.flush()
+    old = (await signed_in.get("/api/v1/matches")).json()
+    assert old["items"] == []
+    assert old["total"] == 0
+    assert old["counts"].get("new", 0) == 0
+    assert (await signed_in.get("/api/v1/briefs/today")).json()["brief"]["matches"] == []
+
+    # A saved job stays, and so does one you applied to (even when no longer marked saved).
+    await signed_in.patch(f"/api/v1/matches/{first}", json={"status": "saved"})
+    tracked = await signed_in.post(
+        "/api/v1/applications", json={"match_id": second, "stage": "applied"}
+    )
+    assert tracked.status_code == 201, tracked.text
+    await signed_in.patch(f"/api/v1/matches/{second}", json={"status": "seen"})
+    kept = (await signed_in.get("/api/v1/matches")).json()
+    assert {item["id"] for item in kept["items"]} == {first, second}
+    assert kept["counts"] == {"saved": 1, "seen": 1}
+    assert [
+        i["id"] for i in (await signed_in.get("/api/v1/matches?status=seen")).json()["items"]
+    ] == [second]
+
+    # "Not interested" keeps every dismissed job, however old.
+    await signed_in.patch(f"/api/v1/matches/{first}", json={"status": "dismissed"})
+    dismissed = (await signed_in.get("/api/v1/matches?status=dismissed")).json()
+    assert [item["id"] for item in dismissed["items"]] == [first]
+    assert dismissed["counts"]["dismissed"] == 1
+    assert [i["id"] for i in (await signed_in.get("/api/v1/matches")).json()["items"]] == [second]
 
 
 async def test_matches_are_private(

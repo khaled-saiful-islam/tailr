@@ -48,8 +48,27 @@ it's ready. Jobs found elsewhere can be added by link or by pasting the ad.
   - **Cover letter**: greeting, paragraphs, closing, a word count; live preview.
   - **Answers**: four likely application-form questions answered from the profile, and a
     short note to the recruiter, each with **Copy**.
-  - **Interview prep**: five likely questions, why they're asked, and the story from the
-    profile that answers each (with the facts it uses).
+  - **Interview prep**: five likely questions come with the application. **Build my full
+    plan** (a background task, about a minute, notified when done) adds:
+    - a one-minute "Tell me about yourself", timed for speaking;
+    - 12 to 17 questions in five kinds (the job's skills, your past work, why this job,
+      skills to explain, what would you do), each with why they ask, what a strong answer
+      covers, your story as situation, task, action and result from your own facts,
+      likely follow-ups and one pitfall;
+    - honest answers for must-have skills your profile doesn't show;
+    - questions to ask them, and a "Before the day" checklist.
+    Mark each question **I'm confident** or **Needs practice** ("Ready for 3 of 12").
+    **Practise** shows one question at a time with a two-minute timer and a reveal, fully
+    keyboard driven. **Practise it in your words** gives feedback on a typed answer (scores
+    for structure, specifics, relevance and length, what worked, what to change, and a
+    tighter version that adds nothing new: missing details become `[fill this in]`).
+    Stories, the pitch and the tighter version are checked against the profile: numbers
+    must appear in the cited facts, and an AI honesty check removes merged or invented
+    claims. Plans, marks and practice survive **Write it again**.
+- **How it's written**: language (English, Bahasa Malaysia) and tone (confident, warm,
+  concise), each with an example; picking a different one offers **Rewrite in …**.
+- The breadcrumb (Jobs › job › Your application) and the side menu's **Jobs** show where
+  you are; `?tab=interview` opens straight on Interview prep.
 - Edits save as you type (versioned, so another tab never silently overwrites them). Edits
   are the user's own and aren't re-checked.
 - On phones the editor and preview switch with **Edit / Preview**.
@@ -102,6 +121,10 @@ translated, and a translation is kept only if it carries exactly the same number
 | POST | `/api/v1/kits/{id}/regenerate` | Tailor again, optionally in another language or tone |
 | GET | `/api/v1/kits/{id}/resume.html`, `letter.html` | The documents as HTML (preview) |
 | GET | `/api/v1/kits/{id}/resume.pdf`, `letter.pdf` | PDFs, printed by the renderer |
+| GET | `/api/v1/kits/{id}/interview` | Interview prep: the basic questions, the full plan, practice and marks |
+| POST | `/api/v1/kits/{id}/interview/plan` | Build the full plan (202, a background task; 6 a day) |
+| POST | `/api/v1/kits/{id}/interview/feedback` | Feedback on a typed answer (202, a background task; 30 an hour) |
+| PUT | `/api/v1/kits/{id}/interview/marks` | Mark a question confident, needs practice, or clear |
 | GET | `/api/v1/notifications?limit=30` | Latest notifications and the unread count |
 | POST | `/api/v1/notifications/{id}/read`, `/read-all` | Mark read (204) |
 

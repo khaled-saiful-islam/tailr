@@ -8,7 +8,7 @@ from pydantic import EmailStr, Field, field_validator
 from app.core.clock import is_valid_timezone
 from app.core.schemas import Schema
 from app.core.security import MIN_PASSWORD_LENGTH
-from app.modules.auth.models import OnboardingStep, Role, Theme
+from app.modules.auth.models import OnboardingStep, Palette, Role, Theme
 
 
 class RegisterRequest(Schema):
@@ -39,6 +39,7 @@ class UserOut(Schema):
     name: str
     timezone: str
     theme: Theme
+    palette: Palette
     onboarding_step: OnboardingStep
     email_digest: bool
     is_demo: bool
@@ -70,6 +71,7 @@ class UpdateMeRequest(Schema):
     name: str | None = Field(default=None, min_length=1, max_length=120)
     timezone: str | None = None
     theme: Theme | None = None
+    palette: Palette | None = None
     email_digest: bool | None = None
     onboarding_step: OnboardingStep | None = None
 

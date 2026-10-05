@@ -15,6 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/cn";
 import type { Application } from "../api";
 import {
@@ -204,18 +205,22 @@ export function Board({ items, onOpen, onMove }: BoardProps) {
         onOpen={open}
         dragging={Boolean(active)}
       />
-      <DragOverlay dropAnimation={{ duration: 180 }}>
-        {dragged ? (
-          <div
-            className={cn(
-              cardClass,
-              "cursor-grabbing border-line-strong shadow-sheet motion-safe:rotate-[1.2deg]",
-            )}
-          >
-            <AppCardBody app={dragged} />
-          </div>
-        ) : null}
-      </DragOverlay>
+      {/* In the body, so page transitions (transforms) can't shift the lifted card. */}
+      {createPortal(
+        <DragOverlay dropAnimation={{ duration: 180 }}>
+          {dragged ? (
+            <div
+              className={cn(
+                cardClass,
+                "cursor-grabbing border-line-strong shadow-sheet motion-safe:rotate-[1.2deg]",
+              )}
+            >
+              <AppCardBody app={dragged} />
+            </div>
+          ) : null}
+        </DragOverlay>,
+        document.body,
+      )}
     </DndContext>
   );
 }

@@ -746,6 +746,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/kits/{kit_id}/interview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Interview Prep
+         * @description Interview prep for this application: the five questions, the full plan if built,
+         *     your last practice answer for each question, and the ones you've marked.
+         */
+        get: operations["interview_prep_api_v1_kits__kit_id__interview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kits/{kit_id}/interview/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Build Interview Plan
+         * @description Build the full interview plan in the background (about a minute); notifies when done.
+         */
+        post: operations["build_interview_plan_api_v1_kits__kit_id__interview_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kits/{kit_id}/interview/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Practice Feedback
+         * @description Feedback on a practice answer, in the background. The last attempt is kept.
+         */
+        post: operations["practice_feedback_api_v1_kits__kit_id__interview_feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/kits/{kit_id}/interview/marks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark Question
+         * @description Mark a question "confident" or "practice" (or clear the mark with null).
+         */
+        put: operations["mark_question_api_v1_kits__kit_id__interview_marks_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/kits/{kit_id}/{which}.html": {
         parameters: {
             query?: never;
@@ -1531,6 +1612,17 @@ export interface components {
             ai_daily_budget?: number | null;
             role?: components["schemas"]["Role"] | null;
         };
+        /** AnswerScores */
+        AnswerScores: {
+            /** Structure */
+            structure: number;
+            /** Specificity */
+            specificity: number;
+            /** Relevance */
+            relevance: number;
+            /** Length */
+            length: number;
+        };
         /** ApplicationDetail */
         ApplicationDetail: {
             /**
@@ -1669,6 +1761,13 @@ export interface components {
              */
             mode: "replace" | "merge";
         };
+        /** AskThem */
+        AskThem: {
+            /** Question */
+            question: string;
+            /** Why */
+            why: string;
+        };
         /** Award */
         Award: {
             /** Title */
@@ -1679,6 +1778,22 @@ export interface components {
             year?: number | null;
             /** Detail */
             detail?: string | null;
+        };
+        /**
+         * BasicQuestion
+         * @description One of the five questions prepared with the application, with an id for marks.
+         */
+        BasicQuestion: {
+            /** Id */
+            id: string;
+            /** Question */
+            question: string;
+            /** Why They Ask */
+            why_they_ask: string;
+            /** Your Story */
+            your_story: string;
+            /** Fact Ids */
+            fact_ids?: string[];
         };
         /** Basics */
         Basics: {
@@ -2134,6 +2249,27 @@ export interface components {
             /** Owner */
             owner: string;
         };
+        /** FeedbackDraft */
+        FeedbackDraft: {
+            scores: components["schemas"]["AnswerScores"];
+            /** Verdict */
+            verdict: string;
+            /** Worked */
+            worked?: string[];
+            /** Improve */
+            improve?: string[];
+            /** Better Answer */
+            better_answer: string;
+            /** Unsupported */
+            unsupported?: string[];
+        };
+        /** FeedbackRequest */
+        FeedbackRequest: {
+            /** Question Id */
+            question_id: string;
+            /** Answer */
+            answer: string;
+        };
         /** FollowUpDraft */
         FollowUpDraft: {
             /** Subject */
@@ -2313,6 +2449,63 @@ export interface components {
             agency: boolean;
             /** Concerns */
             concerns: string[];
+        };
+        /** InterviewPlan */
+        InterviewPlan: {
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "en" | "ms";
+            /**
+             * Built At
+             * Format: date-time
+             */
+            built_at: string;
+            pitch: components["schemas"]["Pitch"];
+            /** Questions */
+            questions?: components["schemas"]["PlanQuestion"][];
+            /** Ask Them */
+            ask_them?: components["schemas"]["AskThem"][];
+            /** Checklist */
+            checklist?: string[];
+            /** Gaps */
+            gaps?: string[];
+            /**
+             * Stories Removed
+             * @default 0
+             */
+            stories_removed: number;
+        };
+        /** InterviewPrepOut */
+        InterviewPrepOut: {
+            /**
+             * Kit Id
+             * Format: uuid
+             */
+            kit_id: string;
+            /** Job Title */
+            job_title: string;
+            /** Company */
+            company: string;
+            /**
+             * Language
+             * @enum {string}
+             */
+            language: "en" | "ms";
+            /** Ready */
+            ready: boolean;
+            /** Basic */
+            basic?: components["schemas"]["BasicQuestion"][];
+            plan?: components["schemas"]["InterviewPlan"] | null;
+            /** Practice */
+            practice?: {
+                [key: string]: components["schemas"]["PracticeAttempt"];
+            };
+            /** Marks */
+            marks?: {
+                [key: string]: "confident" | "practice";
+            };
         };
         /** InterviewQuestion */
         InterviewQuestion: {
@@ -2534,6 +2727,13 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** MarkUpdate */
+        MarkUpdate: {
+            /** Question Id */
+            question_id: string;
+            /** Mark */
+            mark?: ("confident" | "practice") | null;
+        };
         /** MatchDetailOut */
         MatchDetailOut: {
             /**
@@ -2598,6 +2798,8 @@ export interface components {
             counts: {
                 [key: string]: number;
             };
+            /** Kept Days */
+            kept_days: number;
         };
         /**
          * MatchStatus
@@ -2912,6 +3114,12 @@ export interface components {
             /** Names */
             names: string[];
         };
+        /**
+         * Palette
+         * @description The accent colours, on top of light or dark. Tape is Tailr's own yellow and navy.
+         * @enum {string}
+         */
+        Palette: "tape" | "lagoon" | "orchid" | "fern";
         /** PasteRequest */
         PasteRequest: {
             /** Url */
@@ -2932,12 +3140,47 @@ export interface components {
             /** Jobs */
             jobs: number;
         };
+        /** Pitch */
+        Pitch: {
+            /** Text */
+            text: string;
+            /** Fact Ids */
+            fact_ids?: string[];
+            /** Seconds */
+            seconds: number;
+        };
         /** PlaceOut */
         PlaceOut: {
             /** Key */
             key: string;
             /** Label */
             label: string;
+        };
+        /** PlanQuestion */
+        PlanQuestion: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "role" | "experience" | "motivation" | "gap" | "situational";
+            /** Question */
+            question: string;
+            /** Why They Ask */
+            why_they_ask: string;
+            /** Strong Answer */
+            strong_answer?: string[];
+            story?: components["schemas"]["StarStory"] | null;
+            /** Follow Ups */
+            follow_ups?: string[];
+            /**
+             * Pitfall
+             * @default
+             */
+            pitfall: string;
+            /** Skill */
+            skill?: string | null;
         };
         /**
          * PortfolioContent
@@ -2975,6 +3218,23 @@ export interface components {
             contact_form: boolean;
             /** Whatsapp */
             whatsapp?: string | null;
+        };
+        /** PracticeAttempt */
+        PracticeAttempt: {
+            /** Question Id */
+            question_id: string;
+            /** Answer */
+            answer: string;
+            /** Words */
+            words: number;
+            /** Seconds */
+            seconds: number;
+            feedback: components["schemas"]["FeedbackDraft"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** PreviewRequest */
         PreviewRequest: {
@@ -3455,6 +3715,19 @@ export interface components {
          * @enum {string}
          */
         Stage: "saved" | "preparing" | "applied" | "interview" | "offer" | "rejected";
+        /** StarStory */
+        StarStory: {
+            /** Situation */
+            situation: string;
+            /** Task */
+            task: string;
+            /** Action */
+            action: string;
+            /** Result */
+            result: string;
+            /** Fact Ids */
+            fact_ids?: string[];
+        };
         /** StreakOut */
         StreakOut: {
             /** Current */
@@ -3619,6 +3892,7 @@ export interface components {
             /** Timezone */
             timezone?: string | null;
             theme?: components["schemas"]["Theme"] | null;
+            palette?: components["schemas"]["Palette"] | null;
             /** Email Digest */
             email_digest?: boolean | null;
             onboarding_step?: components["schemas"]["OnboardingStep"] | null;
@@ -3654,6 +3928,7 @@ export interface components {
             /** Timezone */
             timezone: string;
             theme: components["schemas"]["Theme"];
+            palette: components["schemas"]["Palette"];
             onboarding_step: components["schemas"]["OnboardingStep"];
             /** Email Digest */
             email_digest: boolean;
@@ -5003,6 +5278,138 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["KitOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    interview_prep_api_v1_kits__kit_id__interview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterviewPrepOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    build_interview_plan_api_v1_kits__kit_id__interview_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    practice_feedback_api_v1_kits__kit_id__interview_feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeedbackRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_question_api_v1_kits__kit_id__interview_marks_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterviewPrepOut"];
                 };
             };
             /** @description Validation Error */

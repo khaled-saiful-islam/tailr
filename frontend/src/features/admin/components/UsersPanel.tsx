@@ -26,7 +26,7 @@ export function Badges({ user }: { user: AdminUser }) {
       className: "bg-surface-3 text-ink",
     },
     !user.is_active && { label: "Disabled", className: "bg-pin-soft text-pin" },
-    !user.ai_enabled && { label: "AI off", className: "bg-tape/25 text-ink" },
+    !user.ai_enabled && { label: "AI off", className: "bg-tape-soft text-ink" },
     user.is_demo && {
       label: "Demo",
       className: "border border-line-strong text-ink-2",

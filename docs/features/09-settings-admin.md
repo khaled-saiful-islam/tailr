@@ -7,7 +7,7 @@
 | Section | What it does |
 |---|---|
 | **You** | Your name. (Your CV and portfolio use the name in your profile.) |
-| **Preferences** | Time zone (searchable, Kuala Lumpur first), which decides when the brief arrives and how the streak counts days. Theme (match my device, light, dark), saved to your account so it follows you to every device. Email me my morning brief. All saved as you change them. |
+| **Preferences** | Time zone (searchable, Kuala Lumpur first), which decides when the brief arrives and how the streak counts days. Appearance: light, dark or match my device, and a colour palette (Classic yellow and navy, Lagoon, Orchid or Fern), saved to your account so it follows you to every device. The same picker sits in the side rail (phones: the sun/moon in the top bar), and the new look spreads from where you clicked. Email me my morning brief. All saved as you change them. |
 | **AI use** | Today's AI use against your daily allowance (a rolling 24 hours), the number of AI requests, and a clear note if an administrator has switched AI off for you. |
 | **Security** | Change your password (signs out every other device). Where you're signed in: each device ("Chrome on macOS"), its address and when it was last active, with **Sign out everywhere else**. |
 | **Your data** | **Download my data**: one JSON file with your account, profile, imports, radar, briefs, matches, kits, CV, portfolio and its messages, pictures (by address), tracker, goal, brief days, notifications and AI use. Never passwords or session secrets. **Delete my account**: asks for your password, then removes everything, including stored pictures, imported CV files and preview images. Anonymous AI usage counts are kept for billing. |
@@ -67,7 +67,7 @@ rebuilds it from scratch.
 
 | Method | Path | What it does |
 |---|---|---|
-| GET / PATCH | `/api/v1/auth/me` | Your account; change name, time zone, theme, email digest |
+| GET / PATCH | `/api/v1/auth/me` | Your account; change name, time zone, theme, palette, email digest |
 | POST | `/api/v1/auth/password` | Change your password |
 | GET | `/api/v1/auth/sessions` | Where you're signed in |
 | POST | `/api/v1/auth/sessions/sign-out-others` | Sign out every other device |

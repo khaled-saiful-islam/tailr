@@ -53,7 +53,7 @@ export function SettingsPage() {
             {user.is_demo && (
               <p
                 role="note"
-                className="rounded-panel border border-tape-deep/40 bg-tape/15 px-5 py-4 text-[0.9375rem]"
+                className="rounded-panel border border-tape/40 bg-tape-soft px-5 py-4 text-[0.9375rem]"
               >
                 <span className="font-semibold">
                   This is a shared demo account.

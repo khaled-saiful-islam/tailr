@@ -111,6 +111,17 @@ async def test_update_me(signed_in: httpx.AsyncClient) -> None:
     assert bad.status_code == 422
 
 
+async def test_palette_follows_the_account(signed_in: httpx.AsyncClient) -> None:
+    assert (await signed_in.get(ME)).json()["palette"] == "tape"
+    changed = await signed_in.patch(ME, json={"palette": "lagoon"})
+    assert changed.status_code == 200
+    assert changed.json()["palette"] == "lagoon"
+    assert changed.json()["theme"] == "system"  # one doesn't reset the other
+    assert (await signed_in.get(ME)).json()["palette"] == "lagoon"
+    unknown = await signed_in.patch(ME, json={"palette": "neon"})
+    assert unknown.status_code == 422
+
+
 async def test_change_password(signed_in: httpx.AsyncClient) -> None:
     wrong = await signed_in.post(
         "/api/v1/auth/password",

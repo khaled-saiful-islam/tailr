@@ -3,9 +3,15 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { relativeTime } from "@/lib/format";
 import { useUpdateMatch, type Match } from "../api";
-import { WORK_MODE, payLabel, placeLabel, sourceLabel } from "../format";
+import {
+  WORK_MODE,
+  foundLabel,
+  payLabel,
+  placeLabel,
+  sourceLabel,
+} from "../format";
 
-/** Company, place, mode, pay and age, as quiet text that wraps. */
+/** Place, mode, pay, when it was posted and when Tailr found it, as quiet text that wraps. */
 export function MatchMeta({
   match,
   className,
@@ -22,6 +28,7 @@ export function MatchMeta({
     mode && mode !== place ? mode : null,
     payLabel(job),
     posted ? `${sourceLabel(job.source)}, ${posted}` : sourceLabel(job.source),
+    foundLabel(match),
   ].filter(Boolean);
   return (
     <p

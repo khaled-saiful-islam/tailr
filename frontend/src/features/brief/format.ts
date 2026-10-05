@@ -57,3 +57,30 @@ export const PART_ORDER = [
   "pay",
   "similarity",
 ] as const;
+
+const DAY_MS = 86_400_000;
+
+function startOfDay(date: Date): number {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
+}
+
+/**
+ * When the job reached your list: "Found today", "Found yesterday", "Found 3 days ago".
+ * Jobs you added yourself say "Added". Counts calendar days, as people do.
+ */
+export function foundLabel(
+  match: Pick<Match, "created_at" | "origin">,
+  now: Date = new Date(),
+): string {
+  const verb = match.origin === "pasted" ? "Added" : "Found";
+  const days = Math.round(
+    (startOfDay(now) - startOfDay(new Date(match.created_at))) / DAY_MS,
+  );
+  if (days <= 0) return `${verb} today`;
+  if (days === 1) return `${verb} yesterday`;
+  return `${verb} ${days} days ago`;
+}

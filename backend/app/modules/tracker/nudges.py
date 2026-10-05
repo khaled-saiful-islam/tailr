@@ -66,7 +66,7 @@ async def collect(now: datetime | None = None) -> list[Nudge]:
                     kind="tracker.follow_up",
                     title=f"Follow up with {job.company}?",
                     body=f"You applied for {job.title} a week ago. Tailr can draft a short note.",
-                    link=f"/applications?open={app.id}",
+                    link=f"/applications/{app.id}",
                 )
             )
         soon = (
@@ -94,7 +94,7 @@ async def collect(now: datetime | None = None) -> list[Nudge]:
                     kind="tracker.next_step",
                     title=f"{step}: {job.company}",
                     body=f"{job.title}, {when(moment, user.timezone)}.",
-                    link=f"/applications?open={app.id}",
+                    link=f"/applications/{app.id}",
                 )
             )
     return nudges

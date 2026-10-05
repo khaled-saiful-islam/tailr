@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
+import { Clock, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +13,9 @@ import { JobGroups } from "./components/JobGroups";
 import { useFindNow } from "./useFindNow";
 
 type Tab = "all" | MatchStatus;
+
+/** How long found jobs stay listed, until the first page says (the server decides). */
+const KEPT_DAYS = 14;
 
 const TABS: { key: Tab; label: string; empty: string }[] = [
   { key: "all", label: "All", empty: "" },
@@ -86,6 +89,7 @@ export function JobsPage() {
   }, [searching, client]);
 
   const counts = list.data?.pages[0]?.counts ?? {};
+  const keptDays = list.data?.pages[0]?.kept_days ?? KEPT_DAYS;
   const countFor = (key: Tab) =>
     key === "all"
       ? (counts.new ?? 0) + (counts.seen ?? 0) + (counts.saved ?? 0)
@@ -113,14 +117,17 @@ export function JobsPage() {
         <div className="min-w-[min(100%,22rem)] flex-1">
           <h1 className="type-title">Jobs</h1>
           <p className="mt-2 max-w-[40rem] text-ink-2">
-            Every job Tailr found for you on LinkedIn and JobStreet, best match
+            Jobs Tailr found for you on LinkedIn and JobStreet, best match
             first. Tailr adds new ones every morning.
           </p>
-          {next && ready && (
-            <p className="mt-1 text-[0.875rem] text-ink-3">
-              Next search: {next}.
-            </p>
-          )}
+          <p className="mt-2 flex max-w-[40rem] gap-2 text-[0.875rem] text-ink-3">
+            <Clock className="mt-0.5 size-4 shrink-0" aria-hidden />
+            <span>
+              Jobs stay here for {keptDays} days after Tailr finds them. Jobs
+              you save or add yourself stay until you remove them.
+              {next && ready ? ` Next search: ${next}.` : ""}
+            </span>
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           {findButton}
@@ -211,7 +218,9 @@ export function JobsPage() {
           />
         ) : searching ? null : (
           <Empty
-            title="No jobs yet"
+            title={
+              brief ? `No jobs from the last ${keptDays} days` : "No jobs yet"
+            }
             body={`Tailr searches every morning${next ? `; the next search is ${next}` : ""}. Or search right now; it runs in the background while you carry on.`}
             action={
               <Button onClick={findNow} loading={starting}>

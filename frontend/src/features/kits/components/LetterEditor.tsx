@@ -1,8 +1,8 @@
 import { Labelled, TextArea } from "@/components/ui/controls";
-import { Field } from "@/components/ui/Field";
 import { cn } from "@/lib/cn";
 import type { CoverLetter } from "../api";
 import { letterWordCount, setParagraph } from "../edit";
+import { OneLineField } from "./OneLineField";
 
 const WORD_LIMIT = 300;
 
@@ -16,13 +16,11 @@ export function LetterEditor({ letter, onChange }: LetterEditorProps) {
   const words = letterWordCount(letter);
   return (
     <div className="flex flex-col gap-5">
-      <Field
+      <OneLineField
+        id="kit-greeting"
         label="Greeting"
         value={letter.greeting}
-        onChange={(event) => {
-          const greeting = event.target.value;
-          onChange((l) => ({ ...l, greeting }));
-        }}
+        onChange={(greeting) => onChange((l) => ({ ...l, greeting }))}
       />
       {(letter.paragraphs ?? []).map((paragraph, index) => (
         <Labelled
@@ -40,13 +38,11 @@ export function LetterEditor({ letter, onChange }: LetterEditorProps) {
           />
         </Labelled>
       ))}
-      <Field
+      <OneLineField
+        id="kit-closing"
         label="Closing"
         value={letter.closing}
-        onChange={(event) => {
-          const closing = event.target.value;
-          onChange((l) => ({ ...l, closing }));
-        }}
+        onChange={(closing) => onChange((l) => ({ ...l, closing }))}
       />
       <p
         className={cn(

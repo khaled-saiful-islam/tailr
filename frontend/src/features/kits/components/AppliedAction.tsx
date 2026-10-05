@@ -15,7 +15,13 @@ function shortDate(iso: string): string {
 }
 
 /** After sending the application on the job site: one tap to record it. */
-export function AppliedAction({ kit }: { kit: Kit }) {
+export function AppliedAction({
+  kit,
+  primary = false,
+}: {
+  kit: Kit;
+  primary?: boolean;
+}) {
   const track = useTrack();
   const update = useUpdateApplication();
   const application = kit.application;
@@ -31,8 +37,8 @@ export function AppliedAction({ kit }: { kit: Kit }) {
         : STAGE_LABEL[application.stage];
     return (
       <Link
-        to={`/applications?open=${application.id}`}
-        className="inline-flex h-10 items-center gap-2 rounded-full bg-surface-2 px-4 text-[0.9375rem] font-medium text-ink hover:bg-surface-3"
+        to={`/applications/${application.id}`}
+        className="inline-flex min-h-8 items-center gap-2 rounded-full bg-surface-2 px-3.5 py-1 text-[0.875rem] font-medium text-ink hover:bg-surface-3"
       >
         <Check className="size-4 text-fit-strong" aria-hidden />
         {label}
@@ -54,8 +60,9 @@ export function AppliedAction({ kit }: { kit: Kit }) {
   if (!application && !kit.match_id) return null;
   return (
     <Button
-      variant="secondary"
-      icon={<Send className="size-4" />}
+      size="sm"
+      variant={primary ? "primary" : "secondary"}
+      icon={<Send className="size-3.5" />}
       loading={update.isPending || track.isPending}
       onClick={apply}
     >

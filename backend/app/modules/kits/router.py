@@ -7,6 +7,9 @@ from fastapi import APIRouter, status
 from fastapi.responses import HTMLResponse, Response
 
 from app.api.deps import CurrentUser, DbSession
+from app.modules.background.schemas import TaskOut
+from app.modules.kits.interview import InterviewService
+from app.modules.kits.interview_schemas import FeedbackRequest, InterviewPrepOut, MarkUpdate
 from app.modules.kits.schemas import KitCreate, KitOut, KitRegenerate, KitSummaryOut, KitUpdate
 from app.modules.kits.service import KitService
 
@@ -47,6 +50,39 @@ async def regenerate_kit(
     kit_id: uuid.UUID, data: KitRegenerate, user: CurrentUser, db: DbSession
 ) -> KitOut:
     return await KitService(db).regenerate(user, kit_id, data)
+
+
+@router.get("/{kit_id}/interview", response_model=InterviewPrepOut)
+async def interview_prep(kit_id: uuid.UUID, user: CurrentUser, db: DbSession) -> InterviewPrepOut:
+    """Interview prep for this application: the five questions, the full plan if built,
+    your last practice answer for each question, and the ones you've marked."""
+    return await InterviewService(db).get(user, kit_id)
+
+
+@router.post(
+    "/{kit_id}/interview/plan", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED
+)
+async def build_interview_plan(kit_id: uuid.UUID, user: CurrentUser, db: DbSession) -> TaskOut:
+    """Build the full interview plan in the background (about a minute); notifies when done."""
+    return await InterviewService(db).start_plan(user, kit_id)
+
+
+@router.post(
+    "/{kit_id}/interview/feedback", response_model=TaskOut, status_code=status.HTTP_202_ACCEPTED
+)
+async def practice_feedback(
+    kit_id: uuid.UUID, data: FeedbackRequest, user: CurrentUser, db: DbSession
+) -> TaskOut:
+    """Feedback on a practice answer, in the background. The last attempt is kept."""
+    return await InterviewService(db).start_feedback(user, kit_id, data)
+
+
+@router.put("/{kit_id}/interview/marks", response_model=InterviewPrepOut)
+async def mark_question(
+    kit_id: uuid.UUID, data: MarkUpdate, user: CurrentUser, db: DbSession
+) -> InterviewPrepOut:
+    """Mark a question "confident" or "practice" (or clear the mark with null)."""
+    return await InterviewService(db).set_mark(user, kit_id, data)
 
 
 @router.get("/{kit_id}/{which}.html", response_class=HTMLResponse)

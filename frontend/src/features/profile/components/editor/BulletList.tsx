@@ -226,7 +226,7 @@ function BulletRow({
               )}
               {answer && (
                 <>
-                  <p className="type-label text-chalk">Suggestion</p>
+                  <p className="type-label text-chalk">Tailr's suggestion</p>
                   <p className="chalk-mark mt-1.5 text-[0.9375rem] leading-relaxed">
                     {answer.suggestion}
                   </p>

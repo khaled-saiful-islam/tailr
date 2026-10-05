@@ -8,14 +8,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Tailr: find jobs that match you</title>
     <script>
-      // Apply the saved theme before first paint, so there is no flash.
+      // Apply the saved theme and palette before first paint, so there is no flash.
       (function () {
+        var root = document.documentElement;
         try {
           var saved = localStorage.getItem("tailr.theme") || "system";
           var dark = saved === "dark" || (saved === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-          document.documentElement.dataset.theme = dark ? "dark" : "light";
+          root.dataset.theme = dark ? "dark" : "light";
+          var palette = localStorage.getItem("tailr.palette");
+          root.dataset.palette = /^(tape|lagoon|orchid|fern)$/.test(palette || "") ? palette : "tape";
         } catch (e) {
-          document.documentElement.dataset.theme = "light";
+          root.dataset.theme = "light";
+          root.dataset.palette = "tape";
         }
       })();
     </script>
