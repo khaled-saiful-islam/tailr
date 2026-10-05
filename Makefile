@@ -30,7 +30,7 @@ PY_TEST := $(COMPOSE) run --rm --entrypoint "" -v "$(PWD)/backend:/srv" \
 NODE := docker run --rm -v "$(PWD)/frontend:/app" -v tailr-node-modules:/app/node_modules -w /app node:22-alpine sh -c
 
 .PHONY: help setup up down restart dev logs ps migrate migration seed demo test test-backend test-frontend \
-	lint fmt typecheck gen-api e2e shell psql redis-cli reset clean _banner _env
+	lint fmt typecheck gen-api e2e screenshots shell psql redis-cli reset clean _banner _env
 
 help: ## Show this help
 	@echo "$(BOLD)Tailr$(RESET) — jobs that fit, applications made to measure"
@@ -70,8 +70,8 @@ _banner:
 down: ## Stop everything (data is kept)
 	@$(COMPOSE) down
 
-restart: ## Restart the app containers
-	@$(COMPOSE) restart backend worker scheduler frontend
+restart: ## Restart the app containers, picking up changes to .env
+	@$(COMPOSE) up -d --force-recreate --no-deps --wait backend worker scheduler frontend
 
 dev: _env ## Hot reload: Python services reload on save, Vite serves the UI on DEV_PORT
 	@$(COMPOSE_DEV) up -d --build --wait db redis mailpit renderer backend worker scheduler
@@ -112,6 +112,13 @@ e2e: ## Browser smoke tests with accessibility checks (needs `make up` and `make
 		-v "$(PWD)/e2e:/e2e" -v tailr-e2e-modules:/e2e/node_modules -w /e2e \
 		mcr.microsoft.com/playwright:v1.63.0-noble \
 		sh -c "npm ci --no-audit --no-fund --silent && npx playwright test"
+
+screenshots: ## Retake the README screenshots from the demo account (needs `make up` and `make demo`)
+	@docker run --rm --init --ipc=host --network tailr_default -e BASE_URL=http://frontend \
+		-e SCREENSHOTS_DIR=/screenshots -v "$(PWD)/docs/screenshots:/screenshots" \
+		-v "$(PWD)/e2e:/e2e" -v tailr-e2e-modules:/e2e/node_modules -w /e2e \
+		mcr.microsoft.com/playwright:v1.63.0-noble \
+		sh -c "npm ci --no-audit --no-fund --silent && npx playwright test --config screenshots.config.ts"
 
 lint: ## Lint and type-check backend and frontend
 	@$(COMPOSE) build -q --build-arg INSTALL_DEV=true backend

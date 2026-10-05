@@ -17,7 +17,14 @@ to keep up to date.
 
 ### Reading and review (`/profile/import/:id`)
 
-Live progress, pushed over server-sent events (with polling as a fallback):
+While the CV is read, a **scanner** shows it: a CV page with a beam sweeping across it, the
+parts Tailr recognises appearing beside it, and a status in words ("Finding your job titles
+and employers", "Spotting achievements with numbers", ...), with the time so far ("It usually
+takes 20 to 40 seconds, a little longer for a scan") and four steps: Upload, Read the text,
+Understand it, Ready. Progress is pushed over server-sent events (polling as a fallback),
+and reading continues on the server if you leave: **Your CV is read** (or **We couldn't
+read that CV**) arrives as a notification, and the read shows in **Working on it** (see
+[background work](10-background-work.md)).
 
 | Stage | What happens |
 |---|---|
@@ -41,10 +48,17 @@ they choose **Add to my profile** (merge: adds what's new, never overwrites thei
   plain-language hints; click one to jump to its section.
 - **Achievement hints** on each bullet: *Fill in the [brackets]*, *Starts weakly*,
   *No number yet*, *Too short*, *Long: trim it*.
-- **Bullet Coach** (✨ on any achievement): rewrites it with a strong verb and visible impact,
-  **never inventing numbers**; where a number would help it puts a `[placeholder]` and asks
-  for it. Use it, try again, or keep yours.
-- **Write it for me** (Summary): a 40–80 word summary built only from profile facts.
+- **Improve this point** (✨ on any achievement): rewrites it with a strong verb and visible
+  impact, **never inventing numbers**; where a number would help it puts a `[placeholder]`
+  and asks for it. It runs in the background ("Writing a stronger version… You can keep
+  editing."), so every other field stays editable; the answer appears under the line as
+  **Tailr's suggestion**: **Use this**, **Try again** or **Keep mine**. Leave the page and
+  come back within the hour and the answer for that same line is still there.
+- **Write it for me** (Summary): a 40–80 word summary built only from profile facts, also in
+  the background ("Writing…"); it appears as **Tailr wrote this from your profile** with
+  **Use this** or **Keep mine**.
+- Text Tailr wrote is shown as a tinted note with a sparkle and a label, never underlined,
+  so it can't be mistaken for a link.
 - **Live preview**: an A4 page in the same single-column, ATS-safe layout Tailr's PDFs use
   (beside the editor on wide screens; the Preview button elsewhere).
 
@@ -96,4 +110,6 @@ religion. Generated documents never include them.
 - `tests/integration/test_profile.py`: save/versioning/conflicts, PDF import end to end (real
   PDF, fake AI), image import via vision, paste + merge, failure messages, bad uploads,
   privacy between users, coach, summary.
-- Frontend: `features/profile/__tests__/types.test.ts`, `lib/__tests__/list.test.ts`.
+- Frontend: `features/profile/__tests__/types.test.ts` and `reading.test.ts` (the scanner's
+  timing), `features/tasks/__tests__/useResumableTask.test.ts` (results kept across visits),
+  `lib/__tests__/list.test.ts`.

@@ -11,7 +11,7 @@ to scale on its own.
 |---|---|---|
 | `tailr-frontend` | nginx + built SPA | Serves the app, proxies `/api` to the backend (SSE unbuffered) |
 | `tailr-backend` | `backend/` | HTTP API; runs migrations on start (`RUN_MIGRATIONS=1`) and seeds the admin |
-| `tailr-worker` | `backend/` | taskiq workers: CV imports, job fetching, matching, kits, email |
+| `tailr-worker` | `backend/` | taskiq workers: CV imports, job searches, matching, kits, CV edits, background tasks, email |
 | `tailr-scheduler` | `backend/` | taskiq scheduler; must run as **exactly one** process |
 | `tailr-renderer` | `renderer/` | Node + Playwright; HTML → PDF/PNG; network-isolated per job |
 | `tailr-db` | pgvector/pgvector:pg16 | Postgres with the `vector` extension; creates `tailr_test` on first boot |
@@ -78,8 +78,12 @@ app/
   (`ai/schema.py` inlines `$ref`s and marks every property required and nullable where
   optional), validates the answer, and does one repair round if it doesn't fit.
 - Retries with exponential backoff on timeouts, 429 and 5xx; a semaphore limits concurrency.
-- Every call is metered in `ai_runs` (purpose, model, tokens, latency, status). A per-user
-  daily token budget (`AI_DAILY_BUDGET_TOKENS`) protects cost.
+- Every call is metered in `ai_runs` (purpose, model, tokens, latency, status).
+- Before every call the client checks the user's AI switch (`ai_enabled`, set by an
+  administrator; `ai_disabled`) and their daily allowance (a rolling 24 hours; their own
+  `ai_daily_budget` or `AI_DAILY_BUDGET_TOKENS`; `ai_budget`). While a call runs, an
+  estimate is held in Redis (`reserve` / `release`), so calls running in parallel can't
+  overshoot the allowance together.
 - Models: `ilmu-v3.1` (writing, extraction), `ilmu-mini-v3.3` (cheap tasks),
   `ilmu-vision-v1.3` (scans), `bge-m3` (embeddings, 1024-d), `bge-reranker`.
 
@@ -105,19 +109,73 @@ CV edits, so the app has one "working on it" list. See
 
 ### Live updates
 
-Workers publish small events (`kit.step`, `brief.ready`, …) to Redis channel
-`events:user:<id>`. `GET /api/v1/events` streams them to the browser as Server-Sent Events.
-Events are hints: the UI refetches the real data, so a missed event never loses state.
+Workers publish small events to Redis channel `events:user:<id>`: `brief.progress`,
+`brief.ready`, `profile.import`, `kit.progress`, `kit.step`, `kit.ready`, `cv.ready`,
+`task` and `notification`. `GET /api/v1/events` streams them to the browser as Server-Sent
+Events. Events are hints: the UI refetches the real data (and polls gently while work is
+running), so a missed event never loses state.
+
+### Public pages
+
+`/p/<address>` (portfolio) and `/cv/<address>` (shared CV) are served by the backend so link
+previews (which don't run JavaScript) get real tags. `public_profile/shell.py` fetches the
+built public shell (`public.html`, a second, light Vite entry), caches it for a minute, and
+writes the title, Open Graph and Twitter tags, canonical URL, robots, JSON-LD and the page
+data (as JSON) into it, plus a plain-HTML version in `#root`.
+
+Which shell: `WEB_SHELL_URL` (the frontend container's built file) for every request,
+except in `make dev`, where requests that came through the Vite dev server carry
+`X-Tailr-Dev-Shell: 1` (added by Vite's proxy) and use `DEV_SHELL_URL` (Vite's own,
+hot-reloading shell). Production never sets `DEV_SHELL_URL`, so the header does nothing
+there; and pages opened through nginx keep working while `make dev` runs.
 
 ## Frontend
 
 - **Feature folders** (`src/features/<feature>`) own their pages, components and API hooks.
+  The app frame is `src/app/` (router, providers, layouts, nav, theme and appearance).
 - **Typed API**: `make gen-api` turns the backend's OpenAPI document into
   `src/lib/api/schema.d.ts`; `openapi-fetch` uses it, so a renamed field breaks the build.
 - **Server state** lives in TanStack Query; there is no global client store.
-- **Design system** in `src/components/ui`, driven by semantic CSS tokens
-  (`src/styles/index.css`) with light and dark themes.
-- Pages are lazy-loaded per route.
+- **Background work** is followed through `src/features/tasks/` (`useBackgroundTask`,
+  `useLatestTask`, `useResumableTask`, the tray and alerts); see
+  [background work](features/10-background-work.md).
+- Pages are lazy-loaded per route. Old addresses redirect (`/radar`, `/tracker`,
+  `/kits/:id`, `/profile/portfolio`, and `/applications?open=<id>` to `/applications/<id>`).
+- The shell (`layouts/AppShell.tsx`): a side rail on wide screens (nav, **Working on it**,
+  the bell, Appearance, the account) and, on phones, a top bar with a five-tab bar at the
+  bottom. The nav lights **Jobs** on `/jobs/*` and `/apply/*`, **Applications** on
+  `/applications/*` (`nav.ts`).
+
+### Design tokens and appearance
+
+- Components use semantic tokens only (`src/styles/index.css`): `canvas`, `rail`,
+  `surface`/`surface-2`/`surface-3`, `ink`/`ink-2`/`ink-3`, `line`/`line-strong`,
+  `primary`, `tape` (the measuring-tape accent) with `tape-deep`/`tape-ink`/`tape-soft`,
+  `chalk`/`chalk-soft` (links and focus), `pin` (errors), the `fit-*` colours for match
+  levels, `overlay`, `shade`, `shadow-sheet`, `shadow-lift`, `glow-1`/`glow-2` and
+  `grid-dot`. No hex values in components.
+- Two attributes on `<html>` choose the values: `data-theme` (`light` or `dark`) and
+  `data-palette` (`tape`, `lagoon`, `orchid`, `fern`). A small script in `index.html` sets
+  both before the first paint from the last choice on this device; the account's choice is
+  applied on sign-in (`src/app/appearance.ts`, `features/settings/useAppearance.ts`).
+  Palettes override accents and tint neutrals; fit colours and shadows come from the theme.
+- Every page has a faint glow of the palette at the top (`glow-1`, `glow-2`). In dark mode
+  cards get a soft light along their top edge and the canvas a fine grain, so dark pages
+  have depth rather than flat colour.
+- Contrast: every text token meets WCAG AA on canvas and surfaces in all eight
+  combinations.
+
+### Motion
+
+- `MotionConfig reducedMotion="user"` wraps the app; everything respects reduced motion.
+- Route changes fade and rise (about 260 ms) in the shell; the nav's active marker and the
+  phone tab pill slide between items (`layoutId`).
+- Shared primitives in `src/components/motion/`: `Reveal` (fade and rise into view, once),
+  `Stagger`/`StaggerItem` (lists arriving one by one), `CountUp` (numbers counting up).
+- CSS utilities: `hover-lift` (cards rise slightly on hover), `press` (a quick give under
+  the finger; filled buttons use it), `animate-pop` (menus and popovers open from their
+  trigger).
+- Pages pick one orchestrated moment rather than animating everything.
 
 ## Data
 
@@ -139,7 +197,11 @@ quick score plus fifteen AI reviews.
 | Passwords | Argon2id, rehash on login when parameters change |
 | Sessions | Random token, hashed at rest, httpOnly cookie, 30-day expiry, purged nightly |
 | CSRF | Origin check on writes, SameSite=Lax |
-| Brute force | Per-IP + identifier rate limit on sign-in |
+| Brute force | Per-IP + identifier rate limit on sign-in; 5 password checks per account per 15 minutes |
+| Client address | nginx sets `X-Forwarded-For` to the address it saw, never one the visitor sent (rate limits key on it) |
+| Fetching links | `core/safe_http.py`: http(s) on standard ports only, every resolved address public, redirects re-checked, size capped; localhost and private IP literals refused before any request |
+| Public pages | Strict Content Security Policy; owner's email never in the page; contact form with honeypot, signed time stamp and per-sender limits |
+| AI cost | Per-user switch and daily allowance, with in-flight reservations |
 | Secrets | `.env` only; production refuses default secret/admin password |
 | Headers | nosniff, frame-deny, referrer policy, permissions policy (nginx) |
 | Renderer | Internal only; all network requests blocked while rendering |

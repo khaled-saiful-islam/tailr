@@ -198,17 +198,22 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
       <dl className="mt-6 flex flex-col gap-3">
         {PART_ORDER.filter((part) => detail.parts[part] !== undefined).map(
           (part, index) => (
-            <div key={part}>
-              <div className="flex items-baseline justify-between text-[0.875rem]">
-                <dt className="text-ink-2">{PART_LABEL[part]}</dt>
-                <dd className="type-figure">
-                  <CountUp
-                    value={detail.parts[part] ?? 0}
-                    delay={0.15 + index * 0.06}
-                  />
-                </dd>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3">
+            // A <dl> row holds its <dt> and <dd> directly; the bar is a decorative third cell.
+            <div
+              key={part}
+              className="grid grid-cols-[1fr_auto] items-baseline gap-x-3 text-[0.875rem]"
+            >
+              <dt className="text-ink-2">{PART_LABEL[part]}</dt>
+              <dd className="type-figure">
+                <CountUp
+                  value={detail.parts[part] ?? 0}
+                  delay={0.15 + index * 0.06}
+                />
+              </dd>
+              <dd
+                aria-hidden
+                className="col-span-2 mt-1 h-1.5 overflow-hidden rounded-full bg-surface-3"
+              >
                 <motion.div
                   className="h-full rounded-full bg-ink"
                   initial={{ width: 0 }}
@@ -219,7 +224,7 @@ function FitPanel({ detail }: { detail: MatchDetail }) {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                 />
-              </div>
+              </dd>
             </div>
           ),
         )}

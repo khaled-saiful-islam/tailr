@@ -26,14 +26,18 @@ recorded responses in `backend/tests/fixtures/sources/`.
 ## Being a good citizen
 
 - **Shared cache:** each search is cached for an hour (`SOURCE_SEARCH_CACHE_SECONDS`), so
-  many users with similar radars cost one request.
+  many users with similar job preferences cost one request.
 - **Rate limit:** `SOURCE_REQUESTS_PER_MINUTE` per site across all workers (Redis), plus a
   short random pause before each request and at most two requests at a time per site.
 - **Circuit breaker:** three failures in a row (or a 403/429/999) rest the site for ten
   minutes; the UI says it isn't answering instead of retrying hard.
 - **Kill switch:** remove a key from `SOURCES_ENABLED` to switch a site off everywhere.
 - **Run log:** every search and detail fetch is recorded in `source_runs` (status, results,
-  duration, error), to spot a site that changed its pages.
+  duration, error), to spot a site that changed its pages. Admin › Overview turns the last
+  24 hours into **job-site health** per site (Healthy, Worth a look, Failing).
+- **On demand only:** besides the daily update, a site is searched only when someone asks:
+  **Find new jobs now**, **Save and find jobs**, or **Check now** on Job preferences (which
+  never runs just because the page opened).
 
 ## Normalised data
 

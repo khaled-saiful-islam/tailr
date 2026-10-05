@@ -1,38 +1,46 @@
-# Job Radar
+# Job preferences (the radar)
 
 **Status:** shipped in M2.
 
 > **Users see:** *Job preferences* (`/preferences`). "Radar" is the internal name. Saving with **Save and find jobs** starts a search straight away and opens the Jobs page.
 
 The radar is what Tailr looks for every morning: which roles, where, at what level and pay,
-what to skip, and when the brief arrives. A quick look (**Check now**) scans real job sites
-for the current settings, so you see the effect of your choices before searching for real.
-It runs only when you ask.
+what to skip, and when the daily search runs. A quick look (**Check now**) scans the real job
+sites for the current settings, so you see the effect of your choices before searching for
+real. It runs only when you ask.
 
-## What users see (`/radar`)
+## What users see (`/preferences`)
 
 | Section | Settings |
 |---|---|
-| **Roles** | Up to six job titles. **Suggest from my profile** (AI) proposes titles with a one-line reason and the levels your experience fits. |
-| **Where** | Anywhere in Malaysia, or chosen states (a state covers its cities: Selangor includes Petaling Jaya, Cyberjaya, Shah Alam…). On-site, hybrid and/or remote; remote jobs are always kept when remote is allowed. |
-| **Level and job type** | Intern, entry, mid, senior, lead, manager (none means any). Full-time, contract, part-time, internship. |
-| **Pay** | Lowest monthly salary in RM (slider) and whether to keep jobs that don't show pay. |
-| **Must-haves and deal-breakers** | Words a job must mention, words to skip, companies to skip. |
-| **Freshness and fit** | Last 24 hours, 3 days or a week; the minimum Fit % for the brief (used from M4). |
+| **What job?** | Up to six job titles, and words a job must mention (optional). **Suggest from my CV** (AI, in the background: "Suggesting…") proposes titles, each with a one-line reason, and the levels your experience fits; they stay on the page until you **Hide suggestions**, even if you leave and come back within the hour. |
+| **Where?** | Anywhere in Malaysia, or chosen states (a state covers its cities: Selangor includes Petaling Jaya, Cyberjaya, Shah Alam…). On-site, hybrid and/or remote; remote jobs are always kept when remote is allowed. |
+| **Pay and job type** | Lowest monthly salary in RM (slider) and **Include jobs that don't show a salary**. Level: intern, entry, mid, senior, lead, manager (none means any). Job type: full-time, contract, part-time, internship. |
+| **Leave out** | Words to skip and companies to skip. |
+| **Minimum match** | The match % above which jobs are your good matches (30–95%); the rest still show, lower on the Jobs page. |
 | **Job sites** | LinkedIn and JobStreet on/off; Indeed and Glassdoor shown as needing Tailr Desktop (coming soon). |
-| **Morning brief** | Time (5:00 am to 11:30 am), days of the week, email copy, pause. Shows the next brief time. |
+| **Daily job update** | Time (5:00 am to 11:30 am), days of the week, **Only jobs posted in the** last 24 hours / 3 days / week, **Email me the update**, **Pause the daily update**. Shows the next update time. |
 
-**Radar preview** (beside the settings, on top on phones): the radar scope with one contact
-per matching job, the count ("16 fresh jobs match right now, from 54 found in the last 3
-days"), results per site, *why* the others were left out (in plain words), and the newest
-matches linking to the job pages. The page never searches on its own: it shows the last
-check and when it ran ("Checked 3 hours ago", from any visit or device), says "You've
-changed your preferences since then" when they differ, and searches again only on
-**Check now** / **Check again**. A check runs in the background, so you can keep editing.
+**Save and find jobs** saves the preferences, starts a search straight away and opens the
+Jobs page, where the search shows as a banner while it runs.
 
-First visit: the radar is pre-filled from the profile (latest title without "Senior",
-city mapped to its state, level from the title). **Start my radar** saves it and completes
-onboarding. After that, changes autosave with version checks (like the profile).
+**A quick look** (beside the settings, on top on phones): the radar scope with one contact
+per matching job, the count ("16 recent jobs match your preferences, out of 54 posted in the
+last 3 days"), results per site, *why* the others were left out (in plain words), and the
+newest jobs found, linking to the job sites. It's only a preview: nothing is added to the
+Jobs page. The page never searches on its own:
+
+- It shows the last check and when it ran ("Checked 3 hours ago"), from any visit or device.
+- When your preferences changed since that check: "You've changed your preferences since
+  then. **Check again**".
+- It searches only on **Check now** (first time) or **Check again**. A check runs in the
+  background (about half a minute) and the rest of the page stays editable; the previous
+  answer stays on screen while a new one runs.
+
+First visit: the preferences are filled in from the profile (latest title without "Senior",
+city mapped to its state, level from the title), with a note "We filled this in from your
+CV". **Save and find jobs** saves them and completes onboarding. After that, changes autosave
+with version checks (like the profile).
 
 ## How the preview works
 

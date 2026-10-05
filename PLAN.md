@@ -3,7 +3,7 @@
 > **Jobs that fit. Applications made to measure.**
 > Every morning Tailr finds fresh jobs that fit your profile, scores the fit, and — when you pick one — tailors a resume, cover letter and apply kit for that exact job. You apply yourself.
 
-Status: **v1 in progress** · Owner: Khaled · Started 2026-10-04
+Status: **v1 built (M0 to M9), with the improvements in §4.1** · Owner: Khaled · Started 2026-10-04
 
 ---
 
@@ -200,6 +200,18 @@ ruff + mypy (backend), eslint + tsc (frontend) · pytest with a **separate test 
 - [x] **M9 Settings, admin & hand-over** — settings (name, timezone, theme, digest, password, export, delete), admin panel (users, AI usage and budgets, AI on/off, disable accounts), demo seed (`make demo`), docs, coverage, Playwright smoke, UI audit at 4 widths, accessibility pass
 
 Each milestone: tests green → docs updated → commit → push to GitHub. Every screen works on phones.
+
+### 4.1 After M9 (from using it)
+
+- [x] **Stamp**, a fifth portfolio design (neo-brutalist print); the other four stay (`8361610`)
+- [x] **Plain-language pass** — no internal names on screen (docs/ux-language.md); every search saves all its jobs to the Jobs page (good matches first); a three-step Get started on Home; renamed routes with redirects; a CV scanner while a CV is read (`7209656`)
+- [x] **Background work** — one generic module for slow work (ADR 0004): eight AI and job-site actions answer 202 and run on the worker, the Working on it tray, finish alerts, a slim banner instead of full-page search progress; job preferences check only on **Check now** (docs/features/10-background-work.md, `90d9f33`)
+- [x] **Public pages in `make dev`** keep the built shell on :8400 and the hot-reloading one on :8403 (`1155dad`)
+- [x] **Redesign** — four colour palettes in light and dark with an Appearance picker, motion primitives and page transitions, My applications with Needs you now and a page per application, Your application with How it's written and the trust strip, Tailr's take instead of an underline, jobs kept 14 days (`e392582`)
+- [x] **Interview prep v2** — a full plan (pitch, 12 to 17 questions in five kinds with cited stories, skills to explain, questions to ask, checklist), practice mode, typed-answer feedback, confidence marks; numbers checks, one story per fact set, an honesty and relevance judge, fill-in prompts and a pitch fallback (`e392582`, `1aae737`)
+- [ ] Keep "used or dismissed" for suggestions on the server, so a dismissed draft doesn't come back on another device
+- [ ] Move the older pipelines (searches, CV reads, kits, CV edits) onto the generic background module, if keeping two kinds of "running" state becomes a burden
+- [ ] Desktop helper for Indeed and Glassdoor, Chrome extension, voice mock interviews (roadmap, §1.4)
 
 ## 5. Risks
 

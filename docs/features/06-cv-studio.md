@@ -6,7 +6,7 @@
 
 A CV made from the profile, in one of five print-quality designs. Edit it by hand or
 with AI (every line checked against the profile), download it as a PDF, or share a
-link. Profile, CV and Portfolio sit together under **Profile** as tabs.
+link. **My profile**, **My CV** and **My website** sit together under **Profile** as tabs.
 
 ## What users see (`/profile/cv`)
 
@@ -27,10 +27,11 @@ link. Profile, CV and Portfolio sit together under **Profile** as tabs.
   - Six colours, photo (optional; initials otherwise), spacing (comfortable or compact),
     paper (A4 or US Letter), headings in English or Bahasa Malaysia, show email, show
     phone (own downloads only), and which sections appear.
-- **Words**: the same editor as the Apply Kit (headline, summary, every line with the
+- **Words**: the same editor as Your application (headline, summary, every line with the
   profile facts it came from, skills). The user is the author: their edits aren't
   re-checked.
-- **AI edits** (run in the background; a notification says when they're done):
+- **Improve with AI** (runs in the background and shows in **Working on it**; a notification
+  says when it's done):
   - Polish every line (impact first, sharper headline, new summary)
   - Fit on one page
   - New headline and summary
@@ -49,7 +50,8 @@ The CV itself, scaled to fit any screen, under a bar with **Download PDF** and *
 (phone share sheet, or copy link / WhatsApp / LinkedIn). Link previews show the CV's
 first page beside the person's name (rendered by the renderer, 1200x630 JPEG, about
 70 KB). A shared CV never shows the phone number. "Anyone with the link" is marked
-`noindex`.
+`noindex`. The page is the built public shell with the CV's link-preview tags filled in
+(see [architecture](../architecture.md#public-pages)).
 
 ## How it works
 
@@ -62,7 +64,7 @@ first page beside the person's name (rendered by the renderer, 1200x630 JPEG, ab
   document and the PDF (printed by the renderer with the chosen paper size).
 - Meridian's side panel reaches the paper's edge on every page: page margins are drawn
   by table header and footer spacers, which repeat on each printed page.
-- AI edits (`app/modules/cv/ai.py`) use the Apply Kit's truth lock: fact-cited lines,
+- AI edits (`app/modules/cv/ai.py`) use the same truth lock as Your application: fact-cited lines,
   numbers must match their facts, the AI judge, skills from the profile only, every
   role kept, restored lines translated faithfully. The headline and summary may only
   use numbers that appear in the profile.

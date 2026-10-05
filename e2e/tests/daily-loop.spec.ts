@@ -25,6 +25,7 @@ test("a job: how well you match, then My applications", async ({ page }) => {
       .or(page.getByRole("link", { name: /open my application/i }))
       .first()).toBeVisible();
   await fitsTheScreen(page);
+  await accessible(page); // a job's page
 
   await page.goto("/applications");
   await expect(

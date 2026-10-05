@@ -44,19 +44,32 @@ Big headings never split a word. A heading marked `data-fit` keeps its designed 
 unless its longest word ("recommendations" on a phone) is wider than the line, then
 shrinks just enough (`src/public/portfolio/fit.ts`).
 
-## The editor (Profile, Portfolio)
+## The editor (Profile › My website)
 
 Tabs: **Publish** (visibility, address, QR, visits), **Design** (template, light or dark,
 one page or several, contact form, WhatsApp, which sections show), **About** (photo,
-availability, story, what you do),
-**Highlights** (numbers, awards, recommendations), **Projects** (covers, the lead project,
-case studies with a gallery), and **Inbox**. Changes save as you type and show in the live
-preview at once, before saving.
+availability, your line, about, "Currently", outside work, what you do), **Highlights**
+(key numbers, awards, recommendations), **Projects** (covers, the lead project, case
+studies with a gallery), and **Messages** (the inbox). Changes save as you type and show in
+the live preview at once, before saving; on phones the editor and preview switch with
+**Edit / Preview**.
 
 ## AI drafting, under the truth rules
 
-"Draft with AI" writes your line and about, your areas, or every case study, from the
-profile. You see each draft before it replaces anything.
+**Draft with AI** writes your line and about, your areas, or every case study, from the
+profile; **Suggest from my profile** (Key numbers) picks up to four results with numbers.
+Both run in the background: the button says **Drafting…** or **Finding numbers…**, a note
+shows the current step ("About 20 seconds. You can keep working; your draft will show up
+here."), and the rest of the editor stays usable. You see each draft before it replaces
+anything: **Use this** or **Dismiss** for a draft (**Not now** for one case study), and
+**Use these** (or **Use these instead**) or **Dismiss** for key numbers, which never
+overwrite yours on arrival. What the AI couldn't write is listed under "Tailr needs more
+from you", with **Got it**.
+
+- Drafts survive leaving the page: a draft that finished in the last hour and wasn't used
+  or dismissed shows again, in the panel it belongs to. Which drafts were used or dismissed
+  is remembered in this browser.
+- A finished website draft also sends a notification (**Your website draft is ready**).
 
 - Only profile facts: numbers must appear in the facts they came from; a case study uses
   only its own project's summary and facts; tools come only from your skills.
@@ -115,8 +128,23 @@ with Reply-To set to the visitor, and shown in the Inbox and as a notification.
 ## Code
 
 - Backend: `app/modules/public_profile/` (`assemble.py` builds the page, `drafting.py`
-  the AI drafts and judge, `contact.py` the form, `shell.py` the head tags),
+  the AI drafts and judge, `contact.py` the form, `shell.py` the shell and head tags),
   `app/modules/media/`, `app/modules/notifications/`.
 - Frontend: `src/public/portfolio/` (site, router, contact form, fitting),
   `src/public/templates/<design>/` (each design's parts), `src/features/public-page/`
-  (the editor).
+  (the editor; `useSuggestions.ts`, `suggestionResults.ts` and `remembered.ts` follow the
+  background drafts).
+
+## Serving the pages
+
+`/p/<address>` (and `/cv/<address>`) are rendered by the backend: it fetches the built
+public shell (`public.html`), writes the link-preview tags and the page data into it, and
+caches the shell for a minute (`public_profile/shell.py`).
+
+- Production and `make up`: the shell comes from the frontend container
+  (`WEB_SHELL_URL`, default `http://frontend/public.html`).
+- `make dev`: pages opened through the Vite dev server (:8403) use its hot-reloading shell.
+  Vite's proxy adds the header `X-Tailr-Dev-Shell: 1`, and the backend uses
+  `DEV_SHELL_URL` (set only in `docker-compose.dev.yml`) for those requests alone. Pages
+  opened on :8400 keep the built shell, so both work side by side. Without `DEV_SHELL_URL`
+  (production) the header does nothing.

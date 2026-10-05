@@ -7,13 +7,38 @@
 | Section | What it does |
 |---|---|
 | **You** | Your name. (Your CV and portfolio use the name in your profile.) |
-| **Preferences** | Time zone (searchable, Kuala Lumpur first), which decides when the brief arrives and how the streak counts days. Appearance: light, dark or match my device, and a colour palette (Classic yellow and navy, Lagoon, Orchid or Fern), saved to your account so it follows you to every device. The same picker sits in the side rail (phones: the sun/moon in the top bar), and the new look spreads from where you clicked. Email me my morning brief. All saved as you change them. |
+| **Preferences** | Time zone (searchable, Kuala Lumpur first), which decides when the daily job update runs and how the streak counts days. **Appearance**: Light, Dark or Match my device, and a colour palette (Classic, Lagoon, Orchid or Fern; see below). **Email me my daily job update**. All saved as you change them. |
 | **AI use** | Today's AI use against your daily allowance (a rolling 24 hours), the number of AI requests, and a clear note if an administrator has switched AI off for you. |
 | **Security** | Change your password (signs out every other device). Where you're signed in: each device ("Chrome on macOS"), its address and when it was last active, with **Sign out everywhere else**. |
-| **Your data** | **Download my data**: one JSON file with your account, profile, imports, radar, briefs, matches, kits, CV, portfolio and its messages, pictures (by address), tracker, goal, brief days, notifications and AI use. Never passwords or session secrets. **Delete my account**: asks for your password, then removes everything, including stored pictures, imported CV files and preview images. Anonymous AI usage counts are kept for billing. |
+| **Your data** | **Download my data**: one JSON file with your account (including theme and palette), profile, imports, job preferences, job searches, jobs (matches), applications you prepared (kits, including interview plans and practice), CV, portfolio and its messages, pictures (by address), My applications, weekly goal, days you checked your jobs, notifications and AI use. Never passwords or session secrets. **Delete my account**: asks for your password, then removes everything, including stored pictures, imported CV files and preview images. Anonymous AI usage counts are kept for billing. |
 
 A shared demo account (`is_demo`) can't change its password, sign others out or be
 deleted, so the next visitor finds it as you did; the page says so.
+
+## Appearance (themes and colour palettes)
+
+The **Appearance** picker sits in the side rail above the account (labelled with the
+current choice, e.g. "Device (dark), Classic"), behind the sun/moon in the phone's top bar,
+and in Settings › Preferences. All three use the same control.
+
+- Theme: **Light**, **Dark** or **Match my device**.
+- Palette, each with a light and a dark version that tints the neutrals as well as the
+  accents:
+
+  | Palette | Character (light / dark) |
+  |---|---|
+  | **Classic** (`tape`, default) | Navy and measuring-tape yellow / deep night with a yellow glow |
+  | **Lagoon** (`lagoon`) | Deep teal and aqua / dark sea with bright aqua |
+  | **Orchid** (`orchid`) | Plum and lilac / near-black violet with soft lilac |
+  | **Fern** (`fern`) | Forest green and fresh leaf / dark moss with leaf green |
+
+- The choice is saved to your account (`theme`, `palette` on `PATCH /auth/me`), so it follows
+  you to every device and is applied on sign-in. Before the first paint, `index.html` sets
+  `data-theme` and `data-palette` from the last choice on this device, so there's no flash.
+- Switching spreads the new look as a circle from where you clicked (View Transitions, where
+  the browser supports it); otherwise it fades. Reduced motion skips both.
+- Every text colour meets WCAG AA (4.5:1) on the page, card and raised-card colours in all
+  eight palette and theme combinations.
 
 ## Admin (`/admin`, administrators only)
 
@@ -44,22 +69,31 @@ Builds a complete account from fixed data, with no AI and no job-site calls, so 
 install shows every feature: sign in as **`demo`** / **`Tailr-demo-2026`** (set
 `SEED_DEMO_PASSWORD`; production refuses the default).
 
-It holds a senior AI engineer's profile, a radar, today's brief, 11 jobs over the last few
-weeks (so Market Pulse is ready), two truth-checked kits, a shared CV (`/cv/demo`), a
-published portfolio with case studies, pictures, testimonials and a message
-(`/p/demo`), eight applications across every stage (a follow-up due, an interview
-tomorrow, an offer), a weekly goal, a five-day streak and notifications. Running it again
-rebuilds it from scratch.
+It holds a senior AI engineer's profile, job preferences, today's job search, 11 jobs over
+the last few weeks (so Market Pulse is ready; saved ones stay past 14 days), two
+truth-checked prepared applications (the Teratai Bank one with a full interview plan:
+pitch, questions of every kind with cited stories, questions to ask, checklist), a shared
+CV (`/cv/demo`), a published portfolio with case studies, pictures, testimonials and a
+message (`/p/demo`), eight applications across every stage (a follow-up due, an
+interview, an offer), a weekly goal, a five-day streak and notifications. Running it again
+rebuilds it from scratch (`app/scripts/seed_demo.py`, `demo_*.py`).
 
 ## Quality checks for hand-over
 
 - `make e2e`: Playwright in Docker against the running stack (`make up && make demo`
-  first). On a desktop and a phone: sign-in, a public portfolio and a case study, a shared
-  CV, a missing address (404), Today, a job's fit, the tracker and an application, a kit,
-  the profile, CV Studio, portfolio editor, radar and settings, and the admin panel (and
-  that others are kept out). No page may scroll sideways, and axe finds no serious or
-  critical WCAG 2.2 AA problems on sign-in, Today, the tracker, settings, admin and a public
-  portfolio.
+  first), on a desktop and a phone (22 tests):
+  - visitors: sign-in, a public portfolio and a case study, a shared CV, a missing address
+    (404);
+  - the daily loop: Home (today's jobs, this week, what employers want); a job's match,
+    then My applications (Needs you now) and an application's page; a prepared
+    application with its breadcrumb, four steps and How it's written; profile, My CV,
+    My website, job preferences and settings; job preferences never searching on their
+    own;
+  - admin: the panel, and that others are kept out.
+
+  No page may scroll sideways, and axe finds no serious or critical WCAG 2.2 AA problems
+  on sign-in, Home, My applications, an application's page, Your application,
+  settings, admin and a public portfolio.
 - Every app page was checked at 1440, 1024, 768 and 390 pixels, light and dark, for
   sideways scrolling and words split across lines.
 
@@ -81,7 +115,10 @@ rebuilds it from scratch.
 ## Code
 
 - Backend: `app/modules/account/` (usage, export, delete), `app/modules/admin/`,
-  `app/modules/auth/` (devices, sign out others), `app/ai/client.py` (`allowance`,
-  `enforce_daily_budget`), `app/scripts/seed_demo.py` and `demo_*.py`.
-- Frontend: `src/features/settings/`, `src/features/admin/`.
+  `app/modules/auth/` (devices, sign out others, palette), `app/ai/client.py`
+  (`allowance`, `enforce_daily_budget`, and `reserve`/`release`, which hold an estimate in
+  Redis while a call runs so parallel calls can't overshoot the allowance),
+  `app/scripts/seed_demo.py` and `demo_*.py` (`demo_interview.py` writes the interview plan).
+- Frontend: `src/features/settings/` (`useAppearance.ts`, `components/AppearancePicker.tsx`,
+  `AppearanceButton.tsx`), `src/app/appearance.ts`, `src/features/admin/`.
 - End-to-end: `e2e/` (Playwright and axe).

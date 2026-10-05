@@ -1,35 +1,46 @@
-# Morning Brief and Fit
+# Jobs, the daily search and the match score
 
 **Status:** shipped in M3 + M4.
 
 > **Users see:** *Home*, *Jobs* and the *daily job update*. "Brief" is the internal name for one search. Since the usability pass, every job a search finds (up to 60 per run) is saved to the Jobs page, best match first; jobs at or above the user's *minimum match* are their *good matches* (counted in `stats.good`, highlighted and emailed), the rest are listed below them. Scores are shown as *% match* (Great 85+, Good 70 to 84, Partial 50 to 69, Weak under 50).
 
 Every morning (at the user's chosen time and days) Tailr searches, reads every new job ad,
-measures each against the profile, and delivers the jobs that clear the user's bar, each
-with a **Fit %** and a plain explanation. Users can also **Run my brief now**.
+measures each against the profile, and adds the jobs to the Jobs page, each with a **% match**
+and a plain explanation. Users can also press **Find new jobs now**; the search runs in the
+background and never blocks a page.
 
 ## What users see
 
-### Today (`/`, once the radar is on)
+### Home (`/`, once the job preferences are set)
 
-- Greeting and a one-line summary: "13 new jobs fit you. Your best fit is 76%."
-- **Top pick**: the best job given room: Fit tape, the AI's one-line take (chalk-marked:
-  written by the AI), why you fit, the gaps worth addressing with a tip each, and Save /
-  Not for me / See the full fit.
-- **More that fit**: every other match as a row (tape, title, company, place, mode, pay, age,
-  the AI's one line), with quick save and dismiss. New jobs have a yellow dot.
-- **Today's catch**: found today, new to you, read in full, fit your bar.
-- While a brief is being built: live stages (searching, reading each ad, measuring your fit,
-  writing your reviews) with counts, pushed over server-sent events. It takes about a minute.
-- Before the first brief: when it arrives, and **Run my first brief**.
-- Nothing new: "You're all caught up", with ways to widen the radar.
-- If nothing clears the bar: the three closest jobs, clearly labelled.
+- Greeting and one status line about the latest search: "Tailr found 13 jobs today. 4 are
+  good matches." (or that it's searching, didn't finish, or found nothing new).
+- **See all jobs** and **Find new jobs now** ("Searching in the background…" toast), and when
+  the next daily update runs, with a link to change it.
+- **Best matches**: the top three jobs from the latest search (match badge, title, company,
+  and why it suits you: Tailr's take or the skills you share), and **See all N jobs**.
+- While a search runs: a slim banner ("Searching LinkedIn and JobStreet for new jobs. This
+  takes a minute or two; you can keep using Tailr. We'll tell you when they're ready."), the
+  current step ("Step 2 of 4: Reading each job ad") and a progress bar; the best matches from
+  earlier searches stay visible and clickable underneath.
+- Search didn't finish: the reason and **Try again**. Nothing new: "No new jobs this time",
+  with **Change preferences** and **Search again**. Before the first search: **Find jobs now**.
+- **This week** (weekly goal and streak) and **What employers want** (Market Pulse), see
+  [My applications and this week](08-tracker-momentum.md).
+- Before the CV and preferences exist, Home shows **Get started** instead (see
+  [accounts](01-accounts.md)).
 
 ### Jobs (`/jobs`)
 
-Jobs from the last 14 days, good matches first, with tabs: All, New, Saved, Hidden (with
-counts). Each job says when it was posted and when Tailr found it ("Found 3 days ago";
-"Added" for jobs you added yourself).
+- **Find new jobs now** and **Add a job by link** (a link or pasted ad; added in the
+  background, see [preparing an application](05-apply-kit.md#add-any-job)).
+- Tabs with counts: **All**, **New**, **Saved**, **Hidden**.
+- **Good matches** (at or above your minimum match, best first), then **Other jobs** (or
+  **Closest jobs** when none is good), folded behind **Show N other jobs** when there are many.
+- Each row: the match tape and %, title, company, place, mode, pay, where and when it was
+  posted, when Tailr found it ("Found 3 days ago"; "Added …" for jobs you added yourself),
+  the one-line reason, and quick **Save** / **Hide**. New jobs have a dot. Rows stagger in.
+- While a search runs, the same slim banner as Home sits above the list; the list stays usable.
 
 **How long jobs stay** (`JOBS_KEPT_DAYS = 14`, `brief/service.py`): a job Tailr found stays on
 the Jobs page and Home for 14 days, then drops off on its own; the page says so near the
@@ -41,22 +52,33 @@ out.
 
 ### Job detail (`/jobs/:id`)
 
-- The job, company, place, mode, pay, age, applicants, and **View on LinkedIn/JobStreet**.
+- Back to Jobs; the title, company, place, mode, pay, where and when it was posted, when it
+  was found; **Save job** / **Saved**, **Not interested**, **View on LinkedIn/JobStreet**.
 - **In short**: the AI's two-sentence summary; minimum experience, education, languages,
   whether an agency posted it; **What they ask for**: each must-have skill marked as in your
-  profile or not ("5 of 12 in your profile"); anything worth knowing (for example
+  profile or not ("6 of 8 in your profile"); anything worth knowing (for example
   commission-only pay).
-- **Your fit** panel: the tape (it measures out and counts up), **Tailr's take** (the AI's
-  one-line read, labelled with a sparkle so it's clearly Tailr's opinion and not a link), a
-  bar per part of the score (filling and counting up), why you fit, gaps with tips, and
-  *Prepare my application*.
-- The full job ad.
-- Opening a new job marks it seen.
+- **How well you match** panel: the tape (it measures out and counts up), what the score
+  means, **Tailr's take** (the AI's one-line read: a tinted note with a sparkle, so it's
+  clearly Tailr's opinion and not a link), then:
+  - **Prepare my application** with a language choice (English or Bahasa Malaysia), or
+    **Preparing your application** / **Open my application** once started;
+  - the job's place in My applications ("In My applications: Preparing. Open") or
+    **Add to My applications**, and **I've applied**;
+  - a bar per part of the score (filling and counting up), why you fit, and gaps with tips.
+- The full job ad. Opening a new job marks it seen. The side menu keeps **Jobs** lit here.
+
+### When a search finishes
+
+A notification: **New jobs for you** ("13 new jobs: 4 are good matches; the best is at Teratai
+Bank"), **No new jobs this time**, or **Your job search didn't finish** with the reason. The
+search also shows in **Working on it** while it runs (see [background work](10-background-work.md)).
 
 ### Email
 
-When the radar's "Email me the brief too" is on: subject "13 new jobs fit you this
-morning", the top five with their Fit %, and a link to Today. Development email goes to
+When **Email me the update** is on in job preferences: subject "13 new jobs for you this
+morning", the best matches (or the closest, if none is strong yet) with their % match and
+Tailr's take, and a link to the Jobs page. Development email goes to
 Mailpit (http://localhost:8405).
 
 ## How a brief is built
@@ -77,7 +99,7 @@ radar searches (LinkedIn + JobStreet, cached, waiting politely on rate limits)
 Jobs whose description couldn't be read yet are held back (judging by title alone would be
 guesswork) and tried again in the next brief.
 
-### The Fit score
+### The match score (internally, Fit)
 
 | Part | Weight | How |
 |---|---|---|

@@ -1,12 +1,12 @@
-# Tracker and Momentum
+# My applications and this week (tracker and momentum)
 
 **Status:** shipped in M8.
 
 > **Users see:** *My applications* (`/applications`), with the stages Saved, Preparing, Applied, Interview, Offer, Not successful; *This week* and *What employers want* on Home.
 
 The tracker is where every job you're pursuing lives, from saved to signed. Momentum is what
-brings you back: a weekly goal, a streak of brief-check days, an honest funnel, and a pulse of
-what your market asks for and pays.
+brings you back: a weekly goal, a streak of days you checked your jobs, an honest funnel, and
+a pulse of what your market asks for and pays.
 
 ## Tracker (`/applications`)
 
@@ -14,12 +14,12 @@ what your market asks for and pays.
 
 | You do this | The job lands in |
 |---|---|
-| Save a job from your brief or Jobs, or paste one in | **Saved** |
-| Tailor an application (build a kit) | **Preparing** (moved forward if it was saved) |
-| Press **I've applied** on the kit or job page | **Applied** |
-| Press **Add to tracker** on a job page | **Saved** |
+| Save a job on Home, Jobs or a job's page, or add one by link | **Saved** |
+| Prepare an application | **Preparing** (moved forward if it was saved) |
+| Press **I've applied** on Your application or the job page | **Applied** |
+| Press **Add to My applications** on a job page | **Saved** |
 
-Un-saving or skipping a job takes it off the board only if nothing has happened to it yet
+Un-saving or hiding a job takes it off the board only if nothing has happened to it yet
 (still saved, no kit, no notes, no next step). Jobs saved or tailored before the tracker
 existed were added by a one-off migration.
 
@@ -96,23 +96,28 @@ redirect here.
 The scheduler checks every 15 minutes (`tracker.send_nudges`). Each nudge is sent once;
 changing the next step's date re-arms its reminder.
 
-## Momentum (on Today)
+## This week and what employers want (on Home)
 
-- **This week's goal**: applications marked applied since Monday (your time zone) against
+Under **This week**:
+
+- **Your weekly goal**: applications marked applied since Monday (your time zone) against
   your weekly goal (5 unless you change it, 1 to 50). It celebrates once when met.
-- **Streak**: days in a row you opened your brief. Days with no brief scheduled (your radar's
-  days off, or a paused radar) neither count nor break it, and today only breaks it once
-  it's over. The week strip shows each day: opened, missed, day off, today, still to come,
-  or before your streak began. Best streak too.
-- **This week in your market** (Market Pulse), from the jobs Tailr matched to you in the
-  last seven days, with no AI involved:
-  - the skills they ask for, with the share of jobs and whether your profile shows each one
-    (the rest are worth learning);
-  - typical monthly pay (the middle of what ads state, to the nearest RM 100) when at least
-    three ads state pay, next to your radar's minimum;
-  - where you'd work (on-site, hybrid, remote, not stated);
-  - who's hiring most.
-  It appears once there are at least three matched jobs in the week.
+- **Days in a row**: days in a row you checked your new jobs (opening Home or Jobs counts, once
+  your job preferences are set). Days with no daily update scheduled (days off in your job preferences, or
+  a paused update) neither count nor break it, and today only breaks it once it's over. The
+  week strip shows each day: checked, missed, day off, today, still to come, or before your
+  streak began. Best streak too.
+**What employers want** (Market Pulse), from the jobs Tailr matched to you in the last seven
+days, with no AI involved:
+
+- **Skills they ask for**, with the share of jobs and whether your profile shows each one
+  (the rest are worth learning);
+- **Typical pay** (the middle of what ads state, to the nearest RM 100) when at least three
+  ads state pay, next to the minimum in your job preferences;
+- **Where you'd work** (on-site, hybrid, remote, not stated);
+- **Hiring the most**.
+
+It appears once there are at least three matched jobs in the week.
 
 ## API
 
@@ -138,7 +143,7 @@ where the job stands.
   reached, dates, contact, notes, and follow-up state (due, nudged, done, last draft).
 - `application_events`: the history.
 - `goals`: the weekly target per user.
-- `activity_days`: one row per local day the user opened their brief.
+- `activity_days`: one row per local day the user checked their jobs.
 
 ## Code
 
@@ -148,4 +153,4 @@ where the job stands.
 - Frontend: `src/features/tracker/` (`TrackerPage` with Needs you now, the board and How
   far you've got; `ApplicationPage` with the stage cards in `components/detail/now/`; pure
   logic in `board.ts` and `next.ts`), `src/features/momentum/` (goal, streak, Market Pulse), plus the tracker row
-  on the job page and **I've applied** on the kit page.
+  on the job page and **I've applied** on Your application.

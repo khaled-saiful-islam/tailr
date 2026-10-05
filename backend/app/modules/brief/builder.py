@@ -342,7 +342,7 @@ async def run_brief(brief_id: uuid.UUID) -> None:
             user_id,
             kind="brief.failed",
             title="Your job search didn't finish",
-            body=f"{message} You can run it again from Today.",
+            body=f"{message} You can run it again from Home.",
             link="/",
         )
 
