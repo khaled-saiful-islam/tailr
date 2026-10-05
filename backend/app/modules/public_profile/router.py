@@ -185,7 +185,7 @@ async def og_image(slug: str, db: DbSession) -> Response:
 async def page(slug: str, request: Request, db: DbSession, rest: str = "") -> HTMLResponse:
     service = PublicProfileService(db)
     found = await service.published(slug)
-    shell = await load_shell()
+    shell = await load_shell(request)
     if found is None or not known_path(found[1], rest):
         return HTMLResponse(
             render_page(shell, None, og_image="", index=False),

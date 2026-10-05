@@ -151,10 +151,10 @@ async def og_image(slug: str, db: DbSession) -> Response:
 
 
 @page_router.get("/cv/{slug}", response_class=HTMLResponse)
-async def share_page(slug: str, db: DbSession) -> HTMLResponse:
+async def share_page(slug: str, request: Request, db: DbSession) -> HTMLResponse:
     service = CvService(db)
     found = await service.public_meta(slug)
-    shell = await load_shell()
+    shell = await load_shell(request)
     if found is None:
         return HTMLResponse(
             render_not_available(shell),

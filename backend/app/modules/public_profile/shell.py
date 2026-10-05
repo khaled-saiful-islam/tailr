@@ -15,6 +15,7 @@ from html import escape
 from typing import Any
 
 import httpx
+from fastapi import Request
 
 from app.core.config import get_settings
 from app.core.logging import get_logger
@@ -28,23 +29,39 @@ _FALLBACK_SHELL = (
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />'
     '<title>Tailr</title></head><body><div id="root"></div></body></html>'
 )
-_cache: tuple[float, str] | None = None
+# The header the Vite dev proxy adds, so pages it serves use its shell (with hot reload).
+DEV_SHELL_HEADER = "x-tailr-dev-shell"
+_cache: dict[str, tuple[float, str]] = {}
 
 
-async def load_shell() -> str:
-    """The built shell, cached for a minute; a bare fallback if the web container is down."""
+def shell_url(request: Request | None) -> str:
+    """The built shell, except for pages asked for through the Vite dev server."""
+    settings = get_settings()
+    if (
+        settings.dev_shell_url
+        and request is not None
+        and request.headers.get(DEV_SHELL_HEADER) == "1"
+    ):
+        return settings.dev_shell_url
+    return settings.web_shell_url
+
+
+async def load_shell(request: Request | None = None) -> str:
+    """The shell, cached for a minute; a bare fallback if it can't be fetched."""
     global _cache
-    if _cache and time.monotonic() - _cache[0] < SHELL_TTL_SECONDS:
-        return _cache[1]
+    url = shell_url(request)
+    cached = _cache.get(url)
+    if cached and time.monotonic() - cached[0] < SHELL_TTL_SECONDS:
+        return cached[1]
     try:
         async with httpx.AsyncClient(timeout=5) as client:
-            response = await client.get(get_settings().web_shell_url)
+            response = await client.get(url)
             response.raise_for_status()
             shell = response.text
     except httpx.HTTPError:
-        log.warning("public_shell_unavailable")
-        return _cache[1] if _cache else _FALLBACK_SHELL
-    _cache = (time.monotonic(), shell)
+        log.warning("public_shell_unavailable", url=url)
+        return cached[1] if cached else _FALLBACK_SHELL
+    _cache = {**_cache, url: (time.monotonic(), shell)}
     return shell
 
 

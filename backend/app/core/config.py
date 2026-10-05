@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # The built public-page shell (frontend/public.html). Public profile pages are this
     # file with the profile's link-preview tags and data filled in.
     web_shell_url: str = "http://frontend/public.html"
+    # Development only: the Vite dev server's shell, for pages requested through Vite (its
+    # proxy marks them with the dev-shell header). Unset in production, so the header does
+    # nothing there.
+    dev_shell_url: str | None = None
     cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:8400", "http://localhost:8403"]
     )

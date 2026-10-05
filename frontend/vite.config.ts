@@ -17,9 +17,19 @@ export default defineConfig({
     proxy: {
       "/api": { target: apiTarget, changeOrigin: false },
       // Public pages are served by the backend (it writes their link-preview tags):
-      // /cv/<slug> (online CV) and /p/<slug>/... (portfolio site).
-      "^/cv/[^/]+/?$": { target: apiTarget, changeOrigin: false },
-      "^/p/[^/]+(/.*)?$": { target: apiTarget, changeOrigin: false },
+      // /cv/<slug> (online CV) and /p/<slug>/... (portfolio site). The header asks for
+      // this dev server's shell, so pages opened here hot-reload; pages opened through
+      // nginx keep the built shell.
+      "^/cv/[^/]+/?$": {
+        target: apiTarget,
+        changeOrigin: false,
+        headers: { "X-Tailr-Dev-Shell": "1" },
+      },
+      "^/p/[^/]+(/.*)?$": {
+        target: apiTarget,
+        changeOrigin: false,
+        headers: { "X-Tailr-Dev-Shell": "1" },
+      },
     },
   },
   build: {

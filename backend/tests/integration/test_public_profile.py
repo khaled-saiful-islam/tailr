@@ -30,7 +30,7 @@ BROWSER = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit Sa
 
 @pytest.fixture(autouse=True)
 def shell(monkeypatch: pytest.MonkeyPatch) -> None:
-    async def fake_shell() -> str:
+    async def fake_shell(request: object = None) -> str:
         return SHELL
 
     monkeypatch.setattr("app.modules.public_profile.router.load_shell", fake_shell)
