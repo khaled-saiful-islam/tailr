@@ -139,7 +139,11 @@ there; and pages opened through nginx keep working while `make dev` runs.
 - **Background work** is followed through `src/features/tasks/` (`useBackgroundTask`,
   `useLatestTask`, `useResumableTask`, the tray and alerts); see
   [background work](features/10-background-work.md).
-- Pages are lazy-loaded per route. Old addresses redirect (`/radar`, `/tracker`,
+- Pages are lazy-loaded per route. A tab left open across an update asks for the old
+  build's files, which are gone: Vite's `vite:preloadError` reloads the page once
+  (`src/lib/staleBuild.ts`, with a 30-second guard against loops), and every route has an
+  error page (`RouteError`) instead of the router's developer screen.
+- Old addresses redirect (`/radar`, `/tracker`,
   `/kits/:id`, `/profile/portfolio`, and `/applications?open=<id>` to `/applications/<id>`).
 - The shell (`layouts/AppShell.tsx`): a side rail on wide screens (nav, **Working on it**,
   the bell, Appearance, the account) and, on phones, a top bar with a five-tab bar at the

@@ -55,10 +55,11 @@ From top to bottom:
 - **How it's written**: "Now: English, confident tone."
   - Language: **English** ("Most job ads in Malaysia") or **Bahasa Malaysia** ("When the ad
     is in Malay").
-  - Tone, each with its own colour, icon and an example line: **Confident** ("Direct, leads
+  - Tone, each with its own icon and an example line: **Confident** ("Direct, leads
     with results"), **Warm** ("Friendly, shows why you care about the work"), **Concise**
     ("Short and to the point").
-  - These are radio cards (arrow keys work). Picking something different opens a row:
+  - Both groups mark the pick the same way (the accent border, a light tint and a check);
+    **Now** marks the version you have. These are radio cards (arrow keys work). Picking something different opens a row:
     "Tailr writes a fresh CV, cover letter and answers. Edits you made to this version are
     replaced." with **Keep it as it is** and a button that names the change (**Rewrite in
     Bahasa Malaysia, warm tone**); it asks once more before replacing. While it writes,

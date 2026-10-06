@@ -4,6 +4,7 @@
  */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { watchForUpdates } from "@/lib/staleBuild";
 import { CvViewer, type SharedCv } from "./CvViewer";
 import { NotAvailable } from "./NotAvailable";
 import { PageView } from "./PageView";
@@ -21,6 +22,8 @@ function readPage(): PageData | null {
     return null;
   }
 }
+
+watchForUpdates();
 
 const root = document.getElementById("root");
 if (root) {

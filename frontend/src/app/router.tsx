@@ -1,8 +1,9 @@
 import { lazy } from "react";
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter, Navigate, type RouteObject } from "react-router";
 import { RedirectIfSignedIn, RequireAuth } from "./guards";
 import { AppShell } from "./layouts/AppShell";
 import { NotFound } from "./NotFound";
+import { RouteError } from "./RouteError";
 import { Page } from "./Page";
 import { Moved } from "./Moved";
 
@@ -72,7 +73,7 @@ const ImportProgressPage = lazy(() =>
   })),
 );
 
-export const router = createBrowserRouter([
+const routes: RouteObject[] = [
   {
     path: "/sign-in",
     element: (
@@ -220,4 +221,9 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFound /> },
     ],
   },
-]);
+];
+
+// Any page that fails to open shows a plain message (and a fresh build reloads itself).
+export const router = createBrowserRouter(
+  routes.map((route) => ({ ...route, errorElement: <RouteError /> })),
+);

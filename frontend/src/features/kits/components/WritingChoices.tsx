@@ -10,32 +10,19 @@ import { cn } from "@/lib/cn";
 import type { Language, Tone } from "../api";
 import { LANGUAGE_OPTIONS, TONE_OPTIONS } from "../options";
 
-/** Each tone has its own colour and icon, so the choice reads at a glance. */
-const TONE_LOOK: Record<
-  Tone,
-  { icon: LucideIcon; bubble: string; icon_colour: string; picked: string }
-> = {
-  confident: {
-    icon: Target,
-    bubble: "bg-chalk-soft",
-    icon_colour: "text-chalk",
-    picked:
-      "border-chalk bg-[color-mix(in_oklab,var(--chalk)_9%,var(--surface))]",
-  },
-  warm: {
-    icon: HeartHandshake,
-    bubble: "bg-[color-mix(in_oklab,var(--tape)_26%,var(--surface))]",
-    icon_colour: "text-fit-stretch",
-    picked:
-      "border-tape-deep bg-[color-mix(in_oklab,var(--tape)_12%,var(--surface))]",
-  },
-  concise: {
-    icon: Scissors,
-    bubble: "bg-[color-mix(in_oklab,var(--fit-strong)_16%,var(--surface))]",
-    icon_colour: "text-fit-strong",
-    picked:
-      "border-fit-strong bg-[color-mix(in_oklab,var(--fit-strong)_9%,var(--surface))]",
-  },
+/**
+ * One look for "this is your choice" in both groups: the accent border, a light tint and
+ * a check. Colour never means anything else here, so the pick reads at a glance.
+ */
+const PICKED =
+  "border-chalk bg-[color-mix(in_oklab,var(--chalk)_8%,var(--surface))]";
+const UNPICKED = "border-line hover:border-line-strong";
+
+/** Each tone keeps its own icon, so the three are easy to tell apart. */
+const TONE_ICON: Record<Tone, LucideIcon> = {
+  confident: Target,
+  warm: HeartHandshake,
+  concise: Scissors,
 };
 
 const card =
@@ -51,7 +38,7 @@ function Picked({ on }: { on: boolean }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
           transition={{ type: "spring", stiffness: 520, damping: 22 }}
-          className="absolute right-2.5 top-2.5 grid size-5 place-items-center rounded-full bg-ink text-canvas"
+          className="absolute right-2.5 top-2.5 grid size-5 place-items-center rounded-full bg-chalk text-canvas"
         >
           <Check className="size-3" strokeWidth={3} />
         </motion.span>
@@ -91,9 +78,7 @@ export function LanguageChoice({
               className={cn(
                 card,
                 "flex-row items-center gap-3 pr-9",
-                on
-                  ? "border-ink bg-surface-2"
-                  : "border-line hover:border-line-strong",
+                on ? PICKED : UNPICKED,
               )}
             >
               <input
@@ -108,7 +93,7 @@ export function LanguageChoice({
                 aria-hidden
                 className={cn(
                   "grid size-9 shrink-0 place-items-center rounded-[8px] text-[0.8125rem] font-bold transition-colors duration-200",
-                  on ? "bg-ink text-canvas" : "bg-surface-3 text-ink-2",
+                  on ? "bg-chalk-soft text-chalk" : "bg-surface-2 text-ink-2",
                 )}
               >
                 {option.short}
@@ -148,16 +133,11 @@ export function ToneChoice({
       <div className="mt-2 grid gap-2 md:grid-cols-3">
         {TONE_OPTIONS.map((option) => {
           const on = value === option.value;
-          const look = TONE_LOOK[option.value];
-          const Icon = look.icon;
+          const Icon = TONE_ICON[option.value];
           return (
             <label
               key={option.value}
-              className={cn(
-                card,
-                "pr-9",
-                on ? look.picked : "border-line hover:border-line-strong",
-              )}
+              className={cn(card, "pr-9", on ? PICKED : UNPICKED)}
             >
               <input
                 type="radio"
@@ -171,11 +151,11 @@ export function ToneChoice({
                 <span
                   aria-hidden
                   className={cn(
-                    "grid size-8 shrink-0 place-items-center rounded-full",
-                    look.bubble,
+                    "grid size-8 shrink-0 place-items-center rounded-full transition-colors duration-200",
+                    on ? "bg-chalk-soft text-chalk" : "bg-surface-2 text-ink-2",
                   )}
                 >
-                  <Icon className={cn("size-4", look.icon_colour)} />
+                  <Icon className="size-4" />
                 </span>
                 {option.label}
                 {option.value === current && <NowTag />}
