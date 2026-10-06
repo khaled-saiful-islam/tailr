@@ -23,7 +23,7 @@ visitor ──HTTPS──▶ Caddy :443 ──▶ nginx (frontend) ──▶ app
 
 | Piece | Where | Why |
 |---|---|---|
-| Server | Oracle Cloud (OCI), `ap-singapore-1`, Ampere A1 (Arm), 4 cores, 24 GB RAM, 100 GB disk, Ubuntu 24.04 | Inside Oracle's **Always Free** allowance, so it costs nothing; Singapore is close to Malaysian users |
+| Server | Oracle Cloud (OCI), `ap-singapore-1`, Ampere A1 (Arm), up to 4 cores and 24 GB RAM, 100 GB disk, Ubuntu 24.04 | Inside Oracle's **Always Free** allowance, so it costs nothing; Singapore is close to Malaysian users. Tailr itself needs about 1 GB, and any x86 server works too |
 | Address | `SITE_ADDRESS` in the server's `.env` | Until a domain is bought, a free [sslip.io](https://sslip.io) name for the server's IP (`203-0-113-7.sslip.io`); later `tailr.stream` |
 | HTTPS | Caddy, certificate from Let's Encrypt | Free, and Caddy renews it by itself |
 | Code | `/opt/tailr`, a clone of GitHub's `main` | `make deploy` ships exactly what GitHub has, so the server never runs code that isn't in the repo |
@@ -39,7 +39,7 @@ Everything here is on Oracle's [Always Free list](https://docs.oracle.com/iaas/C
 
 | Resource | Used | Always Free allowance |
 |---|---|---|
-| Arm VM (A1 Flex) | 4 cores, 24 GB | 4 cores, 24 GB in total |
+| Arm VM (A1 Flex) | up to 4 cores, 24 GB | 4 cores, 24 GB in total |
 | Boot disk | 100 GB | 200 GB in total |
 | Network, firewall, gateway | 1 each | Free |
 | Reserved public IP | 1 | Free (1 on Always Free) |
@@ -244,6 +244,53 @@ $P run --rm --no-deps -T --entrypoint sh backend -c 'rm -rf /srv/data/files/* &&
   < backups/files-<time>.tar.gz
 $P up -d --wait
 ```
+
+## Moving to a new server
+
+For moving to a bigger or free server, or rebuilding after losing one. The reserved IP moves
+with the site, so the address, `.env.deploy` and any DNS record stay the same. Expect about
+half an hour of downtime.
+
+1. **Create the new server** as in [step 2](#2-server), without a public IP (`NEW` below is
+   its instance OCID).
+2. **Stop writes, take a last backup, and copy it and `.env` to your Mac.** The old server is
+   unreachable once its IP moves, and the new one needs the same secrets for the backup:
+
+   ```bash
+   ssh -i ~/.ssh/tailr-oci ubuntu@<ip> 'cd /opt/tailr &&
+     docker compose -f docker-compose.yml -f docker-compose.prod.yml stop backend worker scheduler &&
+     scripts/backup-db.sh'
+   mkdir -p ~/tailr-move
+   scp -i ~/.ssh/tailr-oci ubuntu@<ip>:/opt/tailr/.env 'ubuntu@<ip>:/opt/tailr/backups/*' ~/tailr-move/
+   ```
+
+3. **Move the IP** to the new server, and forget the old server's SSH fingerprint:
+
+   ```bash
+   VNIC=$(oci compute instance list-vnics --instance-id "$NEW" --query 'data[0].id' --raw-output)
+   NEW_PRIVATE_IP=$(oci network private-ip list --vnic-id "$VNIC" --query 'data[0].id' --raw-output)
+   PUBIP=$(oci network public-ip get --public-ip-address <ip> --query 'data.id' --raw-output)
+   oci network public-ip update --public-ip-id "$PUBIP" --private-ip-id "$NEW_PRIVATE_IP"
+   ssh-keygen -R <ip>
+   ```
+
+4. **Set it up with the same settings**, then deploy (this creates an empty database):
+
+   ```bash
+   make prod-setup
+   scp -i ~/.ssh/tailr-oci ~/tailr-move/.env ubuntu@<ip>:/opt/tailr/.env
+   ssh -i ~/.ssh/tailr-oci ubuntu@<ip> chmod 600 /opt/tailr/.env
+   make deploy
+   ```
+
+5. **Restore the backup**: copy the newest `tailr-*.dump` and `files-*.tar.gz` from
+   `~/tailr-move` to `/opt/tailr/backups/` on the new server (`scp`), then follow
+   [Backups and restoring](#backups-and-restoring).
+6. **Check the site, then delete the old server** (its disk goes with it):
+
+   ```bash
+   oci compute instance terminate --instance-id <old-instance> --preserve-boot-volume false --force
+   ```
 
 ## Moving to tailr.stream
 
