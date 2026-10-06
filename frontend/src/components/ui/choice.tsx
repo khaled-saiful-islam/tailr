@@ -242,7 +242,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="inline-flex flex-wrap gap-1 rounded-control bg-surface-2 p-1"
+      className="inline-flex flex-wrap gap-1 rounded-control border border-line bg-surface-2 p-1"
     >
       {options.map((option, index) => {
         const on = option.value === value;
@@ -261,9 +261,11 @@ export function Segmented<T extends string>({
               size === "sm"
                 ? "h-7 px-2.5 text-[0.8125rem]"
                 : "h-8 px-3.5 text-[0.875rem]",
+              // The pick is a filled pill in the accent, so it reads at once in light and
+              // dark (5.4:1 or more in every palette).
               on
-                ? "bg-surface text-ink shadow-[0_1px_2px_rgb(20_33_61/0.12)]"
-                : "text-ink-2 hover:text-ink",
+                ? "bg-chalk font-semibold text-canvas shadow-[0_1px_2px_rgb(0_0_0/0.18)]"
+                : "text-ink-2 hover:bg-surface hover:text-ink",
             )}
           >
             {option.label}

@@ -51,6 +51,7 @@ export function SharePanel({
         <AddressField
           path="cv"
           current={identity.data.slug}
+          url={cv.url}
           onSave={(slug) => {
             if (!identity.data) return;
             saveIdentity.mutate(

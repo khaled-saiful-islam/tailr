@@ -71,6 +71,7 @@ export function PublishPanel({ draft, saved, update }: Props) {
       <AddressField
         path="p"
         current={draft.slug}
+        url={pageUrl}
         onSave={(slug) => update((d) => ({ ...d, slug }))}
       />
 
@@ -109,14 +110,27 @@ type Check =
   | { state: "bad"; reason: string };
 
 /** tailr.app/<path>/<address>, checked as you type; saved only when it's free. */
+/** The host people will see in the link (PUBLIC_WEB_URL), not whichever host this tab uses. */
+function hostOf(url: string | undefined): string {
+  try {
+    if (url) return new URL(url).host;
+  } catch {
+    // not a full address: fall back to this tab's host
+  }
+  return typeof window === "undefined" ? "" : window.location.host;
+}
+
 export function AddressField({
   path,
   current,
+  url,
   onSave,
 }: {
   /** "cv" or "p": the page's place in the address. */
   path: string;
   current: string;
+  /** The page's shareable address from the server, for the host shown before the slug. */
+  url?: string;
   onSave: (slug: string) => void;
 }) {
   const [value, setValue] = useState(current);
@@ -153,7 +167,7 @@ export function AddressField({
     return () => window.clearTimeout(timer);
   }, [value, changed]);
 
-  const origin = typeof window === "undefined" ? "" : window.location.host;
+  const origin = hostOf(url);
   return (
     <div className="mt-6">
       <label htmlFor="page-address" className="type-label">
