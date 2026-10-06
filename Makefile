@@ -31,13 +31,13 @@ NODE := docker run --rm -v "$(PWD)/frontend:/app" -v tailr-node-modules:/app/nod
 
 .PHONY: help setup up down restart dev logs ps migrate migration seed demo test test-backend test-frontend \
 	lint fmt typecheck gen-api e2e screenshots shell psql redis-cli reset clean _banner _env \
-	deploy prod-setup prod-status prod-logs prod-backup prod-ssh _deploy_env
+	deploy prod-setup prod-status prod-logs prod-deploy-log prod-backup prod-ssh _deploy_env
 
 help: ## Show this help
 	@echo "$(BOLD)Tailr$(RESET) — jobs that fit, applications made to measure"
 	@echo
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-	  | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-14s$(RESET) %s\n", $$1, $$2}'
+	  | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-16s$(RESET) %s\n", $$1, $$2}'
 	@echo
 
 _env:
@@ -160,7 +160,8 @@ DEPLOY_HOST := $(call deploy_env,DEPLOY_HOST,)
 DEPLOY_KEY := $(call deploy_env,DEPLOY_KEY,~/.ssh/tailr-oci)
 DEPLOY_DIR := $(call deploy_env,DEPLOY_DIR,/opt/tailr)
 DEPLOY_URL := $(call deploy_env,DEPLOY_URL,)
-SSH := ssh -i $(DEPLOY_KEY) -o ConnectTimeout=15
+# Keepalives: some networks silently drop idle connections; this notices within a minute.
+SSH := ssh -i $(DEPLOY_KEY) -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=4
 PROD_COMPOSE := cd $(DEPLOY_DIR) && docker compose -f docker-compose.yml -f docker-compose.prod.yml
 
 _deploy_env:
@@ -174,7 +175,10 @@ deploy: _deploy_env ## Ship GitHub's main to production: back up, update, rebuil
 	  echo "  Production runs what GitHub has: push your commits (or check out main) first."; exit 1; }
 	@[ -z "$$(git status --porcelain)" ] || echo "$(YELLOW)Uncommitted changes here are not part of this deploy.$(RESET)"
 	@echo "$(BOLD)Deploying$(RESET) $$(git log --oneline -1) $(DIM)(the site is down for a minute or two near the end)$(RESET)"
-	@$(SSH) $(DEPLOY_HOST) '$(DEPLOY_DIR)/scripts/deploy.sh'
+	@# ssh exits with 255 when the connection fails; the deploy itself carries on on the server.
+	@$(SSH) $(DEPLOY_HOST) '$(DEPLOY_DIR)/scripts/deploy.sh' || { status=$$?; \
+	  [ $$status -eq 255 ] && echo "$(YELLOW)Lost the connection.$(RESET) The deploy carries on on the server: make prod-deploy-log"; \
+	  exit $$status; }
 	@[ -z "$(DEPLOY_URL)" ] || { echo -n "$(DEPLOY_URL)/api/health → " && curl -fsS --max-time 20 $(DEPLOY_URL)/api/health && echo; }
 
 prod-setup: _deploy_env ## One time, on a fresh server: firewall, Docker, clone, nightly backups
@@ -185,6 +189,9 @@ prod-status: _deploy_env ## Production containers, disk space and the latest bac
 
 prod-logs: _deploy_env ## Follow production logs (all services, or s=backend)
 	@$(SSH) -t $(DEPLOY_HOST) '$(PROD_COMPOSE) logs -f --tail=150 $(s)'
+
+prod-deploy-log: _deploy_env ## Show the latest deploy's log from the server
+	@$(SSH) $(DEPLOY_HOST) 'cd $(DEPLOY_DIR) && ls -1t logs/deploy-*.log 2>/dev/null | head -1 | xargs -r cat'
 
 prod-backup: _deploy_env ## Back up the production database and files now
 	@$(SSH) $(DEPLOY_HOST) '$(DEPLOY_DIR)/scripts/backup-db.sh'

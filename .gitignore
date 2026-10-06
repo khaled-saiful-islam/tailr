@@ -18,3 +18,4 @@ test-results/
 backend/data/
 !.env.*.example
 backups/
+logs/

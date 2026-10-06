@@ -207,11 +207,14 @@ seconds. Open `DEPLOY_URL` and sign in as `admin` with the printed password.
 | `make deploy` | Checks your checkout is GitHub's `main`, then on the server: backs up, pulls, rebuilds what changed, restarts, prunes old images, and checks `/api/health` |
 | `make prod-status` | Containers, free disk, latest backups |
 | `make prod-logs` / `make prod-logs s=backend` | Follow the logs |
+| `make prod-deploy-log` | The latest deploy's log (kept on the server in `logs/`, last 20) |
 | `make prod-backup` | Back up now |
 | `make prod-ssh` | A shell on the server |
 
 `make deploy` refuses to run if your checkout isn't GitHub's `main`, because the server pulls
-from GitHub: push first. Expect a minute or two of downtime near the end while the new
+from GitHub: push first. The deploy runs on the server in its own session and writes a log;
+`make deploy` only follows it. If your connection drops, the deploy still finishes, and
+`make prod-deploy-log` shows how it ended. Only one deploy runs at a time. Expect a minute or two of downtime near the end while the new
 containers start, and background work that is running at that moment is cut off, so deploy
 when it's quiet.
 
