@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 from functools import lru_cache
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
@@ -22,6 +22,7 @@ class Environment(StrEnum):
 
 
 _DEV_SECRET = "dev-only-secret-change-me"  # noqa: S105 - placeholder, refused in production
+_DEV_MAIL_HOSTS = frozenset({"localhost", "127.0.0.1", "mailpit"})
 
 
 class Settings(BaseSettings):
@@ -98,6 +99,10 @@ class Settings(BaseSettings):
     smtp_host: str = "localhost"
     smtp_port: int = 1025
     smtp_from: str = "Tailr <brief@tailr.local>"
+    # A mail provider: "starttls" on 587 or "ssl" on 465, plus its login. Mailpit needs neither.
+    smtp_security: Literal["none", "starttls", "ssl"] = "none"
+    smtp_username: str = ""
+    smtp_password: str = ""
     email_enabled: bool = True
 
     @field_validator("cors_origins", "sources_enabled", mode="before")
@@ -128,6 +133,8 @@ class Settings(BaseSettings):
             problems.append("SEED_ADMIN_PASSWORD must not be the default 'admin'")
         if not self.llm_api_key:
             problems.append("LLM_API_KEY is required")
+        if self.email_enabled and self.smtp_host in _DEV_MAIL_HOSTS:
+            problems.append("EMAIL_ENABLED needs a real mail server in SMTP_HOST (or turn it off)")
         if problems:
             raise RuntimeError("Unsafe production config: " + "; ".join(problems))
 

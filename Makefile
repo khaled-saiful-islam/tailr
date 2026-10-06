@@ -30,7 +30,8 @@ PY_TEST := $(COMPOSE) run --rm --entrypoint "" -v "$(PWD)/backend:/srv" \
 NODE := docker run --rm -v "$(PWD)/frontend:/app" -v tailr-node-modules:/app/node_modules -w /app node:22-alpine sh -c
 
 .PHONY: help setup up down restart dev logs ps migrate migration seed demo test test-backend test-frontend \
-	lint fmt typecheck gen-api e2e screenshots shell psql redis-cli reset clean _banner _env
+	lint fmt typecheck gen-api e2e screenshots shell psql redis-cli reset clean _banner _env \
+	deploy prod-setup prod-status prod-logs prod-backup prod-ssh _deploy_env
 
 help: ## Show this help
 	@echo "$(BOLD)Tailr$(RESET) — jobs that fit, applications made to measure"
@@ -150,3 +151,43 @@ reset: ## Delete all data and start fresh (asks first)
 
 clean: ## Stop everything and remove built images (keeps data)
 	@$(COMPOSE) down --rmi local --remove-orphans
+
+# ── Production ──────────────────────────────────────────────────────
+# The server's address and key live in .env.deploy (copy .env.deploy.example).
+# docs/deployment.md has the whole setup and the reason for each step.
+deploy_env = $(shell grep -E '^$(1)=' .env.deploy 2>/dev/null | cut -d= -f2- | grep . || echo $(2))
+DEPLOY_HOST := $(call deploy_env,DEPLOY_HOST,)
+DEPLOY_KEY := $(call deploy_env,DEPLOY_KEY,~/.ssh/tailr-oci)
+DEPLOY_DIR := $(call deploy_env,DEPLOY_DIR,/opt/tailr)
+DEPLOY_URL := $(call deploy_env,DEPLOY_URL,)
+SSH := ssh -i $(DEPLOY_KEY) -o ConnectTimeout=15
+PROD_COMPOSE := cd $(DEPLOY_DIR) && docker compose -f docker-compose.yml -f docker-compose.prod.yml
+
+_deploy_env:
+	@[ -n "$(DEPLOY_HOST)" ] || { echo "Set DEPLOY_HOST in .env.deploy (copy .env.deploy.example)."; exit 1; }
+
+deploy: _deploy_env ## Ship GitHub's main to production: back up, update, rebuild, check health
+	@git fetch -q origin main
+	@# The server deploys GitHub's main, so this checks that is what you have here.
+	@[ "$$(git rev-parse HEAD)" = "$$(git rev-parse origin/main)" ] || { \
+	  echo "$(BOLD)Not deploying:$(RESET) this checkout isn't origin/main."; \
+	  echo "  Production runs what GitHub has: push your commits (or check out main) first."; exit 1; }
+	@[ -z "$$(git status --porcelain)" ] || echo "$(YELLOW)Uncommitted changes here are not part of this deploy.$(RESET)"
+	@echo "$(BOLD)Deploying$(RESET) $$(git log --oneline -1) $(DIM)(the site is down for a minute or two near the end)$(RESET)"
+	@$(SSH) $(DEPLOY_HOST) '$(DEPLOY_DIR)/scripts/deploy.sh'
+	@[ -z "$(DEPLOY_URL)" ] || { echo -n "$(DEPLOY_URL)/api/health → " && curl -fsS --max-time 20 $(DEPLOY_URL)/api/health && echo; }
+
+prod-setup: _deploy_env ## One time, on a fresh server: firewall, Docker, clone, nightly backups
+	@$(SSH) $(DEPLOY_HOST) 'bash -s' < scripts/server-setup.sh
+
+prod-status: _deploy_env ## Production containers, disk space and the latest backups
+	@$(SSH) $(DEPLOY_HOST) '$(PROD_COMPOSE) ps --format "table {{.Name}}\t{{.Status}}"; echo; df -h / | tail -1; echo; ls -1t backups/*.dump 2>/dev/null | head -3'
+
+prod-logs: _deploy_env ## Follow production logs (all services, or s=backend)
+	@$(SSH) -t $(DEPLOY_HOST) '$(PROD_COMPOSE) logs -f --tail=150 $(s)'
+
+prod-backup: _deploy_env ## Back up the production database and files now
+	@$(SSH) $(DEPLOY_HOST) '$(DEPLOY_DIR)/scripts/backup-db.sh'
+
+prod-ssh: _deploy_env ## Open a shell on the production server
+	@$(SSH) $(DEPLOY_HOST)

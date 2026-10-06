@@ -1,0 +1,22 @@
+# Production front door (docker-compose.prod.yml). Caddy gets and renews the
+# HTTPS certificate from Let's Encrypt by itself, redirects HTTP to HTTPS, and
+# passes everything to nginx, which serves the app and proxies /api.
+#
+# SITE_ADDRESS comes from .env: tailr.stream once the domain is bought, or a
+# free sslip.io name for the server's IP until then (203-0-113-7.sslip.io).
+
+{$SITE_ADDRESS} {
+	# Caddy replaces any X-Forwarded-For the visitor sent with their real address;
+	# nginx trusts it from here (deploy/nginx/real-ip.conf), and rate limits use it.
+	reverse_proxy frontend:80
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

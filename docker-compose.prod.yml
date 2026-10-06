@@ -1,0 +1,82 @@
+# Production overlay, used on the server by scripts/deploy.sh:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Only Caddy is reachable from the internet (80 and 443). It gets the HTTPS
+# certificate and hands every request to nginx (the frontend container). The
+# database, Redis and the API publish no ports, so they can't be reached from
+# outside even if the cloud firewall were opened. Mailpit is not started.
+# Needs Docker Compose 2.24.4+ for !reset.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# Mail goes to a real provider (from .env); the base file points it at Mailpit.
+x-mail: &mail
+  SMTP_HOST: ${SMTP_HOST:-localhost}
+  SMTP_PORT: ${SMTP_PORT:-587}
+
+services:
+  db:
+    ports: !reset []
+    logging: *logging
+
+  redis:
+    ports: !reset []
+    logging: *logging
+
+  backend:
+    ports: !reset []
+    environment: *mail
+    logging: *logging
+
+  worker:
+    environment: *mail
+    logging: *logging
+
+  scheduler:
+    environment: *mail
+    logging: *logging
+
+  renderer:
+    logging: *logging
+
+  mailpit:
+    profiles: ["dev-mail"]
+
+  frontend:
+    ports: !reset []
+    volumes:
+      - ./deploy/nginx/real-ip.conf:/etc/nginx/conf.d/real-ip.conf:ro
+    logging: *logging
+
+  caddy:
+    image: caddy:2.11-alpine
+    container_name: tailr-caddy
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Set SITE_ADDRESS in .env (see docs/deployment.md)}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - tailr-caddy-data:/data
+      - tailr-caddy-config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging: *logging
+
+volumes:
+  # Caddy's certificates and account key. Losing them only means asking Let's Encrypt again.
+  tailr-caddy-data:
+  tailr-caddy-config:

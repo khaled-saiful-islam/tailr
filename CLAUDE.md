@@ -17,6 +17,8 @@ Read `PLAN.md` (scope, decisions, build order) and `docs/architecture.md` first.
 - **Docs:** every feature gets `docs/features/NN-name.md`; update README's status table and
   PLAN.md checkboxes when a milestone lands.
 - **Git:** conventional commits; after each finished milestone, commit and push to `origin main`.
+- **Production:** `make deploy` ships GitHub's `main` (push first). Server address in `.env.deploy`,
+  secrets only in the server's `.env`. See `docs/deployment.md`.
 
 ## Default admin
 

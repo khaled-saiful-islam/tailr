@@ -16,3 +16,5 @@ htmlcov/
 playwright-report/
 test-results/
 backend/data/
+!.env.*.example
+backups/

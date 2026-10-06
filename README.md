@@ -26,6 +26,7 @@ application from your real experience. You apply yourself, and track it in one p
 - [Project layout](#project-layout)
 - [Configuration](#configuration)
 - [Testing and quality](#testing-and-quality)
+- [Deploying](#deploying)
 - [Documentation](#documentation)
 - [Status and roadmap](#status-and-roadmap)
 
@@ -192,6 +193,7 @@ All settings live in `.env` (created from [`.env.example`](.env.example) by `mak
 | `AI_DAILY_BUDGET_TOKENS` | `1500000` | Default AI allowance per person per day (admins can change it per person; 0 = no limit) |
 | `SEED_DEMO_PASSWORD` | `Tailr-demo-2026` | The demo account's password (`make demo`); production refuses the default |
 | `EMAIL_ENABLED` / `SMTP_FROM` | `true` / `Tailr <brief@tailr.local>` | Emails (the daily jobs email, reminders); in development Mailpit catches them all |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURITY` / `SMTP_USERNAME` / `SMTP_PASSWORD` | Mailpit, no login | A mail provider in production: `starttls` on 587 or `ssl` on 465, plus its login |
 | `SOURCES_ENABLED` | `linkedin,jobstreet` | Job sources to use; remove one to switch it off |
 | `WEB_PORT` … `MAIL_UI_PORT` | `8400`–`8405` | Ports on your machine |
 
@@ -214,6 +216,22 @@ make e2e     # Playwright on a desktop and a phone, with axe accessibility check
   profile page, settings and admin, with no sideways scrolling and no serious WCAG 2.2 AA problems.
 - Run one backend test session at a time: runs share the test database and a Redis database.
 
+## Deploying
+
+Production is one free Oracle Cloud Arm server running the same containers, with Caddy in
+front for HTTPS. After the [one-time setup](docs/deployment.md#one-time-setup):
+
+```bash
+git push origin main
+make deploy         # back up, pull GitHub's main on the server, rebuild, restart, check health
+make prod-status    # containers, disk, latest backups
+make prod-logs s=backend
+make prod-backup    # back up now (also nightly, and before every deploy)
+```
+
+[docs/deployment.md](docs/deployment.md) covers the server, HTTPS, backups and restoring,
+moving to the `tailr.stream` domain and turning on email, each step with its reason.
+
 ## Documentation
 
 | Document | For |
@@ -221,6 +239,7 @@ make e2e     # Playwright on a desktop and a phone, with axe accessibility check
 | [PLAN.md](PLAN.md) | Product scope, decisions and build order |
 | [docs/architecture.md](docs/architecture.md) | How the system fits together and why |
 | [docs/development.md](docs/development.md) | Day-to-day development, conventions, adding a feature |
+| [docs/deployment.md](docs/deployment.md) | Production: the server, `make deploy`, backups, domain and email |
 | [docs/features/](docs/features) | One page per feature: [accounts](docs/features/01-accounts.md), [profile builder](docs/features/02-profile-builder.md), [job preferences](docs/features/03-job-radar.md), [jobs and the daily search](docs/features/04-morning-brief.md), [preparing an application](docs/features/05-apply-kit.md), [my CV](docs/features/06-cv-studio.md), [my website](docs/features/07-portfolio.md), [my applications and this week](docs/features/08-tracker-momentum.md), [settings, admin and demo](docs/features/09-settings-admin.md), [working in the background](docs/features/10-background-work.md) |
 | [docs/ux-language.md](docs/ux-language.md) | The words the app uses, and the ones it avoids |
 | [docs/job-sources.md](docs/job-sources.md) | How Tailr reads LinkedIn and JobStreet, politely |
