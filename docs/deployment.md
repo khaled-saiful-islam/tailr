@@ -33,6 +33,17 @@ visitor ──HTTPS──▶ Caddy :443 ──▶ nginx (frontend) ──▶ app
 Only ports 80 and 443 are open to the internet, plus SSH (22) from the owner's IP. The
 database, Redis and the API publish no ports (`docker-compose.prod.yml`).
 
+### Sharing the server with Starboard
+
+Starboard runs on the same server (`/opt/starboard`, its own `docs/deployment.md`). Only one
+program can own ports 80 and 443, so Tailr's Caddy serves both sites:
+
+- Tailr's `deploy/Caddyfile` ends with `import /etc/caddy/sites/*.caddy`, and
+  `docker-compose.prod.yml` mounts `deploy/sites/` there. Starboard's deploy writes
+  `deploy/sites/starboard.caddy` and reloads Caddy; git ignores that file, so Tailr deploys keep it.
+- Starboard's web container joins Tailr's network (`tailr_default`). It brings its own
+  `frontend` name with it, so Caddy reaches Tailr by container name (`tailr-frontend`).
+
 ### Staying free
 
 Everything here is on Oracle's [Always Free list](https://docs.oracle.com/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm):

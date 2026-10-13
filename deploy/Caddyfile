@@ -8,7 +8,8 @@
 {$SITE_ADDRESS} {
 	# Caddy replaces any X-Forwarded-For the visitor sent with their real address;
 	# nginx trusts it from here (deploy/nginx/real-ip.conf), and rate limits use it.
-	reverse_proxy frontend:80
+	# By container name: other apps on this server (Starboard) join this network with their own "frontend".
+	reverse_proxy tailr-frontend:80
 
 	header {
 		Strict-Transport-Security "max-age=31536000"
@@ -20,3 +21,7 @@
 		format console
 	}
 }
+
+# Other apps sharing this server add their own site here (Starboard writes deploy/sites/starboard.caddy
+# when it deploys). git ignores those files, so a Tailr deploy never touches them.
+import /etc/caddy/sites/*.caddy

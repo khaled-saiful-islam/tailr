@@ -64,6 +64,7 @@ services:
       - "443:443/udp"
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/sites:/etc/caddy/sites:ro
       - tailr-caddy-data:/data
       - tailr-caddy-config:/config
     depends_on:

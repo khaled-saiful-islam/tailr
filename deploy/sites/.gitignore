@@ -1,0 +1,3 @@
+# Site files written on the server by other apps (Starboard). Only this file is tracked.
+*
+!.gitignore
